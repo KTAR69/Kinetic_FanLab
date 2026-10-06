@@ -1,0 +1,45 @@
+# ⚡ Kinetic FanLab
+
+**Track 3: Fan-Centric Sports & Entertainment**  
+**IBM SkillsBuild AI Experiential Learning Lab**  
+**Team Lead:** Troy Resendez  
+
+---
+
+## 📌 Project Overview
+Kinetic FanLab turns in-stadium fan energy into a measurable, real-time momentum score (0–100 Calculated Momentum Index). 
+
+By bringing together crowd noise (decibels), heart rates, screen taps, and vocal chants, fans compete section-by-section to disrupt opponent plays and earn recognition as the true "6th Man" (Basketball) or "12th Man" (Football).
+
+---
+
+## 🛠️ Technology Used
+- **IBM Bob IDE**: Development scaffolding and code architecture.
+- **IBM watsonx.ai (Granite)**: Real-time analysis of fan chants and post-play game narratives.
+- **IBM watsonx.governance**: Live safety checks to keep all fan submissions safe and appropriate.
+- **Streamlit**: Interactive 4-screen stadium application.
+
+---
+
+## 📦 Required Dependencies
+The application requires the following Python libraries:
+- `streamlit`
+- `ibm-watsonx-ai`
+
+---
+
+## 🚀 How to Run Locally
+
+1. **Clone the repository:**
+   ```bash
+   git clone [https://github.com/](https://github.com/)<your-username>/Kinetic_FanLab.git
+   cd Kinetic_FanLab
+
+   Install requirements:
+
+Bash
+pip install streamlit ibm-watsonx-ai
+Start the app:
+
+Bash
+streamlit run app.py

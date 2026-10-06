@@ -1,0 +1,20 @@
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Environments & credentials
+.env
+.venv/
+env/
+venv/
+*.key
+*.pem
+
+# Streamlit runtime
+.streamlit/secrets.toml
+
+# OS generated files
+.DS_Store
+Thumbs.db
