@@ -131,12 +131,14 @@ if "last_fixture" not in st.session_state or st.session_state.last_fixture != ac
     
     st.session_state.tap_count = 0
     st.session_state.tap_times = []
+    st.session_state.synergy_claimed = False
 
 # Global session states
 if "tap_count" not in st.session_state: st.session_state.tap_count = 0
 if "tap_times" not in st.session_state: st.session_state.tap_times = []
 if "early_checkin" not in st.session_state: st.session_state.early_checkin = False
 if "synergy_score" not in st.session_state: st.session_state.synergy_score = 92
+if "synergy_claimed" not in st.session_state: st.session_state.synergy_claimed = False
 if "respect_dict" not in st.session_state:
     st.session_state.respect_dict = {
         "Marcus Vance": 313, "Elena Rostova": 168, "Devon Miller": 245, "Jordan Lee": 28,
@@ -535,7 +537,7 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
     with col4: st.metric("In-App Taps", f"{st.session_state.taps}/s", delta="Surge" if st.session_state.taps > 10 else "Steady")
     with col5: st.metric("Vocal Urgency", f"{st.session_state.vu} VU", delta="Clutch" if st.session_state.vu > 0.8 else "Moderate")
 
-    # Section AI Team Members Huddle (Renamed with Intuitive Icons & Supportive Tone)
+    # Section AI Team Members Huddle (Robot + Role Icons & Verifiable Synergy)
     st.markdown("---")
     st.subheader("🤝 Section AI Team Members Huddle")
     st.caption("💡 *You and your fellow fans are the Section Captains. These AI Team Members support your calls with real-time rhythm, sensor telemetry, and rivalry intelligence.*")
@@ -583,24 +585,39 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
 
     st.markdown(f"""
     <div style="background-color: #1a1a1a; border-left: 5px solid #0f62fe; padding: 12px 16px; border-radius: 6px; margin-bottom: 8px;">
-        <h5 style="color: #0f62fe; margin: 0 0 4px 0;">🎵 ⏱️ THE CONDUCTOR — AI Pacing Specialist (Team Member)</h5>
+        <h5 style="color: #0f62fe; margin: 0 0 4px 0;">🤖 ⏱️ THE CONDUCTOR — AI Pacing Specialist (Team Member)</h5>
         <p style="color: #f4f4f4; margin: 0; font-size: 10pt;">"{cond_text}"</p>
     </div>
     <div style="background-color: #1a1a1a; border-left: 5px solid #8a3ffc; padding: 12px 16px; border-radius: 6px; margin-bottom: 8px;">
-        <h5 style="color: #8a3ffc; margin: 0 0 4px 0;">📡 📊 THE SCOUT — AI Telemetry Analyst (Team Member)</h5>
+        <h5 style="color: #8a3ffc; margin: 0 0 4px 0;">🦾 📊 THE SCOUT — AI Telemetry Analyst (Team Member)</h5>
         <p style="color: #f4f4f4; margin: 0; font-size: 10pt;">"{scout_text}"</p>
     </div>
     <div style="background-color: #1a1a1a; border-left: 5px solid #f1c21b; padding: 12px 16px; border-radius: 6px; margin-bottom: 8px;">
-        <h5 style="color: #f1c21b; margin: 0 0 4px 0;">🏆 ♟️ THE STRATEGIST — AI Rivalry Coordinator (Team Member)</h5>
+        <h5 style="color: #f1c21b; margin: 0 0 4px 0;">🧠 🏆 THE STRATEGIST — AI Rivalry Coordinator (Team Member)</h5>
         <p style="color: #f4f4f4; margin: 0; font-size: 10pt;">"{strat_text}"</p>
     </div>
     """, unsafe_allow_html=True)
 
+    # Verifiable Directive Execution Logic
+    has_contributed_telemetry = (st.session_state.tap_count >= 5 or len(st.session_state.fan_notes) > 1)
+    
     syn_col1, syn_col2 = st.columns([2, 1])
     with syn_col1:
-        if st.button("🙌 Roger That! Rallying Section (+5 Pts Synergy)", key="btn_synergy"):
-            st.session_state.synergy_score = min(100, st.session_state.synergy_score + 5)
-            st.success(f"Team Synergy Acknowledged! Section Co-Op score elevated to {st.session_state.synergy_score}%!")
+        if not has_contributed_telemetry:
+            st.info("⏳ **DIRECTIVE PENDING:** Log at least 5 Distraction Taps or submit a Fan Outburst below to verify your in-arena action before claiming synergy points.")
+        else:
+            st.success(f"✅ **ACTION VERIFIED BY WATSONX:** {st.session_state.tap_count} taps logged and voice telemetry recorded. Ready to sync!")
+
+        if st.button("🔍 Verify In-Arena Telemetry & Claim +5 Synergy", key="btn_synergy"):
+            if not has_contributed_telemetry:
+                st.warning("⚠️ Action Not Detected: Please log at least 5 distraction taps or submit an approved voice shout below before verifying!")
+            elif st.session_state.synergy_claimed:
+                st.info(f"✅ Directive already completed for this possession! Current Section Synergy: {st.session_state.synergy_score}%.")
+            else:
+                st.session_state.synergy_score = min(100, st.session_state.synergy_score + 5)
+                st.session_state.synergy_claimed = True
+                st.success(f"🎉 Directive Verified by watsonx! +5 Synergy Awarded. Section Co-Op score elevated to {st.session_state.synergy_score}%!")
+    
     with syn_col2:
         st.write(f"**Section Synergy Meter:** `{st.session_state.synergy_score}% Synchronized`")
         st.progress(st.session_state.synergy_score / 100.0)
@@ -659,6 +676,7 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
             st.session_state.tap_count = 0
             st.session_state.tap_times = []
             st.session_state.taps = 0.0
+            st.session_state.synergy_claimed = False
             st.rerun()
 
     with c_vox:
@@ -786,6 +804,13 @@ elif screen == "📊 Screen 4: Narrative Delta & Story Card":
         <p style="color: #8d8d8d; font-size: 9.5pt; margin-top: 12px;">Verified by IBM watsonx Granite // {winning_sec} Defense Belt Winner</p>
     </div>
     """, unsafe_allow_html=True)
+
+    # Added Prominent Share Button directly beneath the Card
+    sh_col1, sh_col2, sh_col3 = st.columns([1, 2, 1])
+    with sh_col2:
+        if st.button("📲 Share Proof-of-Momentum to Instagram, TikTok & X", key="btn_share_proof_card", use_container_width=True):
+            st.success(f"✅ Proof-of-Momentum card exported! Link copied: kineticfanlab.com/proof/{st.session_state.sport.lower()}/{int(current_cmi)}")
+            st.info("📋 Formatted for Instagram Stories, TikTok, and X with cryptographic signature.")
 
     # Official Crowd Box Score
     st.markdown("---")
