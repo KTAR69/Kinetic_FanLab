@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "record_type": "crowd_box_score",
+  "fixture_id": "BB-01",
+  "sport": "Basketball",
+  "calculated_momentum_index": 37.8,
+  "momentum_surge_pts": 0.0,
+  "winning_section": "Section 114 (Thunder Row)",
+  "fan_contribution": {
+    "tap_count": 0,
+    "peak_hr_bpm": 98,
+    "peak_db": 82.0,
+    "vocal_urgency": 0.55,
+    "fan_notes": [
+      "Watch the shooter, need this stop"
+    ]
+  },
+  "crypto_timestamp": "2026-10-08T20:16:41Z#d619b7e2",
+  "powered_by": "IBM watsonx & Granite Foundation Models"
+}

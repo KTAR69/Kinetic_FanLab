@@ -1,0 +1,44 @@
+{
+  "Marcus Vance": {
+    "member_hash": "0xMV-sec114-8f7a2",
+    "respect_taps": 315,
+    "nft_badges_unlocked": [],
+    "_id": "Marcus Vance"
+  },
+  "Elena Rostova": {
+    "member_hash": "0xER-sec114-3c9b1",
+    "respect_taps": 168,
+    "nft_badges_unlocked": []
+  },
+  "Devon Miller": {
+    "member_hash": "0xDM-sec114-6d4e8",
+    "respect_taps": 245,
+    "nft_badges_unlocked": []
+  },
+  "Jordan Lee": {
+    "member_hash": "0xJL-sec114-1f4a9",
+    "respect_taps": 28,
+    "nft_badges_unlocked": []
+  },
+  "Sarah Jenkins": {
+    "member_hash": "0xSJ-sec115-7b2a5",
+    "respect_taps": 481,
+    "nft_badges_unlocked": [],
+    "_id": "Sarah Jenkins"
+  },
+  "Carlos Mendez": {
+    "member_hash": "0xCM-sec115-4e8f9",
+    "respect_taps": 395,
+    "nft_badges_unlocked": []
+  },
+  "Maya Patel": {
+    "member_hash": "0xMP-sec115-1a5c3",
+    "respect_taps": 185,
+    "nft_badges_unlocked": []
+  },
+  "Alex Taylor": {
+    "member_hash": "0xAT-sec115-5c2d3",
+    "respect_taps": 45,
+    "nft_badges_unlocked": []
+  }
+}
