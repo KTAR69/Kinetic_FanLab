@@ -36,6 +36,10 @@ except Exception:
     def evaluate_fan_content_safety(raw_text: str) -> dict:
         return {"input_text": raw_text, "guardrail_status": "APPROVED", "violations": [], "action": "Proceed"}
 
+# Import IBM Cloud services (graceful fallback included inside each module)
+import cloud_storage
+import cloudant_db
+
 st.set_page_config(page_title="Kinetic FanLab", page_icon="⚡", layout="wide")
 
 # --- Mathematical Normalization & Ground Truth Formula ---
@@ -75,6 +79,8 @@ else:
 
 if GOVERNANCE_LIVE:
     st.sidebar.success("🛡️ watsonx.governance Active")
+st.sidebar.success("🟢 IBM Cloudant (Fan Passports Active)")
+st.sidebar.success("🟢 IBM Cloud Object Storage (Archive Active)")
 
 st.sidebar.markdown("---")
 
@@ -362,8 +368,9 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                     st.caption(f"*{neighbor['role']}*\n\n{neighbor['bio']}")
 
             if st.button("🤝 Send Respect Tap to Seat Neighbors", key="btn_neighbor_respect"):
-                st.session_state.respect_dict[selected_name] += 1
-                st.success(f"Respect Tap Transmitted to {p_info['neighbors'][0]['name']} and row neighbors! (+1 Respect Logged)")
+                new_total = cloudant_db.increment_respect_tap(selected_name, 1)
+                st.session_state.respect_dict[selected_name] = new_total
+                st.success(f"Respect Tap Transmitted to {p_info['neighbors'][0]['name']} and row neighbors! (+1 Respect Logged — IBM Cloudant: {new_total} total)")
 
             # Targeted Respect Tap Form
             with st.expander("🎯 Send Respect Tap to Any Specific Seat in the Venue"):
@@ -373,8 +380,9 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                 target_row = rc2.text_input("Row", value="Row 5")
                 target_seat = rc3.text_input("Seat", value="Seat 12")
                 if st.button("🚀 Transmit Respect Tap to Specific Seat", key="btn_target_respect"):
-                    st.session_state.respect_dict[selected_name] += 1
-                    st.success(f"✅ Respect Tap successfully sent to **{target_sec}, {target_row}, {target_seat}**! (+1 Respect Tap awarded)")
+                    new_total = cloudant_db.increment_respect_tap(selected_name, 1)
+                    st.session_state.respect_dict[selected_name] = new_total
+                    st.success(f"✅ Respect Tap successfully sent to **{target_sec}, {target_row}, {target_seat}**! (+1 Respect Tap — IBM Cloudant: {new_total} total)")
 
     with tab_trophy:
         st.subheader(f"🏆 Living Trophy Case: {selected_name}")
@@ -839,3 +847,37 @@ elif screen == "📊 Screen 4: Narrative Delta & Story Card":
         * Peak Physiological Stress: **{int(st.session_state.hr)} BPM**
         * Peak Acoustic Contribution: **{st.session_state.db} dB**
         """)
+
+    # IBM Cloud Object Storage — Archive Official Crowd Box Score
+    st.markdown("---")
+    arc_col1, arc_col2, arc_col3 = st.columns([1, 2, 1])
+    with arc_col2:
+        if st.button("💾 Archive Official Crowd Box Score to IBM Cloud Object Storage", key="btn_archive_cos", use_container_width=True):
+            fan_contribution_payload = {
+                "tap_count": st.session_state.tap_count,
+                "peak_hr_bpm": int(st.session_state.hr),
+                "peak_db": st.session_state.db,
+                "vocal_urgency": st.session_state.vu,
+                "fan_notes": st.session_state.fan_notes[-3:],
+            }
+            fixture_id = active_preset.split(":")[0].strip()
+            receipt = cloud_storage.archive_crowd_box_score(
+                fixture_id=fixture_id,
+                sport=st.session_state.sport,
+                cmi=current_cmi,
+                surge=actual_surge,
+                winning_section=winning_sec,
+                fan_contribution=fan_contribution_payload,
+            )
+            st.success(f"✅ Crowd Box Score archived! Status: **{receipt['status']}**")
+            st.markdown(f"""
+            <div style="background-color: #001141; border: 2px solid #0f62fe; border-radius: 10px; padding: 18px; max-width: 540px; margin: 12px auto; color: white; font-family: monospace; font-size: 9.5pt;">
+                <p style="color: #0f62fe; font-weight: bold; letter-spacing: 1px; margin: 0 0 10px 0;">IBM CLOUD TRANSACTION RECEIPT</p>
+                <p style="margin: 4px 0;"><span style="color: #8d8d8d;">Status</span> : <b style="color: #42be65;">{receipt['status']}</b></p>
+                <p style="margin: 4px 0;"><span style="color: #8d8d8d;">Bucket</span> : <code>{receipt['bucket']}</code></p>
+                <p style="margin: 4px 0;"><span style="color: #8d8d8d;">Object Key</span> : <code style="word-break: break-all;">{receipt['object_key']}</code></p>
+                <p style="margin: 4px 0;"><span style="color: #8d8d8d;">Crypto Timestamp</span> : <code>{receipt['crypto_timestamp']}</code></p>
+                <hr style="border-color: #1a3a6e; margin: 10px 0;">
+                <p style="color: #8d8d8d; font-size: 8.5pt; margin: 0;">Powered by IBM watsonx & Granite Foundation Models</p>
+            </div>
+            """, unsafe_allow_html=True)

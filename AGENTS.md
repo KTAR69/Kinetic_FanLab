@@ -62,3 +62,120 @@ cmi = round((
     normalize(taps, 0.0, 15.0) * 0.20 +
     normalize(vu, 0.0, 1.0) * 0.20
 ) * 100, 1)
+
+## 6. IBM Cloud Services & Orchestrate Skill Integration (Session 4)
+
+### IBM Cloud Object Storage (COS) — Archival Architecture
+
+`cloud_storage.py` provides a resilient, Pyright-clean COS module for archiving verified post-game records.
+
+**Environment variables (set in `.env` or IBM Cloud Secrets Manager):**
+
+| Variable | Description |
+|---|---|
+| `COS_APIKEY` | IBM Cloud IAM API key with Writer access to the bucket |
+| `COS_RESOURCE_CRN` | CRN of the COS service instance |
+| `COS_ENDPOINT` | Regional endpoint (e.g., `https://s3.us-south.cloud-object-storage.appdomain.cloud`) |
+| `COS_BUCKET` | Target bucket name (default: `kinetic-fanlab-archive`) |
+
+**Graceful fallback:** When credentials are absent or the SDK is unavailable, the module operates in **local mock mode**, writing JSON files to `cloud_storage_archive/` and returning `status: "ARCHIVED_LOCALLY (Simulated IBM COS)"`.
+
+**Bucket object schema (two record types):**
+
+_Crowd Box Score_ — `crowd_box_scores/{sport}/{fixture_id}_{timestamp}.json`:
+```json
+{
+  "schema_version": "1.0",
+  "record_type": "crowd_box_score",
+  "fixture_id": "BB-02",
+  "sport": "Basketball",
+  "calculated_momentum_index": 81.9,
+  "momentum_surge_pts": 44.1,
+  "winning_section": "Section 114 (Thunder Row)",
+  "fan_contribution": { "tap_count": 12, "peak_hr_bpm": 136, "peak_db": 106.5, "vocal_urgency": 0.85, "fan_notes": [] },
+  "crypto_timestamp": "2025-07-14T18:30:00Z#a1b2c3d4",
+  "powered_by": "IBM watsonx & Granite Foundation Models"
+}
+```
+
+_Proof-of-Momentum Card_ — `proof_of_momentum/{sport}/{fixture_id}_{timestamp}.json`:
+```json
+{
+  "schema_version": "1.0",
+  "record_type": "proof_of_momentum_card",
+  "fixture_id": "FB-02",
+  "sport": "Football",
+  "points_display": "+53.0 PTS",
+  "outcome": "MISSED FIELD GOAL (Wide Left - Ice Successful)",
+  "granite_narrative": "111.8 dB sustained roar across 148 BPM cardiac stress disrupted kicker cadence.",
+  "crypto_timestamp": "2025-07-14T18:31:00Z#e5f6a7b8",
+  "powered_by": "IBM watsonx & Granite Foundation Models"
+}
+```
+
+---
+
+### IBM Cloudant NoSQL — Fan Passport Document Schema
+
+`cloudant_db.py` persists the 8 member Fan Passports in the `kinetic-fan-passports` database.
+
+**Environment variables:**
+
+| Variable | Description |
+|---|---|
+| `CLOUDANT_APIKEY` | IBM Cloud IAM API key with Reader/Writer access to Cloudant |
+| `CLOUDANT_URL` | Cloudant service URL (e.g., `https://<account>.cloudantnosqldb.appdomain.cloud`) |
+
+**Graceful fallback:** When credentials are absent, the module uses `cloudant_cache.json` (local JSON) so respect taps and accolades persist across app reloads without any crash.
+
+**Cloudant document schema per member:**
+```json
+{
+  "_id": "Marcus Vance",
+  "member_hash": "0xMV-sec114-8f7a2",
+  "respect_taps": 314,
+  "nft_badges_unlocked": []
+}
+```
+
+**Immutable member hash table (never change):**
+
+| Member | Invariant Hash |
+|---|---|
+| Marcus Vance | `0xMV-sec114-8f7a2` |
+| Elena Rostova | `0xER-sec114-3c9b1` |
+| Devon Miller | `0xDM-sec114-6d4e8` |
+| Jordan Lee | `0xJL-sec114-1f4a9` |
+| Sarah Jenkins | `0xSJ-sec115-7b2a5` |
+| Carlos Mendez | `0xCM-sec115-4e8f9` |
+| Maya Patel | `0xMP-sec115-1a5c3` |
+| Alex Taylor | `0xAT-sec115-5c2d3` |
+
+**Public API:**
+- `load_member_passport(member_name)` → full passport `dict`
+- `save_member_passport(member_name, updated_data)` → `bool` (enforces immutable hash)
+- `increment_respect_tap(member_name, count=1)` → new `int` total
+
+---
+
+### OpenAPI 3.0 Skill Registration Manifest — `kinetic_fanlab_skill.json`
+
+**Title:** Kinetic FanLab Telemetry & Momentum Engine  
+**Version:** 1.0.0  
+**Security:** IBM Cloud IAM Bearer Token  
+**Base URL:** `https://kineticfanlab.ibm.com/api/v1`
+
+Endpoints registered for IBM watsonx Orchestrate skill discovery:
+
+| Endpoint | Method | Operation ID | Purpose |
+|---|---|---|---|
+| `/calculate_cmi` | POST | `calculateCmi` | Fuse dB + BPM + tap rate + vocal urgency → CMI (0–100) + tier |
+| `/evaluate_pacing` | POST | `evaluatePacing` | Return InvisibleCoordinator directive, clutch multiplier, tactic |
+| `/generate_narrative` | POST | `generateNarrative` | IBM Granite post-play reality delta narrative with live telemetry values |
+
+All endpoints accept and return `application/json`. Error responses follow the `ErrorResponse` schema `{ "error": string, "message": string }`.
+
+To register this skill in watsonx Orchestrate:
+```bash
+orchestrate skills import --file kinetic_fanlab_skill.json --kind openapi
+```

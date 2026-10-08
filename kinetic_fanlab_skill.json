@@ -1,0 +1,350 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Kinetic FanLab Telemetry & Momentum Engine",
+    "description": "IBM watsonx Orchestrate OpenAPI skill specification for registering the Kinetic FanLab crowd momentum engine. Exposes three capabilities: Calculated Momentum Index (CMI) scoring, InvisibleCoordinator pacing directives, and IBM Granite post-play narrative delta synthesis.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Kinetic FanLab — Track 3 (IBM SkillsBuild AI Experiential Learning Lab)",
+      "url": "https://kineticfanlab.ibm.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://kineticfanlab.ibm.com/api/v1",
+      "description": "Production — IBM Cloud Dallas Region"
+    }
+  ],
+  "paths": {
+    "/calculate_cmi": {
+      "post": {
+        "operationId": "calculateCmi",
+        "summary": "Calculate Crowd Momentum Index",
+        "description": "Fuses stadium acoustics (dB), wearable biometrics (BPM), in-app tap rate, and IBM Granite vocal urgency into a single Calculated Momentum Index (0–100) with a human-readable operational tier.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CmiRequest"
+              },
+              "example": {
+                "decibels": 106.5,
+                "heart_rate_bpm": 136,
+                "tap_rate": 12.2,
+                "vocal_urgency": 0.85
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Calculated Momentum Index and operational tier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CmiResponse"
+                },
+                "example": {
+                  "cmi": 81.9,
+                  "operational_tier": "Maximum"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/evaluate_pacing": {
+      "post": {
+        "operationId": "evaluatePacing",
+        "summary": "Evaluate InvisibleCoordinator Pacing Directive",
+        "description": "Returns the InvisibleCoordinator AI pacing directive for the current game situation, including the clutch momentum multiplier and recommended crowd tactic for the specified sport.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PacingRequest"
+              },
+              "example": {
+                "sport": "Basketball",
+                "game_situation": "Clutch free throw — opponent shooting 2, 0.4s remaining, down by 1"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "InvisibleCoordinator pacing directive with clutch multiplier and tactic",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PacingResponse"
+                },
+                "example": {
+                  "directive": "MAXIMUM DISTRACTION — synchronized thunderstick wave on shooter knee-bend",
+                  "clutch_multiplier": 1.5,
+                  "tactic": "Behind-the-basket optical disruption — Wave left-right on dribble spin"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/generate_narrative": {
+      "post": {
+        "operationId": "generateNarrative",
+        "summary": "Generate IBM Granite Post-Play Reality Delta Narrative",
+        "description": "Calls IBM Granite foundation models on watsonx.ai to synthesize a sport-specific post-play narrative string that embeds live telemetry values (dB, BPM, delta pts) and connects crowd disruption to on-field execution outcome.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NarrativeRequest"
+              },
+              "example": {
+                "sport": "Football",
+                "outcome": "MISSED FIELD GOAL (Wide Left - Ice Successful)",
+                "pre_cmi": 39.0,
+                "peak_cmi": 92.0,
+                "fan_notes": [
+                  "BLOCK THAT KICK! RATTLE THE KICKER! GET LOUD!",
+                  "Sustained 111 dB roar on 0:03 snap (0.92 VU)"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "IBM Granite post-play reality delta narrative",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NarrativeResponse"
+                },
+                "example": {
+                  "narrative": "111.8 dB sustained roar across 148 BPM cardiac stress disrupted kicker cadence.",
+                  "surge_pts": 53.0,
+                  "powered_by": "IBM watsonx & Granite Foundation Models"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CmiRequest": {
+        "type": "object",
+        "required": ["decibels", "heart_rate_bpm", "tap_rate", "vocal_urgency"],
+        "properties": {
+          "decibels": {
+            "type": "number",
+            "format": "float",
+            "minimum": 60.0,
+            "maximum": 130.0,
+            "description": "Stadium acoustic level in decibels (dB). Valid range: 60–130 dB."
+          },
+          "heart_rate_bpm": {
+            "type": "number",
+            "format": "float",
+            "minimum": 40.0,
+            "maximum": 220.0,
+            "description": "Fan wearable heart rate in beats per minute (BPM). Valid range: 40–220 BPM."
+          },
+          "tap_rate": {
+            "type": "number",
+            "format": "float",
+            "minimum": 0.0,
+            "maximum": 15.0,
+            "description": "In-app distraction tap rate in taps per second. Valid range: 0–15 taps/sec."
+          },
+          "vocal_urgency": {
+            "type": "number",
+            "format": "float",
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "description": "IBM Granite Vocal Urgency score (0–1) derived from fan voice transcript."
+          }
+        }
+      },
+      "CmiResponse": {
+        "type": "object",
+        "required": ["cmi", "operational_tier"],
+        "properties": {
+          "cmi": {
+            "type": "number",
+            "format": "float",
+            "minimum": 0.0,
+            "maximum": 100.0,
+            "description": "Calculated Momentum Index (0–100)."
+          },
+          "operational_tier": {
+            "type": "string",
+            "enum": ["Baseline", "Moderate", "High", "Maximum"],
+            "description": "Human-readable pressure tier corresponding to the CMI score."
+          }
+        }
+      },
+      "PacingRequest": {
+        "type": "object",
+        "required": ["sport", "game_situation"],
+        "properties": {
+          "sport": {
+            "type": "string",
+            "enum": ["Basketball", "Football"],
+            "description": "Sport context for pacing analysis."
+          },
+          "game_situation": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 500,
+            "description": "Plain-text description of the current in-game situation (e.g., 'clutch free throw, 0.4s remaining')."
+          }
+        }
+      },
+      "PacingResponse": {
+        "type": "object",
+        "required": ["directive", "clutch_multiplier", "tactic"],
+        "properties": {
+          "directive": {
+            "type": "string",
+            "description": "InvisibleCoordinator pacing directive for the current game situation."
+          },
+          "clutch_multiplier": {
+            "type": "number",
+            "format": "float",
+            "minimum": 1.0,
+            "maximum": 2.0,
+            "description": "Clutch momentum multiplier applied to the base CMI during this situation."
+          },
+          "tactic": {
+            "type": "string",
+            "description": "Specific crowd tactic recommended by the InvisibleCoordinator."
+          }
+        }
+      },
+      "NarrativeRequest": {
+        "type": "object",
+        "required": ["sport", "outcome", "pre_cmi", "peak_cmi"],
+        "properties": {
+          "sport": {
+            "type": "string",
+            "enum": ["Basketball", "Football"],
+            "description": "Sport context for narrative synthesis."
+          },
+          "outcome": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 200,
+            "description": "Play outcome label (e.g., 'MISSED FREE THROW (Defensive Rebound Secured)')."
+          },
+          "pre_cmi": {
+            "type": "number",
+            "format": "float",
+            "minimum": 0.0,
+            "maximum": 100.0,
+            "description": "Pre-play baseline Calculated Momentum Index."
+          },
+          "peak_cmi": {
+            "type": "number",
+            "format": "float",
+            "minimum": 0.0,
+            "maximum": 100.0,
+            "description": "Peak Calculated Momentum Index recorded during the play."
+          },
+          "fan_notes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20,
+            "description": "Optional list of fan outburst strings for context enrichment."
+          }
+        }
+      },
+      "NarrativeResponse": {
+        "type": "object",
+        "required": ["narrative", "surge_pts", "powered_by"],
+        "properties": {
+          "narrative": {
+            "type": "string",
+            "description": "IBM Granite post-play reality delta narrative with embedded live telemetry values."
+          },
+          "surge_pts": {
+            "type": "number",
+            "format": "float",
+            "description": "Momentum surge in CMI points (peak_cmi − pre_cmi)."
+          },
+          "powered_by": {
+            "type": "string",
+            "description": "Attribution string: 'IBM watsonx & Granite Foundation Models'."
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "required": ["error", "message"],
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Short error code."
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable error description."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "IBMCloudIAM": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "IBM Cloud IAM Token",
+        "description": "IBM Cloud IAM bearer token. Obtain via `ibmcloud iam oauth-tokens` or the IAM API."
+      }
+    }
+  },
+  "security": [
+    {
+      "IBMCloudIAM": []
+    }
+  ]
+}
