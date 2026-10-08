@@ -1,6 +1,6 @@
 # ==============================================================================
 # Kinetic FanLab — Scaffolded & Refactored via IBM Bob IDE
-# IBM Cloud Services: watsonx.ai (Granite 4.0) | watsonx.governance Guardrails
+# Track 3: Fan-Centric Sports & Entertainment (Week 4 Milestone Update)
 # ==============================================================================
 
 import streamlit as st
@@ -21,7 +21,10 @@ except Exception:
     WATSONX_LIVE = False
     def analyze_vocal_urgency_live(fan_text: str) -> float: return 0.85
     def generate_narrative_live(sport: str, outcome: str, pre_cmi: float, peak_cmi: float, fan_notes: list) -> str:
-        return f"Crowd momentum surged +{round(peak_cmi - pre_cmi, 1)} pts directly altering opponent execution."
+        surge = round(max(0.0, peak_cmi - pre_cmi), 1)
+        if surge == 0.0:
+            return f"The stadium atmosphere holds at a focused baseline of {pre_cmi}/100 CMI (+0.0 pts) awaiting play execution."
+        return f"Crowd momentum surged +{surge} pts (peaking at {peak_cmi}/100) directly influencing the {outcome} result."
     def summarize_tailgate_chants_live(sport: str, raw_proposals: list) -> list:
         return ["1. MISS IT! OFF THE RIM! - On release", "2. BRING THE NOISE! - Continuous", "3. DEFENSE! - Wave"]
 
@@ -83,7 +86,6 @@ screen = st.sidebar.radio("Navigate Platform:", [
 ])
 
 st.sidebar.markdown("---")
-# Reactive Selectbox: Changing this instantly updates state across all screens
 active_preset = st.sidebar.selectbox("Load Canonical Fixture:", [
     "BB-01: Basketball Baseline (Free Throw 1)",
     "BB-02: Basketball Clutch (Free Throw 2)",
@@ -117,7 +119,7 @@ if "last_fixture" not in st.session_state or st.session_state.last_fixture != ac
         st.session_state.taps = 3.0
         st.session_state.vu = 0.60
         st.session_state.is_clutch = False
-        st.session_state.fan_notes = ["Timeout called, make him wait!"]
+        st.session_state.fan_notes = ["Timeout called, make him wait in the cold!"]
     elif "FB-02" in active_preset:
         st.session_state.sport = "Football"
         st.session_state.db = 111.8
@@ -127,18 +129,18 @@ if "last_fixture" not in st.session_state or st.session_state.last_fixture != ac
         st.session_state.is_clutch = True
         st.session_state.fan_notes = ["BLOCK THAT KICK! RATTLE THE KICKER! GET LOUD!"]
     
-    # Reset tapper buffer on preset switch
     st.session_state.tap_count = 0
     st.session_state.tap_times = []
 
-# Ensure other defaults exist
+# Global session states
 if "tap_count" not in st.session_state: st.session_state.tap_count = 0
 if "tap_times" not in st.session_state: st.session_state.tap_times = []
 if "early_checkin" not in st.session_state: st.session_state.early_checkin = False
+if "synergy_score" not in st.session_state: st.session_state.synergy_score = 92
 if "respect_dict" not in st.session_state:
     st.session_state.respect_dict = {
-        "Marcus Vance": 312, "Elena Rostova": 168, "Devon Miller": 245,
-        "Sarah Jenkins": 480, "Carlos Mendez": 395, "Maya Patel": 185
+        "Marcus Vance": 313, "Elena Rostova": 168, "Devon Miller": 245, "Jordan Lee": 28,
+        "Sarah Jenkins": 480, "Carlos Mendez": 395, "Maya Patel": 185, "Alex Taylor": 45
     }
 
 current_cmi = calc_momentum_index(st.session_state.db, st.session_state.hr, st.session_state.taps, st.session_state.vu)
@@ -149,8 +151,7 @@ is_basketball = st.session_state.sport == "Basketball"
 start_term = "tip-off" if is_basketball else "kickoff"
 role_tag = "6th Man" if is_basketball else "12th Man"
 
-# Master Persona Database
-# Master Persona Database (Permanent Identity Hashes across all fixtures)
+# Master Persona Database with Universal Tier Progress & Dynamic Accolades
 PERSONA_DB = {
     "Marcus Vance": {
         "hash": "0xMV-sec114-8f7a2",
@@ -158,9 +159,18 @@ PERSONA_DB = {
         "tier": "Section Director (Tier 4)",
         "sec": "Section 114 (Thunder Row)",
         "games": 34, "career_db": "3,820 dB", "clutch_stops": 23,
+        "next_tier_title": "Tier 5 (Arena Legend / Hall of Fame)",
+        "tier_progress_pct": 0.68,
+        "tier_progress_desc": "34/50 games attended — 16 more game(s) to unlock Tier 5 Arena Legend status & Lifetime Banner Recognition.",
         "neighbors": [
             {"name": "Elena Rostova", "seat": "Row 2, Seat 4", "role": "Prop Captain", "bio": "14 Games | Peak HR: 142 BPM | Waving Leader"},
-            {"name": "Devon Miller", "seat": "Row 3, Seat 8", "role": "Vocal Tactician", "bio": "28 Games | 18 Voice Logs | Chant Starter"}
+            {"name": "Devon Miller", "seat": "Row 3, Seat 8", "role": "Vocal Tactician", "bio": "28 Games | 18 Voice Logs | Chant Starter"},
+            {"name": "Jordan Lee", "seat": "Row 4, Seat 12", "role": "Rookie Member", "bio": "3 Games | 1 Clutch Stop | Thunderstick Cadet"}
+        ],
+        "accolades": [
+            {"title": "Arena Director Ring", "rarity": "Legendary", "color": "#f1c21b", "desc": "Led Section 114 to 20+ verified clutch stops.", "perk": "Post-game press conference access"},
+            {"title": "Decibel General", "rarity": "Epic", "color": "#8a3ffc", "desc": "Sustained Section 114 above 105 dB for 15+ rivalry minutes.", "perk": "Early student gate express entry"},
+            {"title": "30-Game Streak", "rarity": "Rare", "color": "#0f62fe", "desc": "30 consecutive home game roll calls verified.", "perk": "15% bookstore & concession discount"}
         ]
     },
     "Elena Rostova": {
@@ -169,9 +179,17 @@ PERSONA_DB = {
         "tier": "Prop Captain (Tier 2)",
         "sec": "Section 114 (Thunder Row)",
         "games": 14, "career_db": "1,580 dB", "clutch_stops": 9,
+        "next_tier_title": "Tier 3 (Vocal Tactician & Section Strategist)",
+        "tier_progress_pct": 0.70,
+        "tier_progress_desc": "14/20 games attended — 6 more game(s) to unlock Tier 3 Section Strategist privileges.",
         "neighbors": [
             {"name": "Marcus Vance", "seat": "Row 1, Seat 1", "role": "Section Director", "bio": "34 Games | Section Conductor | Megaphone Lead"},
-            {"name": "Devon Miller", "seat": "Row 3, Seat 8", "role": "Vocal Tactician", "bio": "28 Games | 18 Voice Logs | Chant Starter"}
+            {"name": "Devon Miller", "seat": "Row 3, Seat 8", "role": "Vocal Tactician", "bio": "28 Games | 18 Voice Logs | Chant Starter"},
+            {"name": "Jordan Lee", "seat": "Row 4, Seat 12", "role": "Rookie Member", "bio": "3 Games | 1 Clutch Stop | Thunderstick Cadet"}
+        ],
+        "accolades": [
+            {"title": "Thunderstick Master", "rarity": "Epic", "color": "#8a3ffc", "desc": "Synchronized visual waving across 10-second free throw release.", "perk": "Row 1-3 wristband reserve"},
+            {"title": "Depth Disruptor", "rarity": "Rare", "color": "#0f62fe", "desc": "Forced 3 consecutive opponent missed free throws.", "perk": "Custom section prop kit"}
         ]
     },
     "Devon Miller": {
@@ -180,9 +198,36 @@ PERSONA_DB = {
         "tier": "Vocal Tactician (Tier 3)",
         "sec": "Section 114 (Thunder Row)",
         "games": 28, "career_db": "3,140 dB", "clutch_stops": 19,
+        "next_tier_title": "Tier 4 (Section Director / Conductor)",
+        "tier_progress_pct": 0.80,
+        "tier_progress_desc": "28/35 games attended — 7 more game(s) to unlock Tier 4 Director voting privileges.",
         "neighbors": [
             {"name": "Marcus Vance", "seat": "Row 1, Seat 1", "role": "Section Director", "bio": "34 Games | Section Conductor | Megaphone Lead"},
-            {"name": "Elena Rostova", "seat": "Row 2, Seat 4", "role": "Prop Captain", "bio": "14 Games | Peak HR: 142 BPM | Waving Leader"}
+            {"name": "Elena Rostova", "seat": "Row 2, Seat 4", "role": "Prop Captain", "bio": "14 Games | Peak HR: 142 BPM | Waving Leader"},
+            {"name": "Jordan Lee", "seat": "Row 4, Seat 12", "role": "Rookie Member", "bio": "3 Games | 1 Clutch Stop | Thunderstick Cadet"}
+        ],
+        "accolades": [
+            {"title": "Chant Starter Crest", "rarity": "Epic", "color": "#8a3ffc", "desc": "Synthesized 18 approved chants through IBM Granite.", "perk": "PA booth microphone shoutout"},
+            {"title": "Acoustic Wall Star", "rarity": "Rare", "color": "#0f62fe", "desc": "Personal voice log scored 0.90+ vocal urgency.", "perk": "Section playlist curator"}
+        ]
+    },
+    "Jordan Lee": {
+        "hash": "0xJL-sec114-1f4a9",
+        "role": "Rookie Section Member",
+        "tier": "Rookie Member (Tier 1)",
+        "sec": "Section 114 (Thunder Row)",
+        "games": 3, "career_db": "310 dB", "clutch_stops": 1,
+        "next_tier_title": "Tier 2 (Prop Captain / Specialist)",
+        "tier_progress_pct": 0.30,
+        "tier_progress_desc": "3/10 games attended — 7 more game(s) to unlock Tier 2 status and full section specialist privileges.",
+        "neighbors": [
+            {"name": "Marcus Vance", "seat": "Row 1, Seat 1", "role": "Section Director", "bio": "34 Games | Section Conductor | Megaphone Lead"},
+            {"name": "Elena Rostova", "seat": "Row 2, Seat 4", "role": "Prop Captain", "bio": "14 Games | Peak HR: 142 BPM | Waving Leader"},
+            {"name": "Devon Miller", "seat": "Row 3, Seat 8", "role": "Vocal Tactician", "bio": "28 Games | 18 Voice Logs | Chant Starter"}
+        ],
+        "accolades": [
+            {"title": "First Roll Call Stamp", "rarity": "Common", "color": "#0f62fe", "desc": "Completed in-seat early check-in before tip-off.", "perk": "1.25x 1st-quarter points boost"},
+            {"title": "First Distraction Tap", "rarity": "Common", "color": "#0f62fe", "desc": "Contributed first active distraction tap during clutch defense.", "perk": "Section roster profile active"}
         ]
     },
     "Sarah Jenkins": {
@@ -191,9 +236,18 @@ PERSONA_DB = {
         "tier": "Stadium Veteran (Tier 5)",
         "sec": "Section 115 (End Zone Loyals)",
         "games": 62, "career_db": "6,850 dB", "clutch_stops": 31,
+        "next_tier_title": "Tier 5 Prestige (Master 12th Man Legend)",
+        "tier_progress_pct": 0.83,
+        "tier_progress_desc": "62/75 games attended — 13 more game(s) to unlock 100% Lifetime Stadium Immortality & Press Box Recognition.",
         "neighbors": [
             {"name": "Carlos Mendez", "seat": "Row 18, Seat 12", "role": "Lot B Tailgate Host", "bio": "45 Games | 10-Yr Season Ticket Holder | Early Arrival Champ"},
-            {"name": "Maya Patel", "seat": "Row 19, Seat 14", "role": "Biometric Superfan", "bio": "18 Games | Peak HR: 154 BPM | Tech Ambassador"}
+            {"name": "Maya Patel", "seat": "Row 19, Seat 14", "role": "Biometric Superfan", "bio": "18 Games | Peak HR: 154 BPM | Tech Ambassador"},
+            {"name": "Alex Taylor", "seat": "Row 20, Seat 8", "role": "General Member", "bio": "4 Games | 2 Clutch Stops | Rookie 12th Man"}
+        ],
+        "accolades": [
+            {"title": "10-Year Stadium Ring", "rarity": "Legendary", "color": "#f1c21b", "desc": "A decade of verified 12th Man defense in Section 115.", "perk": "Exclusive pre-game sideline pass"},
+            {"title": "111 dB Roar Enforcer", "rarity": "Epic", "color": "#8a3ffc", "desc": "Forced 12 false start penalties on visiting offenses.", "perk": "Stadium club lounge access"},
+            {"title": "Ice Breaker Legend", "rarity": "Rare", "color": "#0f62fe", "desc": "Sustained bleacher stomp during 3-minute kicker timeout.", "perk": "20% official team store discount"}
         ]
     },
     "Carlos Mendez": {
@@ -202,9 +256,17 @@ PERSONA_DB = {
         "tier": "Tailgate Host (Tier 4)",
         "sec": "Section 115 (End Zone Loyals)",
         "games": 45, "career_db": "4,920 dB", "clutch_stops": 24,
+        "next_tier_title": "Tier 5 (Stadium Legend / 12th Man Hall of Fame)",
+        "tier_progress_pct": 0.90,
+        "tier_progress_desc": "45/50 games attended — 5 more game(s) to unlock Tier 5 Stadium Legend status.",
         "neighbors": [
             {"name": "Sarah Jenkins", "seat": "Row 18, Seat 10", "role": "10-Year Veteran", "bio": "62 Games | 12th Man Bleacher Stomper | Defense Wall"},
-            {"name": "Maya Patel", "seat": "Row 19, Seat 14", "role": "Biometric Superfan", "bio": "18 Games | Peak HR: 154 BPM | Tech Ambassador"}
+            {"name": "Maya Patel", "seat": "Row 19, Seat 14", "role": "Biometric Superfan", "bio": "18 Games | Peak HR: 154 BPM | Tech Ambassador"},
+            {"name": "Alex Taylor", "seat": "Row 20, Seat 8", "role": "General Member", "bio": "4 Games | 2 Clutch Stops | Rookie 12th Man"}
+        ],
+        "accolades": [
+            {"title": "Lot B Grill Master", "rarity": "Legendary", "color": "#f1c21b", "desc": "Hosted 40+ consecutive community tailgates.", "perk": "Reserved VIP parking spot Lot B"},
+            {"title": "Early Arrival Shield", "rarity": "Epic", "color": "#8a3ffc", "desc": "Achieved 100% early check-in before kickoff in 4 seasons.", "perk": "Season ticket seat renewal priority"}
         ]
     },
     "Maya Patel": {
@@ -213,9 +275,36 @@ PERSONA_DB = {
         "tier": "Tech Superfan (Tier 2)",
         "sec": "Section 115 (End Zone Loyals)",
         "games": 18, "career_db": "1,940 dB", "clutch_stops": 11,
+        "next_tier_title": "Tier 3 (Stadium Veteran / Cadence Caller)",
+        "tier_progress_pct": 0.72,
+        "tier_progress_desc": "18/25 games attended — 7 more game(s) to unlock Tier 3 Bleacher Conductor status.",
         "neighbors": [
             {"name": "Sarah Jenkins", "seat": "Row 18, Seat 10", "role": "10-Year Veteran", "bio": "62 Games | 12th Man Bleacher Stomper | Defense Wall"},
-            {"name": "Carlos Mendez", "seat": "Row 18, Seat 12", "role": "Lot B Tailgate Host", "bio": "45 Games | 10-Yr Season Ticket Holder | Early Arrival Champ"}
+            {"name": "Carlos Mendez", "seat": "Row 18, Seat 12", "role": "Lot B Tailgate Host", "bio": "45 Games | 10-Yr Season Ticket Holder | Early Arrival Champ"},
+            {"name": "Alex Taylor", "seat": "Row 20, Seat 8", "role": "General Member", "bio": "4 Games | 2 Clutch Stops | Rookie 12th Man"}
+        ],
+        "accolades": [
+            {"title": "Pulse Sync Pioneer", "rarity": "Epic", "color": "#8a3ffc", "desc": "Logged 150+ BPM peak during game-winning field goal stop.", "perk": "Free smartwatch sensor calibration kit"},
+            {"title": "Haptic Ambassador", "rarity": "Rare", "color": "#0f62fe", "desc": "Synchronized BLE mesh cadence across 50 bleacher seats.", "perk": "Tech beta tester accreditation"}
+        ]
+    },
+    "Alex Taylor": {
+        "hash": "0xAT-sec115-5c2d3",
+        "role": "General Season Ticket Holder",
+        "tier": "General Member (Tier 1)",
+        "sec": "Section 115 (End Zone Loyals)",
+        "games": 4, "career_db": "420 dB", "clutch_stops": 2,
+        "next_tier_title": "Tier 2 (Tech Superfan / Bleacher Specialist)",
+        "tier_progress_pct": 0.40,
+        "tier_progress_desc": "4/10 games attended — 6 more game(s) to unlock Tier 2 Bleacher Specialist status.",
+        "neighbors": [
+            {"name": "Sarah Jenkins", "seat": "Row 18, Seat 10", "role": "10-Year Veteran", "bio": "62 Games | 12th Man Bleacher Stomper | Defense Wall"},
+            {"name": "Carlos Mendez", "seat": "Row 18, Seat 12", "role": "Lot B Tailgate Host", "bio": "45 Games | 10-Yr Season Ticket Holder | Early Arrival Champ"},
+            {"name": "Maya Patel", "seat": "Row 19, Seat 14", "role": "Biometric Superfan", "bio": "18 Games | Peak HR: 154 BPM | Tech Ambassador"}
+        ],
+        "accolades": [
+            {"title": "First Kickoff Stamp", "rarity": "Common", "color": "#0f62fe", "desc": "Checked in for opening kickoff of the season.", "perk": "1.25x 1st-quarter points boost"},
+            {"title": "Rookie 12th Man", "rarity": "Common", "color": "#0f62fe", "desc": "Contributed to first stadium-wide 111 dB roar.", "perk": "Quarterly seat upgrade lottery entry"}
         ]
     }
 }
@@ -227,53 +316,104 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
     st.header(f"👤 The Living Fan Passport & Section Roster ({st.session_state.sport})")
     st.caption("Persistent 365-day fandom identity, career telemetry, and peer-to-peer section camaraderie.")
 
-    col_p, col_b = st.columns([1, 2])
-    with col_p:
-        if is_basketball:
-            persona_options = ["Marcus Vance", "Elena Rostova", "Devon Miller"]
-        else:
-            persona_options = ["Sarah Jenkins", "Carlos Mendez", "Maya Patel"]
+    if is_basketball:
+        persona_options = ["Marcus Vance", "Elena Rostova", "Devon Miller", "Jordan Lee"]
+    else:
+        persona_options = ["Sarah Jenkins", "Carlos Mendez", "Maya Patel", "Alex Taylor"]
 
-        selected_name = st.selectbox("Select Active Fan Persona:", persona_options)
-        p_info = PERSONA_DB[selected_name]
+    selected_name = st.selectbox("Select Active Fan Persona:", persona_options)
+    p_info = PERSONA_DB[selected_name]
 
-        # Dynamic Artifact Badge Card (Web3 Abstraction with Unique Hash)
-        glow_color = "#0043ce" if current_cmi < 80 else "#da1e28"
-        st.markdown(f"""
-        <div style="background-color: #161616; padding: 22px; border-radius: 12px; border: 2px solid {glow_color}; box-shadow: 0 0 15px {glow_color}88; text-align: center; margin-top: 10px;">
-            <p style="color: #8d8d8d; font-size: 10pt; margin: 0; text-transform: uppercase;">DYNAMIC MOMENTUM PASS</p>
-            <h2 style="color: #f4f4f4; margin: 6px 0;">{selected_name}</h2>
-            <p style="color: #0f62fe; font-weight: bold; margin: 0;">{p_info['sec']}</p>
-            <hr style="border-color: #333; margin: 12px 0;">
-            <p style="color: #f4f4f4; font-size: 11pt; margin: 4px 0;">Tier: <b>{p_info['tier']}</b></p>
-            <p style="color: #a8a8a8; font-size: 9.5pt; margin: 0;">Unique Member Hash: <code>{p_info['hash']}</code></p>
-        </div>
-        """, unsafe_allow_html=True)
+    tab_identity, tab_trophy = st.tabs(["🪪 Fan Passport & Section Roster", "🏆 Living Trophy Case & Dynamic Accolades"])
 
-    with col_b:
-        st.subheader("📊 Lifetime Career Telemetry Statline")
-        stat1, stat2, stat3, stat4 = st.columns(4)
-        stat1.metric("Games Attended", f"{p_info['games']}", delta="Active Season")
-        stat2.metric("Career Acoustic dB", p_info['career_db'], delta=f"{st.session_state.db} dB peak")
-        stat3.metric("Clutch Stops", f"{p_info['clutch_stops']}", delta="Verified Stops")
-        stat4.metric("Respect Taps", f"{st.session_state.respect_dict[selected_name]}", delta="+1 Received")
+    with tab_identity:
+        col_p, col_b = st.columns([1, 2])
+        with col_p:
+            glow_color = "#f1c21b" if "Tier 5" in p_info['tier'] else ("#8a3ffc" if "Tier 4" in p_info['tier'] else "#0f62fe")
+            st.markdown(f"""
+            <div style="background-color: #161616; padding: 22px; border-radius: 12px; border: 2px solid {glow_color}; box-shadow: 0 0 15px {glow_color}88; text-align: center; margin-top: 10px;">
+                <p style="color: #8d8d8d; font-size: 10pt; margin: 0; text-transform: uppercase;">DYNAMIC MOMENTUM PASS</p>
+                <h2 style="color: #f4f4f4; margin: 6px 0;">{selected_name}</h2>
+                <p style="color: #0f62fe; font-weight: bold; margin: 0;">{p_info['sec']}</p>
+                <hr style="border-color: #333; margin: 12px 0;">
+                <p style="color: #f4f4f4; font-size: 11pt; margin: 4px 0;">Tier: <b>{p_info['tier']}</b></p>
+                <p style="color: #a8a8a8; font-size: 9.5pt; margin: 0;">Unique Member Hash: <code>{p_info['hash']}</code></p>
+            </div>
+            """, unsafe_allow_html=True)
+
+        with col_b:
+            st.subheader("📊 Lifetime Career Telemetry Statline")
+            stat1, stat2, stat3, stat4 = st.columns(4)
+            stat1.metric("Games Attended", f"{p_info['games']}", delta="Active Season")
+            stat2.metric("Career Acoustic dB", p_info['career_db'], delta=f"{st.session_state.db} dB peak")
+            stat3.metric("Clutch Stops", f"{p_info['clutch_stops']}", delta="Verified Stops")
+            stat4.metric("Respect Taps", f"{st.session_state.respect_dict[selected_name]}", delta="+1 Received")
+
+            st.markdown("---")
+            st.subheader(f"👥 Section Roster for {selected_name} (Seat Neighbors)")
+            st.write(f"Connect with your actual row neighbors in **{p_info['sec']}**:")
+
+            r_cols = st.columns(3)
+            for idx, neighbor in enumerate(p_info['neighbors'][:3]):
+                with r_cols[idx]:
+                    st.markdown(f"**{neighbor['name']}** ({neighbor['seat']})")
+                    st.caption(f"*{neighbor['role']}*\n\n{neighbor['bio']}")
+
+            if st.button("🤝 Send Respect Tap to Seat Neighbors", key="btn_neighbor_respect"):
+                st.session_state.respect_dict[selected_name] += 1
+                st.success(f"Respect Tap Transmitted to {p_info['neighbors'][0]['name']} and row neighbors! (+1 Respect Logged)")
+
+            # Targeted Respect Tap Form
+            with st.expander("🎯 Send Respect Tap to Any Specific Seat in the Venue"):
+                st.write("Acknowledge a dedicated fan, chant starter, or veteran anywhere in the venue:")
+                rc1, rc2, rc3 = st.columns(3)
+                target_sec = rc1.text_input("Section", value=p_info['sec'].split()[0] + " " + p_info['sec'].split()[1])
+                target_row = rc2.text_input("Row", value="Row 5")
+                target_seat = rc3.text_input("Seat", value="Seat 12")
+                if st.button("🚀 Transmit Respect Tap to Specific Seat", key="btn_target_respect"):
+                    st.session_state.respect_dict[selected_name] += 1
+                    st.success(f"✅ Respect Tap successfully sent to **{target_sec}, {target_row}, {target_seat}**! (+1 Respect Tap awarded)")
+
+    with tab_trophy:
+        st.subheader(f"🏆 Living Trophy Case: {selected_name}")
+        st.caption("Dynamic NFT Accolades that evolve based on your real-time verified stadium telemetry.")
+
+        # Universal Tier Progress Indicator for all 8 members
+        st.markdown(f"### 📈 {p_info['next_tier_title']} Progress")
+        st.progress(p_info['tier_progress_pct'])
+        st.caption(p_info['tier_progress_desc'])
 
         st.markdown("---")
-        st.subheader(f"👥 Section Roster for {selected_name} (Seat Neighbors)")
-        st.write(f"Connect with your actual row neighbors in **{p_info['sec']}**:")
+        st.subheader("🏅 Unlocked Dynamic Accolades (NFT Badges)")
+        badge_cols = st.columns(len(p_info['accolades']))
+        for b_idx, badge in enumerate(p_info['accolades']):
+            with badge_cols[b_idx]:
+                st.markdown(f"""
+                <div style="background-color: #1a1a1a; border: 2px solid {badge['color']}; border-radius: 10px; padding: 16px; min-height: 180px; box-shadow: 0 0 10px {badge['color']}44;">
+                    <span style="background-color: {badge['color']}33; color: {badge['color']}; padding: 3px 8px; border-radius: 4px; font-size: 8pt; font-weight: bold; text-transform: uppercase;">{badge['rarity']}</span>
+                    <h4 style="color: white; margin: 8px 0 4px 0;">{badge['title']}</h4>
+                    <p style="color: #a8a8a8; font-size: 9.5pt; margin-bottom: 8px;">{badge['desc']}</p>
+                    <hr style="border-color: #333; margin: 6px 0;">
+                    <p style="color: #0f62fe; font-size: 8.5pt; font-weight: bold; margin: 0;">🎁 Perk: {badge['perk']}</p>
+                </div>
+                """, unsafe_allow_html=True)
 
-        r_cols = st.columns(2)
-        for idx, neighbor in enumerate(p_info['neighbors']):
-            with r_cols[idx]:
-                st.markdown(f"**{neighbor['name']}** ({neighbor['seat']}) — *{neighbor['role']}*")
-                st.caption(neighbor['bio'])
-
-        if st.button("🤝 Send Respect Tap to Seat Neighbors"):
-            st.session_state.respect_dict[selected_name] += 1
-            st.success(f"Respect Tap Transmitted to {p_info['neighbors'][0]['name']} and {p_info['neighbors'][1]['name']}!")
+        st.markdown("---")
+        st.subheader("📲 Share Trophy Showcase")
+        st.markdown(f"""
+        <div style="background-color: #111; border: 2px solid #0f62fe; border-radius: 12px; padding: 20px; max-width: 450px; margin: 0 auto; text-align: center;">
+            <p style="color: #8d8d8d; font-size: 9pt; margin: 0; letter-spacing: 1px;">KINETIC FANLAB // NFT TROPHY SHOWCASE</p>
+            <h2 style="color: white; margin: 6px 0;">{selected_name}</h2>
+            <p style="color: #0f62fe; font-weight: bold; margin: 0;">{p_info['tier']} • {p_info['sec']}</p>
+            <p style="color: #a8a8a8; font-size: 9.5pt; margin: 8px 0;">Verified Impact: <b>{p_info['career_db']}</b> Acoustic Wall • <b>{p_info['clutch_stops']}</b> Clutch Stops</p>
+            <p style="color: #8d8d8d; font-size: 8.5pt; margin: 0;">Hash: <code>{p_info['hash']}</code></p>
+        </div>
+        """, unsafe_allow_html=True)
+        if st.button("📲 Share Showcase to Instagram, TikTok & X", key="btn_share_showcase"):
+            st.success("Trophy Showcase formatted! Shareable story card ready for export.")
 
 # ==============================================================================
-# SCREEN 2: 36-HOUR VIRTUAL TAILGATE
+# SCREEN 2: 36-HOUR VIRTUAL TAILGATE (UNTOUCHED)
 # ==============================================================================
 elif screen == "🎪 Screen 2: 36h Virtual Tailgate":
     st.header(f"🎪 The 36-Hour Virtual Tailgate ({st.session_state.sport})")
@@ -307,7 +447,6 @@ elif screen == "🎪 Screen 2: 36h Virtual Tailgate":
                 st.session_state[f"chants_{st.session_state.sport}"] = summarize_tailgate_chants_live(st.session_state.sport, chant_proposals)
             st.success(f"IBM Granite has synthesized this week's official {st.session_state.sport} defensive strategy!")
 
-        # Display sport-specific synthesized chants
         sport_chants = st.session_state.get(f"chants_{st.session_state.sport}")
         if not sport_chants:
             if is_basketball:
@@ -364,10 +503,9 @@ elif screen == "🎪 Screen 2: 36h Virtual Tailgate":
                 """)
 
 # ==============================================================================
-# SCREEN 3: IN-ARENA GAME HUB & CLUTCH TRIGGER
+# SCREEN 3: IN-ARENA GAME HUB & TRIGGER
 # ==============================================================================
 elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
-    situation_tag = "Opponent Free Throw Distraction" if is_basketball else "Icing the Kicker Field Goal Stand"
     st.header(f"🏟️ In-Arena Game Hub & Clutch Trigger ({st.session_state.sport} — {role_tag})")
     st.caption(f"Live crowd acoustics, biometric telemetry, distraction tapping, and section competition for {st.session_state.sport}.")
 
@@ -397,7 +535,77 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
     with col4: st.metric("In-App Taps", f"{st.session_state.taps}/s", delta="Surge" if st.session_state.taps > 10 else "Steady")
     with col5: st.metric("Vocal Urgency", f"{st.session_state.vu} VU", delta="Clutch" if st.session_state.vu > 0.8 else "Moderate")
 
-    # In-Arena Section Rivalry (Sport & Fixture Dynamic)
+    # Section AI Team Members Huddle (Renamed with Intuitive Icons & Supportive Tone)
+    st.markdown("---")
+    st.subheader("🤝 Section AI Team Members Huddle")
+    st.caption("💡 *You and your fellow fans are the Section Captains. These AI Team Members support your calls with real-time rhythm, sensor telemetry, and rivalry intelligence.*")
+
+    if is_basketball:
+        huddle_members = ["Marcus Vance", "Elena Rostova", "Devon Miller", "Jordan Lee"]
+    else:
+        huddle_members = ["Sarah Jenkins", "Carlos Mendez", "Maya Patel", "Alex Taylor"]
+
+    huddle_fan = st.selectbox("Active Member for AI Team Member Briefing:", huddle_members, key="huddle_fan_select")
+
+    # Tailored, supportive dialogue based on member role, tier, and sport
+    if huddle_fan == "Marcus Vance":
+        cond_text = "Marcus, section leader, Section 114 is looking to you! When the shooter steps up, give the signal—we are right behind you. Let's make this basket impossible!"
+        scout_text = f"Marcus, our live section CMI is at {current_cmi}/100. The students are locked in. When you call for the peak yell, the telemetry is primed to surge past 105 dB!"
+        strat_text = "Marcus, we hold a slim lead over Section 115. A coordinated wave on this 10-second release will secure our Section Defense Belt. You've got this!"
+    elif huddle_fan == "Elena Rostova":
+        cond_text = "Elena, your prop waving in Row 2 sets the optical tempo for the entire lower bowl. Whenever you start the wave, the section follows your lead!"
+        scout_text = "Elena, our visual waving cadence is perfectly timed with the shooter's knee bend. Your coordination is keeping our distraction score at peak efficiency!"
+        strat_text = "Elena, great work keeping the students focused. Keep the thundersticks moving left-to-right to break the shooter's depth perception!"
+    elif huddle_fan == "Devon Miller":
+        cond_text = "Devon, your vocal leadership is the heartbeat of our chants. Call out the timing, and we'll echo it across all 1,500 students!"
+        scout_text = "Devon, your recent voice outburst registered at a sharp 0.85 Vocal Urgency. Your energy is contagious across Thunder Row!"
+        strat_text = "Devon, Section 115 is trailing by only 2.1 points. Keep the vocal rhythm going—every cheer compounds our lead!"
+    elif huddle_fan == "Jordan Lee":
+        cond_text = "Welcome to Thunder Row, Jordan! No pressure at all—just watch Marcus and Elena and wave your props when the prompt glows. Every single voice counts!"
+        scout_text = "Jordan, you are doing great! Your taps just registered on our section's live energy score. You're already making a real difference for the defense!"
+        strat_text = "Jordan, welcome to the family! Cheering together is what makes this section special. Have fun and let's make some noise together!"
+    elif huddle_fan == "Sarah Jenkins":
+        cond_text = "Sarah, 10-year veteran, Section 115 feeds off your endurance! Lead the bleacher stomps through this timeout—we are right by your side!"
+        scout_text = f"Sarah, the stadium acoustic wall is holding at {st.session_state.db} dB. Your section's dedication is keeping the pressure immense on the visiting kicker!"
+        strat_text = "Sarah, Section 115 is in prime position for Section of the Game. When the ball snaps at 0:03, let's unleash the full 111 dB roar!"
+    elif huddle_fan == "Carlos Mendez":
+        cond_text = "Carlos, your Lot B tailgate brought incredible energy into the stadium today! Keep that tailgate spirit alive in Row 18!"
+        scout_text = "Carlos, Section 115 achieved a 94% early check-in thanks to your pre-game rally! That 1.25x multiplier is paying massive dividends!"
+        strat_text = "Carlos, we have the lead! Let's keep the bleacher rhythm going through the timeout so the defense stays fired up!"
+    elif huddle_fan == "Maya Patel":
+        cond_text = "Maya, your wearable telemetry sync is keeping our section's pulse calibrated. When the snap counts down, let's feel that collective adrenaline!"
+        scout_text = "Maya, biometric tracking shows Section 115 heart rates climbing past 140 BPM! The collective focus is off the charts!"
+        strat_text = "Maya, the data shows our 3rd-down acoustic crescendo breaks the quarterback's cadence 68% of the time. Let's execute!"
+    else:  # Alex Taylor
+        cond_text = "Welcome to Section 115, Alex! You picked a legendary row to sit in. Just stomp the bleachers with Sarah and Carlos—we're glad to have you!"
+        scout_text = "Alex, you just logged your first telemetry taps! Every tap directly boosts Section 115's standing on the video board. Fantastic start!"
+        strat_text = "Alex, welcome to the 12th Man! We cheer together as one section. Let's make some noise and enjoy the game!"
+
+    st.markdown(f"""
+    <div style="background-color: #1a1a1a; border-left: 5px solid #0f62fe; padding: 12px 16px; border-radius: 6px; margin-bottom: 8px;">
+        <h5 style="color: #0f62fe; margin: 0 0 4px 0;">🎵 ⏱️ THE CONDUCTOR — AI Pacing Specialist (Team Member)</h5>
+        <p style="color: #f4f4f4; margin: 0; font-size: 10pt;">"{cond_text}"</p>
+    </div>
+    <div style="background-color: #1a1a1a; border-left: 5px solid #8a3ffc; padding: 12px 16px; border-radius: 6px; margin-bottom: 8px;">
+        <h5 style="color: #8a3ffc; margin: 0 0 4px 0;">📡 📊 THE SCOUT — AI Telemetry Analyst (Team Member)</h5>
+        <p style="color: #f4f4f4; margin: 0; font-size: 10pt;">"{scout_text}"</p>
+    </div>
+    <div style="background-color: #1a1a1a; border-left: 5px solid #f1c21b; padding: 12px 16px; border-radius: 6px; margin-bottom: 8px;">
+        <h5 style="color: #f1c21b; margin: 0 0 4px 0;">🏆 ♟️ THE STRATEGIST — AI Rivalry Coordinator (Team Member)</h5>
+        <p style="color: #f4f4f4; margin: 0; font-size: 10pt;">"{strat_text}"</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    syn_col1, syn_col2 = st.columns([2, 1])
+    with syn_col1:
+        if st.button("🙌 Roger That! Rallying Section (+5 Pts Synergy)", key="btn_synergy"):
+            st.session_state.synergy_score = min(100, st.session_state.synergy_score + 5)
+            st.success(f"Team Synergy Acknowledged! Section Co-Op score elevated to {st.session_state.synergy_score}%!")
+    with syn_col2:
+        st.write(f"**Section Synergy Meter:** `{st.session_state.synergy_score}% Synchronized`")
+        st.progress(st.session_state.synergy_score / 100.0)
+
+    # In-Arena Section Rivalry
     st.markdown("---")
     st.subheader(f"🏆 Live In-Arena Section Leaderboard ({st.session_state.sport})")
     
@@ -429,14 +637,11 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
     c_tap, c_vox = st.columns(2)
     with c_tap:
         st.subheader("📱 Distraction Tapper")
-        
-        # Tapping calculation with active rolling window
         now = time.time()
         if st.button("🔥 TAP TO DISTRACT OPPONENT 🔥", use_container_width=True):
             st.session_state.tap_count += 1
             st.session_state.tap_times.append(now)
 
-        # Filter taps in the last 2.5 seconds
         st.session_state.tap_times = [t for t in st.session_state.tap_times if now - t <= 2.5]
         active_taps = len(st.session_state.tap_times)
         
@@ -510,7 +715,6 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
                 st.session_state.fan_notes.append("THIRD DOWN ROAR! (0.90 VU)")
                 st.rerun()
 
-        # Restored Recent Logged Outbursts Feed
         st.markdown("**Recent Logged Outbursts:**")
         for note in reversed(st.session_state.fan_notes[-3:]):
             st.markdown(f"- 📢 *\"{note}\"*")
@@ -522,31 +726,31 @@ elif screen == "📊 Screen 4: Narrative Delta & Story Card":
     st.header(f"📊 Narrative Delta & Shareable Crowd Box Score ({st.session_state.sport})")
     st.caption("Post-play synthesis connecting crowd disruption to on-field execution, with viral story card export.")
 
-    # Exact fixture matching for surge calculations
+    # Determine baseline reference and target situation label
     if "BB-01" in active_preset:
         pre_val = 37.8
-        surge_val = 0.0
-        surge_title = "+0.0 PTS (BASELINE ANTICIPATION)"
         outcome_label = "PENDING PLAY EXECUTION (Free Throw 1)"
-        card_sub = "PRE-PLAY BASELINE ESTABLISHED"
     elif "BB-02" in active_preset:
         pre_val = 37.8
-        surge_val = 44.1
-        surge_title = "+44.1 PTS MOMENTUM SURGE"
         outcome_label = "MISSED FREE THROW (Defensive Rebound Secured)"
-        card_sub = "CLUTCH DEFENSIVE STOP VERIFIED"
     elif "FB-01" in active_preset:
         pre_val = 39.0
-        surge_val = 0.0
-        surge_title = "+0.0 PTS (TIMEOUT DELAY LULL)"
         outcome_label = "TIMEOUT IN PROGRESS ('Icing the Kicker')"
-        card_sub = "PRE-SNAP TENSION ESTABLISHED"
     else:  # FB-02
         pre_val = 39.0
-        surge_val = 53.0
-        surge_title = "+53.0 PTS MOMENTUM SURGE"
         outcome_label = "MISSED FIELD GOAL (Wide Left - Ice Successful)"
-        card_sub = "CLUTCH DEFENSIVE STOP VERIFIED"
+
+    # Compute actual surge strictly from live CMI and pre-play baseline
+    actual_surge = round(max(0.0, current_cmi - pre_val), 1)
+
+    if actual_surge == 0.0:
+        surge_title = "+0.0 PTS (BASELINE ANTICIPATION)"
+        card_sub = "PRE-PLAY BASELINE ESTABLISHED"
+        card_points_display = "+0.0 PTS"
+    else:
+        surge_title = f"+{actual_surge} PTS MOMENTUM SURGE"
+        card_sub = "CLUTCH DEFENSIVE IMPACT VERIFIED"
+        card_points_display = f"+{actual_surge} PTS"
 
     st.markdown(f"""
     <div style="background-color: #edf5ff; padding: 18px; border-radius: 8px; border-left: 6px solid #0f62fe; margin-bottom: 20px;">
@@ -555,7 +759,7 @@ elif screen == "📊 Screen 4: Narrative Delta & Story Card":
     </div>
     """, unsafe_allow_html=True)
 
-    # Live Granite Narrative Generation
+    # Live Granite Narrative Generation with synchronized points
     st.subheader(f"🤖 IBM Granite Post-Play Narrative Synthesis ({st.session_state.sport})")
     with st.spinner(f"Synthesizing {st.session_state.sport} ecosystem narrative with IBM Granite..."):
         narrative = generate_narrative_live(st.session_state.sport, outcome_label, pre_val, current_cmi, st.session_state.fan_notes)
@@ -563,7 +767,7 @@ elif screen == "📊 Screen 4: Narrative Delta & Story Card":
     st.caption("⚡ Powered by IBM watsonx.ai & Granite Foundation Models (Dallas Region)")
 
     st.markdown("---")
-    # Shareable Proof-of-Momentum Social Story Card
+    # Shareable Proof-of-Momentum Social Story Card (Correlated Points)
     st.subheader("📲 One-Tap Shareable 'Proof-of-Momentum' Card")
     st.write(f"Share your verified in-arena {st.session_state.sport} defensive impact to Instagram, TikTok, and X:")
 
@@ -574,7 +778,7 @@ elif screen == "📊 Screen 4: Narrative Delta & Story Card":
     st.markdown(f"""
     <div style="background-color: {card_bg}; border: 3px solid {card_border}; border-radius: 12px; padding: 24px; max-width: 500px; margin: 10px auto; color: white; text-align: center; box-shadow: 0 0 20px {card_border}66;">
         <p style="color: #0f62fe; font-weight: bold; letter-spacing: 2px; margin: 0; font-size: 11pt;">KINETIC FANLAB // OFFICIAL PROOF-OF-MOMENTUM</p>
-        <h1 style="color: white; margin: 8px 0; font-size: 32pt;">+{surge_val} PTS</h1>
+        <h1 style="color: white; margin: 8px 0; font-size: 32pt;">{card_points_display}</h1>
         <p style="color: {card_border}; font-weight: bold; font-size: 14pt; margin: 0;">{card_sub}</p>
         <hr style="border-color: #333; margin: 14px 0;">
         <p style="color: #f4f4f4; font-size: 11pt; margin: 4px 0;">Sport: <b>{st.session_state.sport} ({role_tag})</b></p>
@@ -583,7 +787,7 @@ elif screen == "📊 Screen 4: Narrative Delta & Story Card":
     </div>
     """, unsafe_allow_html=True)
 
-    # Official Crowd Box Score (Section Battle Winner)
+    # Official Crowd Box Score
     st.markdown("---")
     st.subheader(f"🏆 Official Crowd Box Score: Section of the Game ({st.session_state.sport})")
     c1, c2 = st.columns(2)

@@ -44,6 +44,269 @@ def evaluate_tier(cmi: float) -> str:
     else:
         return "Baseline"
 
+# ---------------------------------------------------------------------------
+# Section AI Co-Captains — role-aware, warm, motivating dialogue agents
+# ---------------------------------------------------------------------------
+
+_BASKETBALL_LEADERS = {"Student Section Director"}
+_BASKETBALL_SPECIALISTS = {"Hype & Prop Captain", "Vocal Tactician"}
+_BASKETBALL_ROOKIES = {"Rookie Section Member"}
+
+_FOOTBALL_LEADERS = {"10-Year Season Ticket Holder"}
+_FOOTBALL_SPECIALISTS = {"Lot B Tailgate Host", "Biometric & Tech Superfan"}
+_FOOTBALL_ROOKIES = {"General Season Ticket Holder"}
+
+
+def _build_conductor_line(
+    member_name: str,
+    role: str,
+    sport: str,
+    tier: str,
+    is_clutch: bool,
+) -> str:
+    """The Conductor — sets the tempo, reads the room, deploys the synchronized wave."""
+    is_basketball = "basket" in sport.lower()
+
+    if role in _BASKETBALL_LEADERS or role in _FOOTBALL_LEADERS:
+        if is_basketball:
+            signal = "DEAFENING SCREAM" if is_clutch else "steady hoop chant"
+            return (
+                f"🎵 The Conductor — {member_name}, you ARE the 6th Man heartbeat right now. "
+                f"Section 114 eyes are on you. Call the {signal} on that 10-second free-throw clock. "
+                f"Let's make this hoop feel impossible for them."
+            )
+        else:
+            signal = "111 dB WALL" if is_clutch else "bleacher stomp rhythm"
+            return (
+                f"🎵 The Conductor — {member_name}, ten years in Section 115 says you know exactly when "
+                f"to lift the crowd. Hold the {signal} through the timeout. "
+                f"That kicker is already feeling the 12th Man pressure."
+            )
+
+    if role in _BASKETBALL_SPECIALISTS:
+        if role == "Hype & Prop Captain":
+            wave = "thunderstick wave" if not is_clutch else "LEFT-RIGHT synchronized wave on knee bend"
+            return (
+                f"🎵 The Conductor — Elena, your {wave} is the visual anchor for the whole section. "
+                f"When that shooter grips the ball, you lead — Section 114 follows. "
+                f"We trust your timing completely. The hoop is ours to defend."
+            )
+        else:
+            chant = "MISS IT! OFF THE RIM!" if is_clutch else "keep the defensive chant alive"
+            return (
+                f"🎵 The Conductor — Devon, your vocal cadence sets the tempo for everyone around you. "
+                f"Hit {chant} right when the elbow bends. "
+                f"Your voice log is already elite — let's add another clutch stop to Section 114's record."
+            )
+
+    if role in _FOOTBALL_SPECIALISTS:
+        if role == "Lot B Tailgate Host":
+            energy = "3rd down redzone roar" if is_clutch else "sustained bleacher stomp"
+            return (
+                f"🎵 The Conductor — Carlos, that tailgate energy you brought from Lot B? "
+                f"Carry it straight to row 18. Lead the {energy} and Section 115 will lock in. "
+                f"The kicker is about to hear the whole End Zone Loyals crew."
+            )
+        else:
+            beat = "sync your heart rate spike" if is_clutch else "keep your biometric pacing steady"
+            return (
+                f"🎵 The Conductor — Maya, your wearable data is the section's pulse monitor. "
+                f"{beat.capitalize()} with the crowd wave. "
+                f"When Section 115 sees your tap rate go up, they know it's time to get loud at the 0:03 snap."
+            )
+
+    # Rookies / General members — welcoming, zero pressure
+    if is_basketball:
+        return (
+            f"🎵 The Conductor — Welcome, {member_name}! Section 114 is really glad you're here. "
+            f"You don't need to do anything special — just cheer along with us at the hoop when the free throw goes up. "
+            f"Every voice in Thunder Row counts, and yours matters just as much as everyone else's. Enjoy the game! 🏀"
+        )
+    else:
+        return (
+            f"🎵 The Conductor — Hey {member_name}, so glad you joined Section 115! "
+            f"There's no pressure at all — just feel the bleacher energy and stomp along when the crowd rises. "
+            f"Every single fan in the End Zone Loyals makes the 12th Man wall stronger. Welcome home! 🏈"
+        )
+
+
+def _build_scout_line(
+    member_name: str,
+    role: str,
+    sport: str,
+    tier: str,
+    cmi: float,
+) -> str:
+    """The Scout — reads live telemetry, surfaces situational insight, encourages action."""
+    is_basketball = "basket" in sport.lower()
+
+    if role in _BASKETBALL_LEADERS or role in _FOOTBALL_LEADERS:
+        if is_basketball:
+            return (
+                f"🔭 The Scout — {member_name}, live CMI is at {cmi}/100. "
+                f"Acoustic trend shows the section is coiling for a big push. "
+                f"Historical data says a 6th Man surge above 80 pts correlates with a 68% miss rate on clutch free throws. "
+                f"You know what to call — we're ready to back you up."
+            )
+        else:
+            return (
+                f"🔭 The Scout — {member_name}, CMI sitting at {cmi}/100 going into this snap. "
+                f"The last three timeout-iced kickers facing 111+ dB missed two of them. "
+                f"Section 115's bleacher stomp frequency is already pushing the low-frequency wall. "
+                f"Your leadership sets the ceiling — take us there."
+            )
+
+    if role in _BASKETBALL_SPECIALISTS:
+        if role == "Hype & Prop Captain":
+            return (
+                f"🔭 The Scout — Elena, current acoustic CMI is {cmi}/100. "
+                f"Visual disruption props are most effective when timed within the 10-second free-throw clock window. "
+                f"Section 114 hoop defense is locked in — your thundersticks are the X-factor right now."
+            )
+        else:
+            return (
+                f"🔭 The Scout — Devon, vocal urgency readings on the section are tracking strong. "
+                f"CMI at {cmi}/100. Your chant leadership in the last clutch possession pushed the section's "
+                f"vocal score +0.12 VU. Keep the high-frequency energy alive around the hoop."
+            )
+
+    if role in _FOOTBALL_SPECIALISTS:
+        if role == "Lot B Tailgate Host":
+            return (
+                f"🔭 The Scout — Carlos, fan energy data shows Section 115 early check-in is at 87%. "
+                f"The tailgate rally you led is directly reflected in that number — CMI is at {cmi}/100. "
+                f"3rd down redzone stands are where that community cohesion pays off. Great work getting everyone here."
+            )
+        else:
+            return (
+                f"🔭 The Scout — Maya, your wearable data sync is giving us the cleanest biometric signal in the section. "
+                f"Current heart rate variance suggests the crowd is primed for a cardiac stress spike at the 0:03 snap. "
+                f"CMI at {cmi}/100. You're our most accurate data anchor in Section 115. Keep it coming!"
+            )
+
+    if is_basketball:
+        return (
+            f"🔭 The Scout — {member_name}, Section 114 CMI is at {cmi}/100 — every fan in Thunder Row is contributing to that. "
+            f"Your presence here today literally adds to the crowd pressure on the free-throw line. "
+            f"No experience needed — just stay loud and have fun at the hoop! 🏀"
+        )
+    else:
+        return (
+            f"🔭 The Scout — {member_name}, Section 115 CMI is reading {cmi}/100 and every person in the bleachers helps. "
+            f"Your cheering adds real acoustic pressure on that kicker at the 0:03 snap. "
+            f"Just be yourself and enjoy — you're already part of the 12th Man wall! 🏈"
+        )
+
+
+def _build_strategist_line(
+    member_name: str,
+    role: str,
+    sport: str,
+    tier: str,
+    is_clutch: bool,
+    cmi: float,
+) -> str:
+    """The Strategist — game-plan advisor, tactic deployer, section synergy builder."""
+    is_basketball = "basket" in sport.lower()
+
+    if role in _BASKETBALL_LEADERS or role in _FOOTBALL_LEADERS:
+        if is_basketball:
+            tactic = "synchronized thunderstick wave + piercing scream on knee bend" if is_clutch else "rhythmic possession chant to wear down the shooter"
+            return (
+                f"🧠 The Strategist — {member_name}, the play call for this possession is {tactic}. "
+                f"Signal the section at T-5 seconds on the free-throw clock. "
+                f"A 6th Man wall above 100 dB at the hoop release is our defensive target. You've done it before. Let's go!"
+            )
+        else:
+            tactic = "sustained 111 dB acoustic wall at the 0:03 snap" if is_clutch else "bleacher stomp endurance pacing through the full timeout delay"
+            return (
+                f"🧠 The Strategist — {member_name}, game plan is {tactic}. "
+                f"Section 115's 12th Man protocol says the kicker has already heard 62 games worth of End Zone Loyals pressure. "
+                f"Hold the wall through the snap — this is what we've been building toward."
+            )
+
+    if role in _BASKETBALL_SPECIALISTS:
+        if role == "Hype & Prop Captain":
+            tactic = "left-right wave on the shooter's second dribble, hold through the release" if is_clutch else "steady prop visibility to maintain baseline hoop disruption"
+            return (
+                f"🧠 The Strategist — Elena, execute the {tactic}. "
+                f"Your prop timing is the visual trigger that sets the whole section in motion. "
+                f"The 6th Man needs that synchronized moment to hit maximum disruption on the free throw. You've got this."
+            )
+        else:
+            chant = "MISS IT! OFF THE RIM! right as the elbow snaps up" if is_clutch else "start a low-level DEFENSE chant to build tension"
+            return (
+                f"🧠 The Strategist — Devon, call the {chant}. "
+                f"Your chant leadership is the sonic blueprint for Section 114 around the hoop. "
+                f"Own the 6th Man moment — we're all following your lead."
+            )
+
+    if role in _FOOTBALL_SPECIALISTS:
+        if role == "Lot B Tailgate Host":
+            tactic = "pump up the bleacher stomp in rows 17-20 for the redzone snap" if is_clutch else "coordinate a rolling timeout stomp wave to keep the kicker cold"
+            return (
+                f"🧠 The Strategist — Carlos, your assignment is to {tactic}. "
+                f"The community you built at Lot B is Section 115's social backbone. "
+                f"Channel that into one loud, unified 12th Man roar when that 0:03 snap hits."
+            )
+        else:
+            tactic = "flag peak cardiac stress window for the snap — that's when wearable-synced taps hit maximum" if is_clutch else "log baseline biometrics through the timeout to track the crowd's stress buildup"
+            return (
+                f"🧠 The Strategist — Maya, {tactic}. "
+                f"Your tech lens on Section 115 turns raw fan energy into real defensive intelligence. "
+                f"The 12th Man wall is stronger because you're tracking it. Keep that data flowing!"
+            )
+
+    if is_basketball:
+        return (
+            f"🧠 The Strategist — {member_name}, here's the only thing we need from you: "
+            f"when the crowd rises at the free-throw line, rise with them. Clap, shout, wave — whatever feels natural. "
+            f"Section 114 Thunder Row is a family, and every 6th Man voice builds the wall around the hoop. "
+            f"You're going to have a blast — we promise! 🏀"
+        )
+    else:
+        return (
+            f"🧠 The Strategist — {member_name}, your only playbook tonight: "
+            f"when Section 115 stomps, stomp. When they roar at the snap, roar with them. "
+            f"The 12th Man isn't about experience — it's about heart. "
+            f"You've got that already or you wouldn't be here in the End Zone Loyals bleachers! 🏈"
+        )
+
+
+def get_co_captain_huddle(
+    member_name: str,
+    persona_data: Dict[str, Any],
+    sport: str,
+    cmi: float,
+    is_clutch: bool,
+) -> Dict[str, str]:
+    """
+    Returns a dict of three Co-Captain speech lines tailored to the active member.
+
+    Args:
+        member_name: Display name of the fan (e.g. "Marcus Vance").
+        persona_data: The persona dict from PERSONA_REGISTRY.
+        sport: "Basketball" or "Football".
+        cmi: Current Calculated Momentum Index float (0–100).
+        is_clutch: Whether a clutch moment is active.
+
+    Returns:
+        {"conductor": str, "scout": str, "strategist": str}
+    """
+    role: str = persona_data.get("role", "General Member")
+    tier: str = persona_data.get("tier", "Tier 1")
+
+    return {
+        "conductor": _build_conductor_line(member_name, role, sport, tier, is_clutch),
+        "scout": _build_scout_line(member_name, role, sport, tier, cmi),
+        "strategist": _build_strategist_line(member_name, role, sport, tier, is_clutch, cmi),
+    }
+
+
+# ---------------------------------------------------------------------------
+# Existing agent classes (unchanged)
+# ---------------------------------------------------------------------------
+
 class InvisibleCoordinatorAgent:
     def __init__(self, sport: str = "Basketball"):
         self.sport = sport.capitalize()
@@ -107,7 +370,7 @@ class KnowledgeSynthesizerAgent:
                 "violations": gov_result.get("violations", ["Content safety violation"]),
                 "urgency_score": 0.0
             }
-        
+
         urgency = analyze_vocal_urgency_live(raw_transcript)
         return {
             "transcript": raw_transcript,

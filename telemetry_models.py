@@ -27,7 +27,7 @@ class DisruptionTactic(str, Enum):
 
 # --- Persona & Identity Registry (Permanent Invariant Hashes) ---
 
-PERSONA_REGISTRY = {
+PERSONA_REGISTRY: Dict[str, Dict[str, Any]] = {
     "Marcus Vance": {
         "hash": "0xMV-sec114-8f7a2",
         "sport": SportType.BASKETBALL,
@@ -40,7 +40,23 @@ PERSONA_REGISTRY = {
         "clutch_stops": 23,
         "respect_taps": 312,
         "wearable": "Apple Watch Ultra 2 (Acoustic + ECG)",
-        "neighbors": ["Elena Rostova", "Devon Miller"]
+        "neighbors": ["Elena Rostova", "Devon Miller"],
+        "accolades": [
+            {
+                "title": "Thunder Row Legend",
+                "rarity": "Legendary",
+                "glow_color": "#da1e28",
+                "description": "Awarded to the Section 114 conductor who has led 20+ verified clutch free-throw defensive stops.",
+                "perks": ["Post-Game Press Pass", "Seat Upgrade Lottery Entry", "VIP Locker Room Tour"]
+            },
+            {
+                "title": "34-Game Iron Streak",
+                "rarity": "Epic",
+                "glow_color": "#f1c21b",
+                "description": "Consecutive 34-game attendance streak without a single absence. Unbreakable dedication.",
+                "perks": ["5% Concession Discount", "Priority Queue Arena Entry", "Exclusive Section Director Jersey"]
+            }
+        ]
     },
     "Elena Rostova": {
         "hash": "0xER-sec114-3c9b1",
@@ -54,7 +70,23 @@ PERSONA_REGISTRY = {
         "clutch_stops": 9,
         "respect_taps": 168,
         "wearable": "Apple Watch Series 9",
-        "neighbors": ["Marcus Vance", "Devon Miller"]
+        "neighbors": ["Marcus Vance", "Devon Miller"],
+        "accolades": [
+            {
+                "title": "Thunderstick Maestro",
+                "rarity": "Rare",
+                "glow_color": "#8a3ffc",
+                "description": "Coordinated synchronized thunderstick waves across 50+ fans during a critical free throw sequence.",
+                "perks": ["5% Concession Discount", "Free Thunderstick Kit (Season)", "Section Hype Reel Feature"]
+            },
+            {
+                "title": "9-Stop Prop Specialist",
+                "rarity": "Rare",
+                "glow_color": "#8a3ffc",
+                "description": "Credited with visual depth-perception disruption on 9 verified opponent missed free throws.",
+                "perks": ["Seat Upgrade Lottery Entry", "Arena Prop Storage Locker Access"]
+            }
+        ]
     },
     "Devon Miller": {
         "hash": "0xDM-sec114-6d4e8",
@@ -68,7 +100,53 @@ PERSONA_REGISTRY = {
         "clutch_stops": 19,
         "respect_taps": 245,
         "wearable": "WearOS Pixel Watch 2",
-        "neighbors": ["Marcus Vance", "Elena Rostova"]
+        "neighbors": ["Marcus Vance", "Elena Rostova"],
+        "accolades": [
+            {
+                "title": "Chant Architect",
+                "rarity": "Epic",
+                "glow_color": "#f1c21b",
+                "description": "Originated 3 official section chants now used across all 6th Man defensive possessions.",
+                "perks": ["Post-Game Press Pass", "5% Concession Discount", "Chant Archive Feature Credit"]
+            },
+            {
+                "title": "19-Stop Voice Log",
+                "rarity": "Rare",
+                "glow_color": "#8a3ffc",
+                "description": "Maintained a high-frequency vocal urgency score above 0.80 across 19 clutch free-throw stops.",
+                "perks": ["Seat Upgrade Lottery Entry", "Section Vocal Tactician Badge"]
+            }
+        ]
+    },
+    "Jordan Lee": {
+        "hash": "0xJL-sec114-1f4a9",
+        "sport": SportType.BASKETBALL,
+        "section": "Section 114 (Thunder Row)",
+        "seat": "Row 4, Seat 11",
+        "role": "Rookie Section Member",
+        "tier": "Tier 1",
+        "career_games": 3,
+        "career_db": "310 dB",
+        "clutch_stops": 1,
+        "respect_taps": 28,
+        "wearable": "Apple Watch SE",
+        "neighbors": ["Marcus Vance", "Elena Rostova"],
+        "accolades": [
+            {
+                "title": "First Roar Badge",
+                "rarity": "Common",
+                "glow_color": "#0f62fe",
+                "description": "Awarded after attending your first Section 114 game and contributing to a crowd surge moment.",
+                "perks": ["5% Concession Discount", "Rookie Welcome Kit"]
+            },
+            {
+                "title": "Rookie Rising",
+                "rarity": "Common",
+                "glow_color": "#0f62fe",
+                "description": "Progress milestone: Attend 10 games and unlock Tier 2 Prop Specialist status. 7 games remaining.",
+                "perks": ["Tier 2 Unlock at 10 Games — Thunderstick Kit + Priority Queue Entry"]
+            }
+        ]
     },
     "Sarah Jenkins": {
         "hash": "0xSJ-sec115-7b2a5",
@@ -82,7 +160,23 @@ PERSONA_REGISTRY = {
         "clutch_stops": 31,
         "respect_taps": 480,
         "wearable": "Garmin Fenix 7X (Cardiac Stress + Altimeter)",
-        "neighbors": ["Carlos Mendez", "Maya Patel"]
+        "neighbors": ["Carlos Mendez", "Maya Patel"],
+        "accolades": [
+            {
+                "title": "End Zone Loyals Hall of Fame",
+                "rarity": "Legendary",
+                "glow_color": "#da1e28",
+                "description": "10-year consecutive season ticket holder. The heartbeat of Section 115 on every 3rd down and redzone stand.",
+                "perks": ["Post-Game Press Pass", "VIP Locker Room Tour", "Permanent Section Plaque Recognition"]
+            },
+            {
+                "title": "62-Game Ironclad",
+                "rarity": "Legendary",
+                "glow_color": "#da1e28",
+                "description": "62 verified stadium appearances — the longest active attendance streak in Section 115 history.",
+                "perks": ["Lifetime 10% Concession Discount", "Priority Suite Access Lottery", "Stadium Veteran Commemorative Jersey"]
+            }
+        ]
     },
     "Carlos Mendez": {
         "hash": "0xCM-sec115-4e8f9",
@@ -96,7 +190,23 @@ PERSONA_REGISTRY = {
         "clutch_stops": 24,
         "respect_taps": 395,
         "wearable": "Samsung Galaxy Watch 6 Pro",
-        "neighbors": ["Sarah Jenkins", "Maya Patel"]
+        "neighbors": ["Sarah Jenkins", "Maya Patel"],
+        "accolades": [
+            {
+                "title": "Lot B Legend",
+                "rarity": "Epic",
+                "glow_color": "#f1c21b",
+                "description": "Hosted 30+ pre-game tailgates that drove Section 115 early check-in rates above 85%.",
+                "perks": ["Post-Game Press Pass", "5% Concession Discount", "Lot B Permanent Reserved Spot"]
+            },
+            {
+                "title": "Community Anchor",
+                "rarity": "Rare",
+                "glow_color": "#8a3ffc",
+                "description": "Personally welcomed 50+ first-time Section 115 members at the Lot B tailgate tradition.",
+                "perks": ["Seat Upgrade Lottery Entry", "Exclusive Tailgate Host Plaque"]
+            }
+        ]
     },
     "Maya Patel": {
         "hash": "0xMP-sec115-1a5c3",
@@ -110,13 +220,59 @@ PERSONA_REGISTRY = {
         "clutch_stops": 11,
         "respect_taps": 185,
         "wearable": "Apple Watch SE",
-        "neighbors": ["Sarah Jenkins", "Carlos Mendez"]
+        "neighbors": ["Sarah Jenkins", "Carlos Mendez"],
+        "accolades": [
+            {
+                "title": "Data Pulse Pioneer",
+                "rarity": "Rare",
+                "glow_color": "#8a3ffc",
+                "description": "Logged the highest wearable biometric data accuracy rate across 11 clutch kicker icing moments.",
+                "perks": ["5% Concession Discount", "Tech Superfan Exclusive App Features"]
+            },
+            {
+                "title": "Wearable Ambassador",
+                "rarity": "Common",
+                "glow_color": "#0f62fe",
+                "description": "Onboarded 8 Section 115 members to the Kinetic FanLab wearable program.",
+                "perks": ["Seat Upgrade Lottery Entry", "Section Tech Lead Recognition"]
+            }
+        ]
+    },
+    "Alex Taylor": {
+        "hash": "0xAT-sec115-5c2d3",
+        "sport": SportType.FOOTBALL,
+        "section": "Section 115 (End Zone Loyals)",
+        "seat": "Row 20, Seat 3",
+        "role": "General Season Ticket Holder",
+        "tier": "Tier 1",
+        "career_games": 4,
+        "career_db": "420 dB",
+        "clutch_stops": 2,
+        "respect_taps": 45,
+        "wearable": "Pixel Watch",
+        "neighbors": ["Sarah Jenkins", "Carlos Mendez"],
+        "accolades": [
+            {
+                "title": "End Zone Initiate",
+                "rarity": "Common",
+                "glow_color": "#0f62fe",
+                "description": "Awarded after your first season ticket activation and verified check-in at Section 115.",
+                "perks": ["5% Concession Discount", "Section 115 Welcome Pack"]
+            },
+            {
+                "title": "Rookie Rising",
+                "rarity": "Common",
+                "glow_color": "#0f62fe",
+                "description": "Progress milestone: Attend 10 games and unlock Tier 2 Tailgate Crew status. 6 games remaining.",
+                "perks": ["Tier 2 Unlock at 10 Games — Lot B Reserved Tailgate Spot + Priority Entry"]
+            }
+        ]
     }
 }
 
 # --- Canonical Benchmark Fixtures (Contract Ground Truth) ---
 
-CANONICAL_FIXTURES = {
+CANONICAL_FIXTURES: Dict[str, Dict[str, Any]] = {
     "BB-01": {
         "id": "BB-01",
         "name": "Basketball Baseline (Free Throw 1)",
