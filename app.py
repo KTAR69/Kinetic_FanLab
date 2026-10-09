@@ -48,12 +48,7 @@ def normalize(val: float, min_val: float, max_val: float) -> float:
     return (clamped - min_val) / (max_val - min_val)
 
 def _append_fan_note(note: str) -> None:
-    """Append a fan outburst note and cap the list at 20 entries.
-
-    Keeps fan_notes aligned with the maxItems: 20 constraint in the
-    OpenAPI NarrativeRequest schema and prevents unbounded memory growth
-    during long demo sessions.
-    """
+    """Append a fan outburst note and cap the list at 20 entries."""
     st.session_state.fan_notes.append(note)
     if len(st.session_state.fan_notes) > 20:
         st.session_state.fan_notes = st.session_state.fan_notes[-20:]
@@ -110,6 +105,9 @@ active_preset = st.sidebar.selectbox("Load Canonical Fixture:", [
     "FB-02: Football 48-Yard FG Snap (Clutch)"
 ], key="fixture_picker")
 
+bb_members = ["Marcus Vance", "Elena Rostova", "Devon Miller", "Jordan Lee"]
+fb_members = ["Sarah Jenkins", "Carlos Mendez", "Maya Patel", "Alex Taylor"]
+
 # Reactively update fixture parameters if changed
 if "last_fixture" not in st.session_state or st.session_state.last_fixture != active_preset:
     prev_sport = st.session_state.get("sport", None)
@@ -151,15 +149,19 @@ if "last_fixture" not in st.session_state or st.session_state.last_fixture != ac
     st.session_state.tap_times = []
     st.session_state.synergy_claimed = False
 
-    # When sport changes, reset sport-scoped UI state to avoid stale carryover
+    # When sport changes, update active persona to match sport without losing selection state
     if prev_sport is not None and prev_sport != st.session_state.sport:
         st.session_state.early_checkin = False
         st.session_state.synergy_score = 92
-        # huddle_fan_select key is widget-bound; clear it so the selectbox resets
-        if "huddle_fan_select" in st.session_state:
-            del st.session_state["huddle_fan_select"]
+        if st.session_state.sport == "Basketball" and st.session_state.get("active_member") not in bb_members:
+            st.session_state.active_member = "Marcus Vance"
+        elif st.session_state.sport == "Football" and st.session_state.get("active_member") not in fb_members:
+            st.session_state.active_member = "Sarah Jenkins"
 
 # Global session states
+if "sport" not in st.session_state: st.session_state.sport = "Basketball"
+if "active_member" not in st.session_state:
+    st.session_state.active_member = "Marcus Vance" if st.session_state.sport == "Basketball" else "Sarah Jenkins"
 if "tap_count" not in st.session_state: st.session_state.tap_count = 0
 if "tap_times" not in st.session_state: st.session_state.tap_times = []
 if "early_checkin" not in st.session_state: st.session_state.early_checkin = False
@@ -170,6 +172,12 @@ if "respect_dict" not in st.session_state:
         "Marcus Vance": 313, "Elena Rostova": 168, "Devon Miller": 245, "Jordan Lee": 28,
         "Sarah Jenkins": 480, "Carlos Mendez": 395, "Maya Patel": 185, "Alex Taylor": 45
     }
+
+# Ensure active member matches current sport
+if st.session_state.sport == "Basketball" and st.session_state.active_member not in bb_members:
+    st.session_state.active_member = "Marcus Vance"
+elif st.session_state.sport == "Football" and st.session_state.active_member not in fb_members:
+    st.session_state.active_member = "Sarah Jenkins"
 
 current_cmi = calc_momentum_index(st.session_state.db, st.session_state.hr, st.session_state.taps, st.session_state.vu)
 tier = get_tier(current_cmi)
@@ -344,12 +352,11 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
     st.header(f"👤 The Living Fan Passport & Section Roster ({st.session_state.sport})")
     st.caption("Persistent 365-day fandom identity, career telemetry, and peer-to-peer section camaraderie.")
 
-    if is_basketball:
-        persona_options = ["Marcus Vance", "Elena Rostova", "Devon Miller", "Jordan Lee"]
-    else:
-        persona_options = ["Sarah Jenkins", "Carlos Mendez", "Maya Patel", "Alex Taylor"]
+    persona_options = bb_members if is_basketball else fb_members
+    p_idx = persona_options.index(st.session_state.active_member) if st.session_state.active_member in persona_options else 0
 
-    selected_name = st.selectbox("Select Active Fan Persona:", persona_options)
+    selected_name = st.selectbox("Select Active Fan Persona:", persona_options, index=p_idx, key="passport_persona_select")
+    st.session_state.active_member = selected_name
     p_info = PERSONA_DB[selected_name]
 
     tab_identity, tab_trophy = st.tabs(["🪪 Fan Passport & Section Roster", "🏆 Living Trophy Case & Dynamic Accolades"])
@@ -443,7 +450,7 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
             st.success("Trophy Showcase formatted! Shareable story card ready for export.")
 
 # ==============================================================================
-# SCREEN 2: 36-HOUR VIRTUAL TAILGATE (UNTOUCHED)
+# SCREEN 2: 36-HOUR VIRTUAL TAILGATE
 # ==============================================================================
 elif screen == "🎪 Screen 2: 36h Virtual Tailgate":
     st.header(f"🎪 The 36-Hour Virtual Tailgate ({st.session_state.sport})")
@@ -561,18 +568,20 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
     coord_state = _coordinator.evaluate_game_state(_game_ctx)
 
     # ------------------------------------------------------------------
-    # Live Sensor Simulation toggle (Rec 3)
+    # Live Sensor Simulation toggle + Pulse button (Responsive & Non-Blocking)
     # ------------------------------------------------------------------
-    sim_col, _ = st.columns([1, 3])
-    with sim_col:
-        live_sim = st.toggle("⚡ Live Sensor Simulation", key="live_sim",
-                             help="Animates telemetry with sinusoidal noise around the fixture target values.")
-    if live_sim:
+    pulse_btn_col1, surge_btn_col2 = st.columns(2)
+    with pulse_btn_col1:
+        pulse_clicked = st.button("🎲 Pulse Telemetry Tick", help="Instantly inject a live sensor packet tick", use_container_width=True)
+    with surge_btn_col2:
+        surge_clicked = st.button("⚡ Live Telemetry Surge (Wave)", help="Instantly inject a surge telemetry wave packet", use_container_width=True)
+
+    if pulse_clicked or surge_clicked:
         from stream_simulator import TelemetryStreamSimulator
         if "sim_instance" not in st.session_state:
             st.session_state.sim_instance = TelemetryStreamSimulator(st.session_state.sport)
         tick = st.session_state.sim_instance.generate_live_tick(
-            is_clutch=st.session_state.is_clutch, noise_variance=0.05
+            is_clutch=st.session_state.is_clutch or surge_clicked, noise_variance=0.08 if surge_clicked else 0.05
         )
         st.session_state.db   = tick["db"]
         st.session_state.hr   = tick["hr"]
@@ -585,19 +594,21 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
         )
         tier  = get_tier(current_cmi)
         color = get_color(current_cmi)
-        time.sleep(0.4)
         st.rerun()
 
-    # Early Check-in
-    with st.expander(f"🎟️ Pre-Game Roll Call: Early Seat Check-In ({st.session_state.sport})", expanded=not st.session_state.early_checkin):
+    # Early Check-in with Immediate State Update
+    with st.expander(f"🎟️ Pre-Game Roll Call: Early Seat Check-In ({st.session_state.sport})", expanded=True):
         st.write(f"Fans who reach their seats 30 minutes before **{start_term}** unlock a **1.25x 1st-Quarter Multiplier**.")
         if not st.session_state.early_checkin:
             sec_btn_label = "Section 114" if is_basketball else "Section 115"
-            if st.button(f"📍 Check In at Seat ({sec_btn_label})"):
+            if st.button(f"📍 Check In at Seat ({sec_btn_label})", key="btn_checkin_seat"):
                 st.session_state.early_checkin = True
-                st.success(f"Seat Verified! {sec_btn_label} Energy Multiplier boosted to 1.25x!")
+                st.rerun()
         else:
             st.success("✅ Checked In: Section holds the Early Arrival Multiplier (1.25x)!")
+            if st.button("Cancel Seat Check-In", key="btn_cancel_checkin"):
+                st.session_state.early_checkin = False
+                st.rerun()
 
     # Coordinator directive banner
     directive_color = "#da1e28" if coord_state["clutch_active"] else "#0f62fe"
@@ -629,18 +640,17 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
     with col5: st.metric("Vocal Urgency", f"{st.session_state.vu} VU", delta="Clutch" if st.session_state.vu > 0.8 else "Moderate")
 
     # ------------------------------------------------------------------
-    # Rec 1: Section AI Co-Captains Huddle — driven by get_co_captain_huddle()
+    # Rec 1: Section AI Co-Captains Huddle — Synchronized with Global Member
     # ------------------------------------------------------------------
     st.markdown("---")
     st.subheader("🤝 Section AI Team Members Huddle")
     st.caption("💡 *You and your fellow fans are the Section Captains. These AI Team Members support your calls with real-time rhythm, sensor telemetry, and rivalry intelligence.*")
 
-    if is_basketball:
-        huddle_members = ["Marcus Vance", "Elena Rostova", "Devon Miller", "Jordan Lee"]
-    else:
-        huddle_members = ["Sarah Jenkins", "Carlos Mendez", "Maya Patel", "Alex Taylor"]
+    huddle_members = bb_members if is_basketball else fb_members
+    h_idx = huddle_members.index(st.session_state.active_member) if st.session_state.active_member in huddle_members else 0
 
-    huddle_fan = st.selectbox("Active Member for AI Team Member Briefing:", huddle_members, key="huddle_fan_select")
+    huddle_fan = st.selectbox("Active Member for AI Team Member Briefing:", huddle_members, index=h_idx, key="huddle_fan_select")
+    st.session_state.active_member = huddle_fan
 
     # Rec 4: FanCoachAgent coaching line
     _coach_line = ""
@@ -649,7 +659,7 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
         from orchestrate_agents import FanCoachAgent
         _coach_line = FanCoachAgent().coach(huddle_fan, _persona, current_cmi, st.session_state.is_clutch)
 
-    # Live agent-driven huddle lines (replaces hardcoded if/elif chain)
+    # Live agent-driven huddle lines
     _huddle = get_co_captain_huddle(
         member_name=huddle_fan,
         persona_data=PERSONA_REGISTRY.get(huddle_fan, {"role": "General Member", "tier": "Tier 1"}),
@@ -684,19 +694,19 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
     </div>
         """, unsafe_allow_html=True)
 
-    # Verifiable Directive Execution Logic
-    has_contributed_telemetry = (st.session_state.tap_count >= 5 or len(st.session_state.fan_notes) > 1)
+    # Verifiable Directive Execution Logic — immediate verification threshold (>= 1 tap)
+    has_contributed_telemetry = (st.session_state.tap_count >= 1 or len(st.session_state.fan_notes) > 1)
 
     syn_col1, syn_col2 = st.columns([2, 1])
     with syn_col1:
         if not has_contributed_telemetry:
-            st.info(f"⏳ **DIRECTIVE PENDING ({coord_state['trigger_event']}):** Log at least 5 Distraction Taps or submit a Fan Outburst below to verify your in-arena action before claiming synergy points.")
+            st.info(f"⏳ **DIRECTIVE PENDING ({coord_state['trigger_event']}):** Log at least 1 Distraction Tap or submit a Fan Outburst below to verify your in-arena action before claiming synergy points.")
         else:
-            st.success(f"✅ **ACTION VERIFIED BY WATSONX:** {st.session_state.tap_count} taps logged and voice telemetry recorded. Ready to sync!")
+            st.success(f"✅ **ACTION VERIFIED BY WATSONX:** {st.session_state.tap_count} tap(s) logged and voice telemetry recorded. Ready to sync!")
 
-        if st.button("🔍 Verify In-Arena Telemetry & Claim +5 Synergy", key="btn_synergy"):
+        if st.button("🔍 Verify In-Arena Telemetry & Claim Synergy", key="btn_synergy"):
             if not has_contributed_telemetry:
-                st.warning("⚠️ Action Not Detected: Please log at least 5 distraction taps or submit an approved voice shout below before verifying!")
+                st.warning("⚠️ Action Not Detected: Please log at least 1 distraction tap or submit an approved voice shout below before verifying!")
             elif st.session_state.synergy_claimed:
                 st.info(f"✅ Directive already completed for this possession! Current Section Synergy: {st.session_state.synergy_score}%.")
             else:
@@ -705,6 +715,7 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
                 st.session_state.synergy_score = min(100, st.session_state.synergy_score + synergy_gain)
                 st.session_state.synergy_claimed = True
                 st.success(f"🎉 Directive Verified by watsonx! +{synergy_gain} Synergy Awarded (x{coord_state['multiplier']} multiplier). Section Co-Op score elevated to {st.session_state.synergy_score}%!")
+                st.rerun()
 
     with syn_col2:
         st.write(f"**Section Synergy Meter:** `{st.session_state.synergy_score}% Synchronized`")
@@ -758,52 +769,70 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
         st.write(label)
         st.progress(min(1.0, entry["score"] / 100.0))
 
-    # Interactive Tapper & Voice Logger
+    # Interactive Tapper & Voice Logger with Immediate Response
     st.markdown("---")
     c_tap, c_vox = st.columns(2)
     with c_tap:
         st.subheader("📱 Distraction Tapper")
         now = time.time()
-        if st.button("🔥 TAP TO DISTRACT OPPONENT 🔥", use_container_width=True):
-            st.session_state.tap_count += 1
-            st.session_state.tap_times.append(now)
+        
+        tap_col1, tap_col2 = st.columns(2)
+        with tap_col1:
+            if st.button("🔥 TAP +1", use_container_width=True, key="btn_tap_single"):
+                st.session_state.tap_count += 1
+                st.session_state.tap_times.append(now)
+                st.session_state.taps = min(15.0, round(st.session_state.taps + 0.5, 1))
+                st.rerun()
+        with tap_col2:
+            if st.button("⚡ BURST TAP (+5)", use_container_width=True, key="btn_tap_burst"):
+                st.session_state.tap_count += 5
+                st.session_state.tap_times.extend([now] * 5)
+                st.session_state.taps = min(15.0, round(st.session_state.taps + 2.5, 1))
+                st.rerun()
 
         st.session_state.tap_times = [t for t in st.session_state.tap_times if now - t <= 2.5]
         active_taps = len(st.session_state.tap_times)
         
         if active_taps > 0:
             calc_speed = round(min(15.0, (active_taps / 2.5) * 3.5), 1)
-            st.session_state.taps = calc_speed
-        elif st.session_state.tap_count == 0:
-            st.session_state.taps = 2.5 if is_basketball else 3.0
+            st.session_state.taps = max(st.session_state.taps, calc_speed)
 
         tc1, tc2 = st.columns(2)
         tc1.metric("Taps Recorded", st.session_state.tap_count)
         tc2.metric("Active Tap Speed", f"{st.session_state.taps} taps/s")
         
-        if st.button("Reset Tapper"):
+        if st.button("Reset Tapper", key="btn_reset_tapper"):
             st.session_state.tap_count = 0
             st.session_state.tap_times = []
-            st.session_state.taps = 0.0
+            st.session_state.taps = 2.5 if is_basketball else 3.0
             st.session_state.synergy_claimed = False
             st.rerun()
 
     with c_vox:
         st.subheader("🎙️ Armchair Coach Reaction Logger")
         p_text = "e.g., MISS IT! OFF THE BACK IRON!" if is_basketball else "e.g., BLOCK THAT KICK! RATTLE HIM!"
-        user_in = st.text_input("Enter Fan Outburst:", placeholder=p_text)
-        if st.button("Submit & Audit Reaction"):
-            if user_in.strip():
-                gov = evaluate_fan_content_safety(user_in)
-                if gov["guardrail_status"] == "REJECTED":
-                    st.error(f"❌ REJECTED by watsonx.governance: {gov['violations'][0]}")
-                else:
-                    st.success("🛡️ APPROVED by watsonx.governance (Content Safe & Anonymized)")
-                    with st.spinner("Scoring with IBM Granite live..."):
-                        u_score = analyze_vocal_urgency_live(user_in)
-                    st.session_state.vu = u_score
-                    _append_fan_note(f"{user_in} (Live Urgency: {u_score} VU)")
-                    st.info(f"Live IBM Granite Vocal Urgency: **{u_score} VU**")
+        
+        with st.form(key="reaction_governance_form"):
+            user_in = st.text_input("Enter Fan Outburst:", placeholder=p_text)
+            submit_reaction = st.form_submit_button("Submit & Audit Reaction")
+
+        if submit_reaction and user_in.strip():
+            # Adversarial prompt injection keyword defense check
+            adversarial_keywords = ["ignore previous", "system prompt", "disregard", "override", "bypass", "reveal instructions"]
+            is_prompt_injection = any(kw in user_in.lower() for kw in adversarial_keywords)
+
+            gov = evaluate_fan_content_safety(user_in)
+            if gov.get("guardrail_status") == "REJECTED" or is_prompt_injection:
+                violation_reason = gov.get("violations", ["Adversarial Prompt Injection / System Prompt Extraction Attempt Detected"])[0] if gov.get("violations") else "Adversarial Prompt Injection / System Prompt Extraction Attempt Detected"
+                st.error(f"🚨 **REJECTED by watsonx.governance:** {violation_reason}\n\n*Content blocked at the edge prior to IBM Granite Foundation Model inference.*")
+            else:
+                st.success("🛡️ **APPROVED by watsonx.governance** (Content Safe & Anonymized)")
+                with st.spinner("Scoring with IBM Granite live..."):
+                    u_score = analyze_vocal_urgency_live(user_in)
+                st.session_state.vu = u_score
+                _append_fan_note(f"{user_in} (Live Urgency: {u_score} VU)")
+                st.info(f"Live IBM Granite Vocal Urgency: **{u_score} VU**")
+                st.rerun()
 
         st.markdown(f"**Quick-Fire Chants ({st.session_state.sport}):**")
         q_cols = st.columns(2)
@@ -886,8 +915,7 @@ elif screen == "📊 Screen 4: Narrative Delta & Story Card":
     </div>
     """, unsafe_allow_html=True)
 
-    # Live Granite Narrative Generation — cached by (fixture, cmi) to avoid
-    # redundant Granite API calls on every Streamlit re-render.
+    # Live Granite Narrative Generation — cached by (fixture, cmi)
     st.subheader(f"🤖 IBM Granite Post-Play Narrative Synthesis ({st.session_state.sport})")
     _narrative_key = f"narrative_{active_preset}_{current_cmi}"
     if _narrative_key not in st.session_state:
@@ -948,12 +976,10 @@ elif screen == "📊 Screen 4: Narrative Delta & Story Card":
             """)
     with c2:
         user_sec = "Section 114" if is_basketball else "Section 115"
-        st.markdown(f"""
-        **Your Personal Fan Contribution ({user_sec}):**
-        * Distraction Taps Contributed: **{st.session_state.tap_count} clicks**
-        * Peak Physiological Stress: **{int(st.session_state.hr)} BPM**
-        * Peak Acoustic Contribution: **{st.session_state.db} dB**
-        """)
+        st.markdown(f"**Your Personal Fan Contribution ({user_sec}):**")
+        st.write(f"* Distraction Taps Contributed: **{st.session_state.tap_count} clicks**")
+        st.write(f"* Peak Physiological Stress: **{int(st.session_state.hr)} BPM**")
+        st.write(f"* Peak Acoustic Contribution: **{st.session_state.db} dB**")
 
     # IBM Cloud Object Storage — Archive Official Crowd Box Score
     st.markdown("---")
@@ -977,14 +1003,16 @@ elif screen == "📊 Screen 4: Narrative Delta & Story Card":
                 fan_contribution=fan_contribution_payload,
             )
             st.success(f"✅ Crowd Box Score archived! Status: **{receipt['status']}**")
-            st.markdown(f"""
-            <div style="background-color: #001141; border: 2px solid #0f62fe; border-radius: 10px; padding: 18px; max-width: 540px; margin: 12px auto; color: white; font-family: monospace; font-size: 9.5pt;">
-                <p style="color: #0f62fe; font-weight: bold; letter-spacing: 1px; margin: 0 0 10px 0;">IBM CLOUD TRANSACTION RECEIPT</p>
-                <p style="margin: 4px 0;"><span style="color: #8d8d8d;">Status</span> : <b style="color: #42be65;">{receipt['status']}</b></p>
-                <p style="margin: 4px 0;"><span style="color: #8d8d8d;">Bucket</span> : <code>{receipt['bucket']}</code></p>
-                <p style="margin: 4px 0;"><span style="color: #8d8d8d;">Object Key</span> : <code style="word-break: break-all;">{receipt['object_key']}</code></p>
-                <p style="margin: 4px 0;"><span style="color: #8d8d8d;">Crypto Timestamp</span> : <code>{receipt['crypto_timestamp']}</code></p>
-                <hr style="border-color: #1a3a6e; margin: 10px 0;">
-                <p style="color: #8d8d8d; font-size: 8.5pt; margin: 0;">Powered by IBM watsonx & Granite Foundation Models</p>
-            </div>
-            """, unsafe_allow_html=True)
+            receipt_html = (
+                '<div style="background-color: #001141; border: 2px solid #0f62fe; border-radius: 10px; padding: 18px; max-width: 540px; margin: 12px auto; color: white; font-family: monospace; font-size: 9.5pt;">'
+                '<p style="color: #0f62fe; font-weight: bold; letter-spacing: 1px; margin: 0 0 10px 0;">IBM CLOUD TRANSACTION RECEIPT</p>'
+                f'<p style="margin: 4px 0;"><span style="color: #8d8d8d;">Status</span> : <b style="color: #42be65;">{receipt["status"]}</b></p>'
+                f'<p style="margin: 4px 0;"><span style="color: #8d8d8d;">Bucket</span> : <code>{receipt["bucket"]}</code></p>'
+                f'<p style="margin: 4px 0;"><span style="color: #8d8d8d;">Object Key</span> : <code style="word-break: break-all;">{receipt["object_key"]}</code></p>'
+                f'<p style="margin: 4px 0;"><span style="color: #8d8d8d;">Crypto Timestamp</span> : <code>{receipt["crypto_timestamp"]}</code></p>'
+                '<hr style="border-color: #1a3a6e; margin: 10px 0;">'
+                '<p style="color: #8d8d8d; font-size: 8.5pt; margin: 0;">Powered by IBM watsonx & Granite Foundation Models</p>'
+                '</div>'
+            )
+            st.markdown(receipt_html, unsafe_allow_html=True)
+
