@@ -1,7 +1,7 @@
 {
   "Marcus Vance": {
     "member_hash": "0xMV-sec114-8f7a2",
-    "respect_taps": 999,
+    "respect_taps": 1000,
     "_id": "Marcus Vance"
   },
   "Elena Rostova": {
@@ -24,7 +24,7 @@
   },
   "Sarah Jenkins": {
     "member_hash": "0xSJ-sec115-7b2a5",
-    "respect_taps": 481,
+    "respect_taps": 482,
     "nft_badges_unlocked": [],
     "_id": "Sarah Jenkins"
   },
