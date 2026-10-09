@@ -11,9 +11,17 @@ from dotenv import load_dotenv
 load_dotenv()
 
 API_KEY = os.getenv("WO_API_KEY")
-PROJECT_ID = "7be4956c-c4e8-4775-8559-f076dda7cfea"
+# PROJECT_ID is read from the environment so it never needs to be changed in source.
+# Add WO_PROJECT_ID to your .env file. The literal below is the fallback default.
+PROJECT_ID = os.getenv("WO_PROJECT_ID", "7be4956c-c4e8-4775-8559-f076dda7cfea")
 URL = "https://us-south.ml.cloud.ibm.com"
 MODEL_ID = "ibm/granite-4-h-small"
+
+# ---------------------------------------------------------------------------
+# Lazy singleton — ModelInference is expensive to construct; build it once.
+# ---------------------------------------------------------------------------
+_model_instance = None
+
 
 def to_str(val: Any) -> str:
     """Helper to ensure return type from ModelInference is always a string for Pyright."""
@@ -25,26 +33,30 @@ def to_str(val: Any) -> str:
         return str(val.get("generated_text", val))
     return str(val)
 
+
 def get_model():
+    global _model_instance
+    if _model_instance is not None:
+        return _model_instance
     try:
         from ibm_watsonx_ai import Credentials
         from ibm_watsonx_ai.foundation_models import ModelInference
-        
+
         if not API_KEY or not PROJECT_ID:
             return None
-            
+
         credentials = Credentials(url=URL, api_key=API_KEY)
-        model = ModelInference(
+        _model_instance = ModelInference(
             model_id=MODEL_ID,
             credentials=credentials,
             project_id=PROJECT_ID,
             params={
                 "decoding_method": "greedy",
                 "max_new_tokens": 300,
-                "temperature": 0.1
-            }
+                "temperature": 0.1,
+            },
         )
-        return model
+        return _model_instance
     except Exception as e:
         print(f"[watsonx Live Engine] Fallback active: {e}")
         return None

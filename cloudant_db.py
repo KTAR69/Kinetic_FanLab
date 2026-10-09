@@ -97,6 +97,19 @@ def _load_local_cache() -> dict:
     return _memory_cache
 
 
+def _reset_memory_cache() -> None:
+    """
+    Reset the in-process memory cache to None.
+
+    **Test-only helper** — call this in setUp() to ensure each test class
+    starts from a clean, unseeded state rather than inheriting mutations
+    from a previous test.  Has no effect in production (the cache simply
+    repopulates from disk or defaults on the next load call).
+    """
+    global _memory_cache
+    _memory_cache = None
+
+
 def _save_local_cache(data: dict) -> None:
     """Persist the in-memory cache to disk."""
     global _memory_cache

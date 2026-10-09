@@ -47,6 +47,17 @@ def normalize(val: float, min_val: float, max_val: float) -> float:
     clamped = max(min_val, min(val, max_val))
     return (clamped - min_val) / (max_val - min_val)
 
+def _append_fan_note(note: str) -> None:
+    """Append a fan outburst note and cap the list at 20 entries.
+
+    Keeps fan_notes aligned with the maxItems: 20 constraint in the
+    OpenAPI NarrativeRequest schema and prevents unbounded memory growth
+    during long demo sessions.
+    """
+    st.session_state.fan_notes.append(note)
+    if len(st.session_state.fan_notes) > 20:
+        st.session_state.fan_notes = st.session_state.fan_notes[-20:]
+
 def calc_momentum_index(db: float, hr: float, taps: float, vu: float) -> float:
     n_db = normalize(db, 60.0, 115.0)
     n_hr = normalize(hr, 60.0, 160.0)
@@ -710,7 +721,7 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
                     with st.spinner("Scoring with IBM Granite live..."):
                         u_score = analyze_vocal_urgency_live(user_in)
                     st.session_state.vu = u_score
-                    st.session_state.fan_notes.append(f"{user_in} (Live Urgency: {u_score} VU)")
+                    _append_fan_note(f"{user_in} (Live Urgency: {u_score} VU)")
                     st.info(f"Live IBM Granite Vocal Urgency: **{u_score} VU**")
 
         st.markdown(f"**Quick-Fire Chants ({st.session_state.sport}):**")
@@ -718,36 +729,36 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
         if is_basketball:
             if q_cols[0].button("MISS IT! OFF THE RIM!"):
                 st.session_state.vu = 0.85
-                st.session_state.fan_notes.append("MISS IT! OFF THE RIM! (0.85 VU)")
+                _append_fan_note("MISS IT! OFF THE RIM! (0.85 VU)")
                 st.rerun()
             if q_cols[1].button("BRING THE NOISE!"):
                 st.session_state.vu = 0.90
-                st.session_state.fan_notes.append("BRING THE NOISE! (0.90 VU)")
+                _append_fan_note("BRING THE NOISE! (0.90 VU)")
                 st.rerun()
             if q_cols[0].button("AIR BALL! AIR BALL!"):
                 st.session_state.vu = 0.88
-                st.session_state.fan_notes.append("AIR BALL! AIR BALL! (0.88 VU)")
+                _append_fan_note("AIR BALL! AIR BALL! (0.88 VU)")
                 st.rerun()
             if q_cols[1].button("DEFENSE ON THREE!"):
                 st.session_state.vu = 0.82
-                st.session_state.fan_notes.append("DEFENSE ON THREE! (0.82 VU)")
+                _append_fan_note("DEFENSE ON THREE! (0.82 VU)")
                 st.rerun()
         else:
             if q_cols[0].button("BLOCK THAT KICK!"):
                 st.session_state.vu = 0.92
-                st.session_state.fan_notes.append("BLOCK THAT KICK! (0.92 VU)")
+                _append_fan_note("BLOCK THAT KICK! (0.92 VU)")
                 st.rerun()
             if q_cols[1].button("ICE THE KICKER!"):
                 st.session_state.vu = 0.88
-                st.session_state.fan_notes.append("ICE THE KICKER! (0.88 VU)")
+                _append_fan_note("ICE THE KICKER! (0.88 VU)")
                 st.rerun()
             if q_cols[0].button("FALSE START! GET LOUD!"):
                 st.session_state.vu = 0.95
-                st.session_state.fan_notes.append("FALSE START! GET LOUD! (0.95 VU)")
+                _append_fan_note("FALSE START! GET LOUD! (0.95 VU)")
                 st.rerun()
             if q_cols[1].button("THIRD DOWN ROAR!"):
                 st.session_state.vu = 0.90
-                st.session_state.fan_notes.append("THIRD DOWN ROAR! (0.90 VU)")
+                _append_fan_note("THIRD DOWN ROAR! (0.90 VU)")
                 st.rerun()
 
         st.markdown("**Recent Logged Outbursts:**")
