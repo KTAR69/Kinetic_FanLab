@@ -453,3 +453,100 @@ class SystemOptimizerAgent:
         }
 
         return storycard
+
+
+# ---------------------------------------------------------------------------
+# FanCoachAgent — tier-aware progression advisor (4th Co-Captain)
+# ---------------------------------------------------------------------------
+
+class FanCoachAgent:
+    """
+    Generates a personalized, one-line coaching message for a fan based on
+    their current passport data (tier progress, career stats) and the live
+    game moment (CMI, clutch state).
+
+    This is the fourth Co-Captain alongside The Conductor, The Scout, and
+    The Strategist. It creates the progression feedback loop that converts
+    a static accolade display into an in-game call to action.
+    """
+
+    # Games required to reach each tier boundary
+    _TIER_THRESHOLDS: dict = {
+        "Rookie Member (Tier 1)":            10,
+        "Tier 1":                            10,
+        "Prop Captain (Tier 2)":             20,
+        "Tech Superfan (Tier 2)":            25,
+        "Vocal Tactician (Tier 3)":          35,
+        "Section Director (Tier 4)":         50,
+        "Tailgate Host (Tier 4)":            50,
+        "Stadium Veteran (Tier 5)":          75,
+        "General Season Ticket Holder":      10,
+        "General Member (Tier 1)":           10,
+    }
+
+    def coach(
+        self,
+        member_name: str,
+        persona_data: Dict[str, Any],
+        cmi: float,
+        is_clutch: bool,
+    ) -> str:
+        """
+        Returns a single coaching line tailored to this fan's tier progress
+        and the current game moment.
+
+        Args:
+            member_name:  Fan display name.
+            persona_data: Dict from PERSONA_REGISTRY with tier, career stats.
+            cmi:          Current CMI float (0–100).
+            is_clutch:    Whether a clutch moment is active.
+
+        Returns:
+            A non-empty coaching string.
+        """
+        tier: str  = persona_data.get("tier", "Tier 1")
+        games: int = int(persona_data.get("career_games", 0))
+        stops: int = int(persona_data.get("clutch_stops", 0))
+        taps:  int = int(persona_data.get("respect_taps", 0))
+        role:  str = persona_data.get("role", "Fan")
+        is_basketball = "basket" in str(persona_data.get("sport", "Basketball")).lower()
+
+        # Find how many games until the next tier
+        threshold = self._TIER_THRESHOLDS.get(tier, 10)
+        remaining = max(0, threshold - games)
+
+        # Build the clutch-moment performance nudge
+        if is_clutch and cmi >= 80.0:
+            performance = (
+                f"CMI is peaking at {cmi}/100 right now — this clutch stop counts double toward your Proof-of-Momentum record."
+            )
+        elif is_clutch:
+            performance = (
+                f"CMI is at {cmi}/100 — push the section energy higher and this clutch moment will register on your career ledger."
+            )
+        else:
+            performance = (
+                f"Live CMI is {cmi}/100. Every tap and chant you contribute tonight compounds your Acoustic Wall career total."
+            )
+
+        # Tier-progress message
+        if remaining == 0:
+            progress_msg = f"You have reached the top of your current tier ({tier}). Lead by example tonight — your actions inspire the whole section."
+        elif remaining <= 3:
+            progress_msg = f"Only {remaining} more game(s) to unlock your next tier upgrade. Tonight could be the one."
+        else:
+            progress_msg = f"{remaining} game(s) remaining to unlock your next tier. Keep showing up — {games} games of verified impact already on record."
+
+        # Role-specific achievement nudge
+        if stops >= 20:
+            achievement = f"With {stops} verified clutch stops, you are already operating at Hall of Fame pace."
+        elif stops >= 10:
+            achievement = f"{stops} verified clutch stops and counting — you are the defensive backbone of this section."
+        else:
+            achievement = f"Every clutch stop adds to your {stops} career total and boosts the section's Season Defense Rating."
+
+        sport_emoji = "🏀" if is_basketball else "🏈"
+        return (
+            f"{sport_emoji} Coach to {member_name} ({role}): {performance} "
+            f"{progress_msg} {achievement}"
+        )

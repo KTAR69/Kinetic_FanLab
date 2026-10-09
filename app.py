@@ -536,8 +536,57 @@ elif screen == "🎪 Screen 2: 36h Virtual Tailgate":
 # SCREEN 3: IN-ARENA GAME HUB & TRIGGER
 # ==============================================================================
 elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
+    from orchestrate_agents import (
+        get_co_captain_huddle,
+        InvisibleCoordinatorAgent,
+        SystemOptimizerAgent,
+    )
+    from telemetry_models import PERSONA_REGISTRY
+
     st.header(f"🏟️ In-Arena Game Hub & Clutch Trigger ({st.session_state.sport} — {role_tag})")
     st.caption(f"Live crowd acoustics, biometric telemetry, distraction tapping, and section competition for {st.session_state.sport}.")
+
+    # ------------------------------------------------------------------
+    # Rec 2: InvisibleCoordinator — evaluate live game state
+    # ------------------------------------------------------------------
+    _coordinator = InvisibleCoordinatorAgent(sport=st.session_state.sport)
+    if is_basketball and st.session_state.is_clutch:
+        _game_ctx = "clutch free throw"
+    elif not is_basketball and st.session_state.is_clutch:
+        _game_ctx = "clutch field goal snap"
+    elif not is_basketball:
+        _game_ctx = "timeout ice the kicker"
+    else:
+        _game_ctx = "regular possession"
+    coord_state = _coordinator.evaluate_game_state(_game_ctx)
+
+    # ------------------------------------------------------------------
+    # Live Sensor Simulation toggle (Rec 3)
+    # ------------------------------------------------------------------
+    sim_col, _ = st.columns([1, 3])
+    with sim_col:
+        live_sim = st.toggle("⚡ Live Sensor Simulation", key="live_sim",
+                             help="Animates telemetry with sinusoidal noise around the fixture target values.")
+    if live_sim:
+        from stream_simulator import TelemetryStreamSimulator
+        if "sim_instance" not in st.session_state:
+            st.session_state.sim_instance = TelemetryStreamSimulator(st.session_state.sport)
+        tick = st.session_state.sim_instance.generate_live_tick(
+            is_clutch=st.session_state.is_clutch, noise_variance=0.05
+        )
+        st.session_state.db   = tick["db"]
+        st.session_state.hr   = tick["hr"]
+        st.session_state.taps = tick["taps"]
+        st.session_state.vu   = tick["vu"]
+        # Recompute CMI + tier/color from updated sensor values
+        current_cmi = calc_momentum_index(
+            st.session_state.db, st.session_state.hr,
+            st.session_state.taps, st.session_state.vu
+        )
+        tier  = get_tier(current_cmi)
+        color = get_color(current_cmi)
+        time.sleep(0.4)
+        st.rerun()
 
     # Early Check-in
     with st.expander(f"🎟️ Pre-Game Roll Call: Early Seat Check-In ({st.session_state.sport})", expanded=not st.session_state.early_checkin):
@@ -549,6 +598,20 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
                 st.success(f"Seat Verified! {sec_btn_label} Energy Multiplier boosted to 1.25x!")
         else:
             st.success("✅ Checked In: Section holds the Early Arrival Multiplier (1.25x)!")
+
+    # Coordinator directive banner
+    directive_color = "#da1e28" if coord_state["clutch_active"] else "#0f62fe"
+    st.markdown(f"""
+    <div style="background-color: #0d0d0d; border-left: 5px solid {directive_color}; padding: 10px 16px; border-radius: 6px; margin: 8px 0;">
+        <span style="color: {directive_color}; font-weight: bold; font-size: 9pt; text-transform: uppercase; letter-spacing: 1px;">
+            🎯 InvisibleCoordinator — {coord_state['trigger_event']}
+        </span><br>
+        <span style="color: #f4f4f4; font-size: 10pt;">{coord_state['pacing_directive']}</span>
+        <span style="color: #8d8d8d; font-size: 9pt; float: right;">
+            Multiplier: <b style="color:{directive_color};">{coord_state['multiplier']}x</b>
+        </span>
+    </div>
+    """, unsafe_allow_html=True)
 
     st.markdown("---")
     col1, col2, col3, col4, col5 = st.columns(5)
@@ -565,7 +628,9 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
     with col4: st.metric("In-App Taps", f"{st.session_state.taps}/s", delta="Surge" if st.session_state.taps > 10 else "Steady")
     with col5: st.metric("Vocal Urgency", f"{st.session_state.vu} VU", delta="Clutch" if st.session_state.vu > 0.8 else "Moderate")
 
-    # Section AI Team Members Huddle (Robot + Role Icons & Verifiable Synergy)
+    # ------------------------------------------------------------------
+    # Rec 1: Section AI Co-Captains Huddle — driven by get_co_captain_huddle()
+    # ------------------------------------------------------------------
     st.markdown("---")
     st.subheader("🤝 Section AI Team Members Huddle")
     st.caption("💡 *You and your fellow fans are the Section Captains. These AI Team Members support your calls with real-time rhythm, sensor telemetry, and rivalry intelligence.*")
@@ -577,39 +642,24 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
 
     huddle_fan = st.selectbox("Active Member for AI Team Member Briefing:", huddle_members, key="huddle_fan_select")
 
-    # Tailored, supportive dialogue based on member role, tier, and sport
-    if huddle_fan == "Marcus Vance":
-        cond_text = "Marcus, section leader, Section 114 is looking to you! When the shooter steps up, give the signal—we are right behind you. Let's make this basket impossible!"
-        scout_text = f"Marcus, our live section CMI is at {current_cmi}/100. The students are locked in. When you call for the peak yell, the telemetry is primed to surge past 105 dB!"
-        strat_text = "Marcus, we hold a slim lead over Section 115. A coordinated wave on this 10-second release will secure our Section Defense Belt. You've got this!"
-    elif huddle_fan == "Elena Rostova":
-        cond_text = "Elena, your prop waving in Row 2 sets the optical tempo for the entire lower bowl. Whenever you start the wave, the section follows your lead!"
-        scout_text = "Elena, our visual waving cadence is perfectly timed with the shooter's knee bend. Your coordination is keeping our distraction score at peak efficiency!"
-        strat_text = "Elena, great work keeping the students focused. Keep the thundersticks moving left-to-right to break the shooter's depth perception!"
-    elif huddle_fan == "Devon Miller":
-        cond_text = "Devon, your vocal leadership is the heartbeat of our chants. Call out the timing, and we'll echo it across all 1,500 students!"
-        scout_text = "Devon, your recent voice outburst registered at a sharp 0.85 Vocal Urgency. Your energy is contagious across Thunder Row!"
-        strat_text = "Devon, Section 115 is trailing by only 2.1 points. Keep the vocal rhythm going—every cheer compounds our lead!"
-    elif huddle_fan == "Jordan Lee":
-        cond_text = "Welcome to Thunder Row, Jordan! No pressure at all—just watch Marcus and Elena and wave your props when the prompt glows. Every single voice counts!"
-        scout_text = "Jordan, you are doing great! Your taps just registered on our section's live energy score. You're already making a real difference for the defense!"
-        strat_text = "Jordan, welcome to the family! Cheering together is what makes this section special. Have fun and let's make some noise together!"
-    elif huddle_fan == "Sarah Jenkins":
-        cond_text = "Sarah, 10-year veteran, Section 115 feeds off your endurance! Lead the bleacher stomps through this timeout—we are right by your side!"
-        scout_text = f"Sarah, the stadium acoustic wall is holding at {st.session_state.db} dB. Your section's dedication is keeping the pressure immense on the visiting kicker!"
-        strat_text = "Sarah, Section 115 is in prime position for Section of the Game. When the ball snaps at 0:03, let's unleash the full 111 dB roar!"
-    elif huddle_fan == "Carlos Mendez":
-        cond_text = "Carlos, your Lot B tailgate brought incredible energy into the stadium today! Keep that tailgate spirit alive in Row 18!"
-        scout_text = "Carlos, Section 115 achieved a 94% early check-in thanks to your pre-game rally! That 1.25x multiplier is paying massive dividends!"
-        strat_text = "Carlos, we have the lead! Let's keep the bleacher rhythm going through the timeout so the defense stays fired up!"
-    elif huddle_fan == "Maya Patel":
-        cond_text = "Maya, your wearable telemetry sync is keeping our section's pulse calibrated. When the snap counts down, let's feel that collective adrenaline!"
-        scout_text = "Maya, biometric tracking shows Section 115 heart rates climbing past 140 BPM! The collective focus is off the charts!"
-        strat_text = "Maya, the data shows our 3rd-down acoustic crescendo breaks the quarterback's cadence 68% of the time. Let's execute!"
-    else:  # Alex Taylor
-        cond_text = "Welcome to Section 115, Alex! You picked a legendary row to sit in. Just stomp the bleachers with Sarah and Carlos—we're glad to have you!"
-        scout_text = "Alex, you just logged your first telemetry taps! Every tap directly boosts Section 115's standing on the video board. Fantastic start!"
-        strat_text = "Alex, welcome to the 12th Man! We cheer together as one section. Let's make some noise and enjoy the game!"
+    # Rec 4: FanCoachAgent coaching line
+    _coach_line = ""
+    if huddle_fan in PERSONA_REGISTRY:
+        _persona = PERSONA_REGISTRY[huddle_fan]
+        from orchestrate_agents import FanCoachAgent
+        _coach_line = FanCoachAgent().coach(huddle_fan, _persona, current_cmi, st.session_state.is_clutch)
+
+    # Live agent-driven huddle lines (replaces hardcoded if/elif chain)
+    _huddle = get_co_captain_huddle(
+        member_name=huddle_fan,
+        persona_data=PERSONA_REGISTRY.get(huddle_fan, {"role": "General Member", "tier": "Tier 1"}),
+        sport=st.session_state.sport,
+        cmi=current_cmi,
+        is_clutch=st.session_state.is_clutch,
+    )
+    cond_text  = _huddle["conductor"]
+    scout_text = _huddle["scout"]
+    strat_text = _huddle["strategist"]
 
     st.markdown(f"""
     <div style="background-color: #1a1a1a; border-left: 5px solid #0f62fe; padding: 12px 16px; border-radius: 6px; margin-bottom: 8px;">
@@ -626,13 +676,21 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
     </div>
     """, unsafe_allow_html=True)
 
+    if _coach_line:
+        st.markdown(f"""
+    <div style="background-color: #1a1a1a; border-left: 5px solid #42be65; padding: 12px 16px; border-radius: 6px; margin-bottom: 8px;">
+        <h5 style="color: #42be65; margin: 0 0 4px 0;">🏅 THE COACH — AI Progression Advisor (Team Member)</h5>
+        <p style="color: #f4f4f4; margin: 0; font-size: 10pt;">"{_coach_line}"</p>
+    </div>
+        """, unsafe_allow_html=True)
+
     # Verifiable Directive Execution Logic
     has_contributed_telemetry = (st.session_state.tap_count >= 5 or len(st.session_state.fan_notes) > 1)
-    
+
     syn_col1, syn_col2 = st.columns([2, 1])
     with syn_col1:
         if not has_contributed_telemetry:
-            st.info("⏳ **DIRECTIVE PENDING:** Log at least 5 Distraction Taps or submit a Fan Outburst below to verify your in-arena action before claiming synergy points.")
+            st.info(f"⏳ **DIRECTIVE PENDING ({coord_state['trigger_event']}):** Log at least 5 Distraction Taps or submit a Fan Outburst below to verify your in-arena action before claiming synergy points.")
         else:
             st.success(f"✅ **ACTION VERIFIED BY WATSONX:** {st.session_state.tap_count} taps logged and voice telemetry recorded. Ready to sync!")
 
@@ -642,40 +700,63 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
             elif st.session_state.synergy_claimed:
                 st.info(f"✅ Directive already completed for this possession! Current Section Synergy: {st.session_state.synergy_score}%.")
             else:
-                st.session_state.synergy_score = min(100, st.session_state.synergy_score + 5)
+                # Apply the coordinator multiplier to synergy gain
+                synergy_gain = round(5 * coord_state["multiplier"])
+                st.session_state.synergy_score = min(100, st.session_state.synergy_score + synergy_gain)
                 st.session_state.synergy_claimed = True
-                st.success(f"🎉 Directive Verified by watsonx! +5 Synergy Awarded. Section Co-Op score elevated to {st.session_state.synergy_score}%!")
-    
+                st.success(f"🎉 Directive Verified by watsonx! +{synergy_gain} Synergy Awarded (x{coord_state['multiplier']} multiplier). Section Co-Op score elevated to {st.session_state.synergy_score}%!")
+
     with syn_col2:
         st.write(f"**Section Synergy Meter:** `{st.session_state.synergy_score}% Synchronized`")
         st.progress(st.session_state.synergy_score / 100.0)
 
-    # In-Arena Section Rivalry
+    # ------------------------------------------------------------------
+    # Rec 2: Live agent-driven leaderboard via SystemOptimizerAgent
+    # ------------------------------------------------------------------
     st.markdown("---")
     st.subheader(f"🏆 Live In-Arena Section Leaderboard ({st.session_state.sport})")
-    
-    if is_basketball:
-        lead_sec = "Section 114 (Thunder Row)"
-        chase_sec = "Section 115 (End Zone Loyals)"
-        chase_pts = "-3.5 pts" if st.session_state.is_clutch else "-2.1 pts"
-        score_1 = current_cmi
-        score_2 = round(current_cmi - 3.5, 1) if st.session_state.is_clutch else 35.7
-        score_3 = 31.4
-    else:
-        lead_sec = "Section 115 (End Zone Loyals)"
-        chase_sec = "Section 114 (Thunder Row)"
-        chase_pts = "-4.5 pts" if st.session_state.is_clutch else "-1.8 pts"
-        score_1 = current_cmi
-        score_2 = round(current_cmi - 4.5, 1) if st.session_state.is_clutch else 37.2
-        score_3 = 33.1
 
-    st.info(f"⚠️ **CHASER ALERT:** {chase_sec} is trailing {lead_sec} by only **{chase_pts}**! Tap below to defend your lead!")
-    st.write(f"• **#1 {lead_sec}:** **{score_1} pts** (Leading Section)")
-    st.progress(min(1.0, score_1 / 100.0))
-    st.write(f"• **#2 {chase_sec}:** **{score_2} pts**")
-    st.progress(min(1.0, max(0.0, score_2 / 100.0)))
-    st.write(f"• **#3 Section 113 (Rider's Crew):** **{score_3} pts**")
-    st.progress(min(1.0, score_3 / 100.0))
+    _optimizer = SystemOptimizerAgent(sport=st.session_state.sport)
+    if is_basketball:
+        lead_sec  = "Section 114 (Thunder Row)"
+        chase_sec = "Section 115 (End Zone Loyals)"
+        third_sec = "Section 113 (Rider's Crew)"
+    else:
+        lead_sec  = "Section 115 (End Zone Loyals)"
+        chase_sec = "Section 114 (Thunder Row)"
+        third_sec = "Section 113 (Rider's Crew)"
+
+    _standings = _optimizer.rank_sections_per_capita([
+        {
+            "name": lead_sec,
+            "cmi": current_cmi,
+            "checked_in_fans": 150,
+            "early_multiplier": 1.25 if st.session_state.early_checkin else 1.0,
+            "clutch_multiplier": coord_state["multiplier"],
+        },
+        {
+            "name": chase_sec,
+            "cmi": round(current_cmi * 0.92, 1),
+            "checked_in_fans": 140,
+            "early_multiplier": 1.0,
+            "clutch_multiplier": 1.0,
+        },
+        {
+            "name": third_sec,
+            "cmi": round(current_cmi * 0.85, 1),
+            "checked_in_fans": 120,
+            "early_multiplier": 1.0,
+            "clutch_multiplier": 1.0,
+        },
+    ])
+
+    st.info(_standings["chaser_alert"])
+    for rank, entry in enumerate(_standings["standings"], start=1):
+        label = f"• **#{rank} {entry['section']}:** **{entry['score']} pts**"
+        if rank == 1:
+            label += " (Leading Section)"
+        st.write(label)
+        st.progress(min(1.0, entry["score"] / 100.0))
 
     # Interactive Tapper & Voice Logger
     st.markdown("---")
@@ -805,10 +886,16 @@ elif screen == "📊 Screen 4: Narrative Delta & Story Card":
     </div>
     """, unsafe_allow_html=True)
 
-    # Live Granite Narrative Generation with synchronized points
+    # Live Granite Narrative Generation — cached by (fixture, cmi) to avoid
+    # redundant Granite API calls on every Streamlit re-render.
     st.subheader(f"🤖 IBM Granite Post-Play Narrative Synthesis ({st.session_state.sport})")
-    with st.spinner(f"Synthesizing {st.session_state.sport} ecosystem narrative with IBM Granite..."):
-        narrative = generate_narrative_live(st.session_state.sport, outcome_label, pre_val, current_cmi, st.session_state.fan_notes)
+    _narrative_key = f"narrative_{active_preset}_{current_cmi}"
+    if _narrative_key not in st.session_state:
+        with st.spinner(f"Synthesizing {st.session_state.sport} ecosystem narrative with IBM Granite..."):
+            st.session_state[_narrative_key] = generate_narrative_live(
+                st.session_state.sport, outcome_label, pre_val, current_cmi, st.session_state.fan_notes
+            )
+    narrative = st.session_state[_narrative_key]
     st.markdown(f"> *{narrative}*")
     st.caption("⚡ Powered by IBM watsonx.ai & Granite Foundation Models (Dallas Region)")
 

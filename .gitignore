@@ -1,7 +1,7 @@
-# Python bytecode & cache
+﻿# Python bytecode & cache
 __pycache__/
 *.py[cod]
-*$py.class
+*.class
 .pytest_cache/
 
 # Environments & credentials
@@ -18,3 +18,8 @@ venv/
 # OS generated files
 .DS_Store
 Thumbs.db
+
+# Kinetic FanLab runtime data -- session state, fan passport cache, COS archives.
+# These accumulate real fan data during demos and must not be committed.
+cloudant_cache.json
+cloud_storage_archive/
