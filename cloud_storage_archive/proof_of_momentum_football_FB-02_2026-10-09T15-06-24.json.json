@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "record_type": "proof_of_momentum_card",
+  "fixture_id": "FB-02",
+  "sport": "Football",
+  "points_display": "+53.0 PTS",
+  "outcome": "MISSED FIELD GOAL (Wide Left)",
+  "granite_narrative": "111.8 dB sustained roar across 148 BPM cardiac stress disrupted kicker cadence.",
+  "crypto_timestamp": "2026-10-09T15:06:24Z#d79d9d8a",
+  "powered_by": "IBM watsonx & Granite Foundation Models"
+}

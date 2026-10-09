@@ -1,24 +1,26 @@
 {
   "Marcus Vance": {
     "member_hash": "0xMV-sec114-8f7a2",
-    "respect_taps": 315,
-    "nft_badges_unlocked": [],
+    "respect_taps": 999,
     "_id": "Marcus Vance"
   },
   "Elena Rostova": {
     "member_hash": "0xER-sec114-3c9b1",
-    "respect_taps": 168,
-    "nft_badges_unlocked": []
+    "respect_taps": 100,
+    "_id": "Elena Rostova"
   },
   "Devon Miller": {
     "member_hash": "0xDM-sec114-6d4e8",
     "respect_taps": 245,
-    "nft_badges_unlocked": []
+    "nft_badges_unlocked": [],
+    "test_flag": "week4_regression",
+    "_id": "Devon Miller"
   },
   "Jordan Lee": {
     "member_hash": "0xJL-sec114-1f4a9",
-    "respect_taps": 28,
-    "nft_badges_unlocked": []
+    "respect_taps": 30,
+    "nft_badges_unlocked": [],
+    "_id": "Jordan Lee"
   },
   "Sarah Jenkins": {
     "member_hash": "0xSJ-sec115-7b2a5",
@@ -39,6 +41,12 @@
   "Alex Taylor": {
     "member_hash": "0xAT-sec115-5c2d3",
     "respect_taps": 45,
+    "nft_badges_unlocked": []
+  },
+  "Unknown Fan 999": {
+    "_id": "Unknown Fan 999",
+    "member_hash": "0xUNKNOWN",
+    "respect_taps": 0,
     "nft_badges_unlocked": []
   }
 }

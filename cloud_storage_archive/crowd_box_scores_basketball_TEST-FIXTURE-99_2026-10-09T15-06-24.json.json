@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0",
+  "record_type": "crowd_box_score",
+  "fixture_id": "TEST-FIXTURE-99",
+  "sport": "Basketball",
+  "calculated_momentum_index": 50.0,
+  "momentum_surge_pts": 10.0,
+  "winning_section": "Section 114",
+  "fan_contribution": {},
+  "crypto_timestamp": "2026-10-09T15:06:24Z#d79d9d8a",
+  "powered_by": "IBM watsonx & Granite Foundation Models"
+}
