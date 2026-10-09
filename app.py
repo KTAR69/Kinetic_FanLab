@@ -101,6 +101,7 @@ active_preset = st.sidebar.selectbox("Load Canonical Fixture:", [
 
 # Reactively update fixture parameters if changed
 if "last_fixture" not in st.session_state or st.session_state.last_fixture != active_preset:
+    prev_sport = st.session_state.get("sport", None)
     st.session_state.last_fixture = active_preset
     if "BB-01" in active_preset:
         st.session_state.sport = "Basketball"
@@ -134,10 +135,18 @@ if "last_fixture" not in st.session_state or st.session_state.last_fixture != ac
         st.session_state.vu = 0.92
         st.session_state.is_clutch = True
         st.session_state.fan_notes = ["BLOCK THAT KICK! RATTLE THE KICKER! GET LOUD!"]
-    
+
     st.session_state.tap_count = 0
     st.session_state.tap_times = []
     st.session_state.synergy_claimed = False
+
+    # When sport changes, reset sport-scoped UI state to avoid stale carryover
+    if prev_sport is not None and prev_sport != st.session_state.sport:
+        st.session_state.early_checkin = False
+        st.session_state.synergy_score = 92
+        # huddle_fan_select key is widget-bound; clear it so the selectbox resets
+        if "huddle_fan_select" in st.session_state:
+            del st.session_state["huddle_fan_select"]
 
 # Global session states
 if "tap_count" not in st.session_state: st.session_state.tap_count = 0
