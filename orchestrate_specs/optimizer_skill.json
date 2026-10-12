@@ -1,0 +1,84 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Kinetic FanLab \u2014 System Optimizer Skill",
+    "description": "Calculates per-capita section standings, issues Chaser Alerts, and synthesizes post-play Reality Delta narratives.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.kineticfanlab.com/v1/optimizer"
+    }
+  ],
+  "paths": {
+    "/calculate_section_standings": {
+      "post": {
+        "summary": "Normalizes raw section scores by checked-in fan volume",
+        "operationId": "calculateSectionStandings",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "section_batches"
+                ],
+                "properties": {
+                  "section_batches": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "name",
+                        "cmi",
+                        "checked_in_fans"
+                      ],
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "cmi": {
+                          "type": "number"
+                        },
+                        "checked_in_fans": {
+                          "type": "integer"
+                        },
+                        "early_multiplier": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ranked standings and dynamic Chaser Alert",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "leader": {
+                      "type": "string"
+                    },
+                    "standings": {
+                      "type": "array"
+                    },
+                    "chaser_alert": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

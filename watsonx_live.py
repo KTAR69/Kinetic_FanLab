@@ -1,170 +1,272 @@
-# ==============================================================================
-# Kinetic FanLab — Scaffolded & Refactored via IBM Bob IDE
-# IBM Cloud Services: watsonx.ai (Granite 4.0) | watsonx.governance Guardrails
-# ==============================================================================
+"""
+==============================================================================
+Kinetic FanLab — IBM watsonx.ai Modern Chat Engine (/ml/v1/text/chat)
+Week 5 Milestone (Track 3: Fan-Centric Sports & Entertainment)
+
+Refactored to eliminate SDK deprecation warnings:
+1. Migrated from legacy /ml/v1/text/generation to modern /ml/v1/text/chat.
+2. Removed deprecated decoding_method parameter (handled via temperature).
+3. Structured System/User message separation with robust JSON/text extraction.
+==============================================================================
+"""
 
 import os
 import re
-from typing import Any
+from typing import Any, Dict, List, Optional
 from dotenv import load_dotenv
 
 load_dotenv()
 
 API_KEY = os.getenv("WO_API_KEY")
-# PROJECT_ID is read from the environment so it never needs to be changed in source.
-# Add WO_PROJECT_ID to your .env file. The literal below is the fallback default.
-PROJECT_ID = os.getenv("WO_PROJECT_ID", "7be4956c-c4e8-4775-8559-f076dda7cfea")
-URL = "https://us-south.ml.cloud.ibm.com"
-MODEL_ID = "ibm/granite-4-h-small"
-
-# ---------------------------------------------------------------------------
-# Lazy singleton — ModelInference is expensive to construct; build it once.
-# ---------------------------------------------------------------------------
-_model_instance = None
+PROJECT_ID = os.getenv(
+    "WATSONX_PROJECT_ID", "7be4956c-c4e8-4775-8559-f076dda7cfea"
+)
+URL = os.getenv("WATSONX_URL", "https://us-south.ml.cloud.ibm.com")
+MODEL_ID = os.getenv("WATSONX_MODEL_ID", "ibm/granite-4-h-small")
 
 
-def to_str(val: Any) -> str:
-    """Helper to ensure return type from ModelInference is always a string for Pyright."""
-    if isinstance(val, str):
-        return val
-    if isinstance(val, list):
-        return " ".join([to_str(item) for item in val])
-    if isinstance(val, dict):
-        return str(val.get("generated_text", val))
-    return str(val)
+def extract_content(response: Any) -> str:
+  """Robustly extracts generated text from both Chat API responses and legacy fallback objects."""
+  if isinstance(response, str):
+    return response
+  if isinstance(response, dict):
+    # 1. Modern /ml/v1/text/chat response shape
+    if "choices" in response and len(response["choices"]) > 0:
+      first_choice = response["choices"][0]
+      if isinstance(first_choice, dict):
+        msg = first_choice.get("message", {})
+        if isinstance(msg, dict) and "content" in msg:
+          return str(msg["content"])
+    # 2. Legacy /ml/v1/text/generation shape fallback
+    if "results" in response and len(response["results"]) > 0:
+      return str(response["results"][0].get("generated_text", ""))
+    if "generated_text" in response:
+      return str(response["generated_text"])
+  return str(response)
 
 
 def get_model():
-    global _model_instance
-    if _model_instance is not None:
-        return _model_instance
-    try:
-        from ibm_watsonx_ai import Credentials
-        from ibm_watsonx_ai.foundation_models import ModelInference
+  """Initializes IBM watsonx.ai ModelInference client with modern parameters."""
+  try:
+    from ibm_watsonx_ai import Credentials
+    from ibm_watsonx_ai.foundation_models import ModelInference
 
-        if not API_KEY or not PROJECT_ID:
-            return None
+    if not API_KEY or not PROJECT_ID:
+      return None
 
-        credentials = Credentials(url=URL, api_key=API_KEY)
-        _model_instance = ModelInference(
-            model_id=MODEL_ID,
-            credentials=credentials,
-            project_id=PROJECT_ID,
-            params={
-                "decoding_method": "greedy",
-                "max_new_tokens": 300,
-                "temperature": 0.1,
-            },
-        )
-        return _model_instance
-    except Exception as e:
-        print(f"[watsonx Live Engine] Fallback active: {e}")
-        return None
+    credentials = Credentials(url=URL, api_key=API_KEY)
+
+    # Modern parameters: Do NOT pass decoding_method (eliminates param_deprecation warning)
+    model = ModelInference(
+        model_id=MODEL_ID,
+        credentials=credentials,
+        project_id=PROJECT_ID,
+        params={
+            "max_new_tokens": 300,
+            "temperature": 0.1,
+            "top_p": 0.9,
+            "repetition_penalty": 1.05,
+        },
+    )
+    return model
+  except Exception as e:
+    print(f"[watsonx Live Engine] Model client initialization fallback: {e}")
+    return None
+
+
+def invoke_watsonx_chat(system_prompt: str, user_prompt: str) -> Optional[str]:
+  """Invokes the modern watsonx.ai /ml/v1/text/chat API with structured role separation.
+
+  Gracefully falls back to generate_text if the installed SDK version lacks
+  chat.
+  """
+  model = get_model()
+  if not model:
+    return None
+
+  messages = [
+      {"role": "system", "content": system_prompt},
+      {"role": "user", "content": user_prompt},
+  ]
+
+  try:
+    # Use modern /ml/v1/text/chat API
+    if hasattr(model, "chat"):
+      raw_res = model.chat(messages=messages)
+      return extract_content(raw_res).strip()
+    elif hasattr(model, "generate_text"):
+      # Fallback for older SDK versions
+      full_prompt = f"{system_prompt}\n\nUser: {user_prompt}\nAssistant:"
+      raw_res = model.generate_text(prompt=full_prompt)
+      return extract_content(raw_res).strip()
+  except Exception as e:
+    print(f"[watsonx Live Engine] API call exception: {e}")
+    return None
+  return None
+
 
 def analyze_vocal_urgency_live(fan_text: str) -> float:
-    model = get_model()
-    if not model or not fan_text.strip():
-        urgent_words = ["miss", "block", "loud", "defense", "freeze", "rattle", "stop", "noise"]
-        hits = sum(1 for w in urgent_words if w in fan_text.lower())
-        return min(1.0, round(0.40 + hits * 0.15, 2))
-    
-    prompt = f"""You are the Kinetic FanLab Vocal Urgency Scorer.
-Evaluate the emotional urgency and distraction intensity of this sports fan outburst:
-Outburst: "{fan_text}"
+  """Evaluates emotional urgency and distraction intensity of fan outburst (0.00–1.00 VU).
 
-Respond with ONLY a single decimal number between 0.00 and 1.00 representing vocal urgency.
-Score:"""
-    try:
-        raw_res = to_str(model.generate_text(prompt=prompt)).strip()
-        match = re.search(r"(\d+(\.\d+)?)", raw_res)
-        if match:
-            val = float(match.group(1))
-            return max(0.0, min(1.0, val))
-        return 0.75
-    except Exception:
-        return 0.75
+  Powered by IBM Granite via modern /ml/v1/text/chat.
+  """
+  if not fan_text.strip():
+    return 0.50
 
-def generate_narrative_live(sport: str, outcome: str, pre_cmi: float, peak_cmi: float, fan_notes: list) -> str:
-    """
-    Uses IBM Granite to synthesize post-play reality delta.
-    Strictly synchronizes narrative points with the official proof of momentum card.
-    """
-    surge = round(max(0.0, peak_cmi - pre_cmi), 1)
-    model = get_model()
-    is_basketball = "basket" in sport.lower()
-    defense_role = "6th Man" if is_basketball else "12th Man"
-    section_name = "Section 114" if is_basketball else "Section 115"
-    notes_str = "; ".join(fan_notes[-2:]) if fan_notes else ("Unified cheering" if is_basketball else "Bleacher stomping")
+  system_prompt = (
+      "You are the Kinetic FanLab Vocal Urgency Scorer.\n"
+      "Evaluate the emotional urgency and distraction intensity of a sports"
+      " fan outburst.\n"
+      "Respond with ONLY a single decimal number between 0.00 and 1.00"
+      " representing vocal urgency."
+  )
+  user_prompt = f'Evaluate this fan outburst:\n"{fan_text}"\n\nScore:'
 
-    if not model:
-        if surge == 0.0:
-            return f"The {sport} atmosphere holds at a focused baseline of {pre_cmi}/100 CMI (+0.0 pts), with {section_name} maintaining position as the play develops."
-        else:
-            return f"The crowd's acoustic pressure surged by +{surge} pts (peaking at {peak_cmi}/100), amplifying tension on the opponent and directly influencing the {outcome} result."
+  res = invoke_watsonx_chat(system_prompt, user_prompt)
+  if res:
+    match = re.search(r"(\d+(\.\d+)?)", res)
+    if match:
+      val = float(match.group(1))
+      return max(0.0, min(1.0, round(val, 2)))
 
-    if surge == 0.0:
-        prompt = f"""You are the Kinetic FanLab Sports AI Engine.
-Generate a concise, 2-sentence pre-play baseline anticipation summary explaining the crowd atmosphere before the play begins.
-Sport: {sport} ({defense_role})
-Situation: {outcome}
-Baseline Pressure: {pre_cmi}/100 (+0.0 pts surge)
-Recent Fan Atmosphere: "{notes_str}"
+  # Deterministic heuristic fallback if offline
+  urgent_words = [
+      "miss",
+      "block",
+      "loud",
+      "defense",
+      "freeze",
+      "rattle",
+      "stop",
+      "noise",
+      "vamos",
+      "ruido",
+  ]
+  hits = sum(1 for w in urgent_words if w in fan_text.lower())
+  return min(1.0, round(0.55 + hits * 0.10, 2))
 
-Output 2 clear sentences describing the tense, focused baseline concentration of {section_name} awaiting the play at +0.0 pts:"""
-    else:
-        prompt = f"""You are the Kinetic FanLab Sports AI Engine.
-Generate a concise, 2-sentence post-play ecosystem summary explaining how crowd pressure surged and influenced the play.
-Sport: {sport} ({defense_role})
-Outcome: {outcome}
-Pre-Play Baseline: {pre_cmi}/100
-Peak In-Game Pressure: {peak_cmi}/100 (+{surge} pt surge)
-Recent Fan Outbursts: "{notes_str}"
 
-Output 2 clear sentences explaining how the +{surge} pt crowd surge affected the athlete's concentration and mechanics:"""
+def generate_narrative_live(
+    sport: str, outcome: str, pre_cmi: float, peak_cmi: float, fan_notes: list
+) -> str:
+  """Uses IBM Granite to synthesize post-play reality delta narrative.
 
-    try:
-        return to_str(model.generate_text(prompt=prompt)).strip()
-    except Exception as e:
-        if surge == 0.0:
-            return f"The {sport} atmosphere holds at a focused baseline of {pre_cmi}/100 CMI (+0.0 pts), with {section_name} maintaining position as the play develops."
-        return f"Crowd momentum surged +{surge} pts directly influencing the {outcome} result."
+  Strictly synchronizes narrative points with the official proof of momentum
+  card.
+  """
+  surge = round(max(0.0, peak_cmi - pre_cmi), 1)
+  is_basketball = "basket" in sport.lower()
+  defense_role = "6th Man" if is_basketball else "12th Man"
+  section_name = (
+      "Section 114 (Thunder Row)"
+      if is_basketball
+      else "Section 115 (End Zone Loyals)"
+  )
+  notes_str = (
+      "; ".join(fan_notes[-2:])
+      if fan_notes
+      else ("Unified crowd chant" if is_basketball else "Bleacher stomps")
+  )
+
+  # Deterministic fallback text
+  if surge == 0.0:
+    fallback = (
+        f"The {sport} atmosphere holds at a focused baseline of {pre_cmi}/100"
+        f" CMI (+0.0 pts), with {section_name} maintaining position as the play"
+        " develops."
+    )
+  else:
+    fallback = (
+        f"The crowd's acoustic pressure surged by +{surge} pts (peaking at"
+        f" {peak_cmi}/100), amplifying tension on the opponent and directly"
+        f" influencing the {outcome} result."
+    )
+
+  system_prompt = (
+      f"You are the Kinetic FanLab Sports AI Engine analyzing the in-game"
+      f" impact of {section_name} ({defense_role}).\n"
+      "Write exactly 2 clear, punchy sentences explaining how the crowd's"
+      " acoustic pressure impacted the play."
+  )
+
+  if surge == 0.0:
+    user_prompt = (
+        f"Sport: {sport}\n"
+        f"Play Status: {outcome}\n"
+        f"Baseline Momentum: {pre_cmi}/100 CMI (+0.0 pts surge)\n"
+        f"Atmosphere: {notes_str}\n\n"
+        "Explain the tense, focused baseline anticipation before the play"
+        " execution:"
+    )
+  else:
+    user_prompt = (
+        f"Sport: {sport}\n"
+        f"Play Outcome: {outcome}\n"
+        f"Pre-Play Baseline: {pre_cmi}/100 CMI\n"
+        f"Peak In-Game Momentum: {peak_cmi}/100 CMI (+{surge} pt surge)\n"
+        f"Fan Outbursts: {notes_str}\n\n"
+        "Explain how the verified crowd surge disrupted the opponent's focus"
+        " and mechanics:"
+    )
+
+  res = invoke_watsonx_chat(system_prompt, user_prompt)
+  return res if res else fallback
+
 
 def summarize_tailgate_chants_live(sport: str, raw_proposals: list) -> list:
-    model = get_model()
-    proposals_text = "\n".join([f"- {p}" for p in raw_proposals])
-    
-    if not model:
-        if "basket" in sport.lower():
-            return [
-                "1. MISS IT! OFF THE RIM! - Synchronized side-to-side waving at 10s release",
-                "2. BRING THE NOISE! - High-frequency piercing chant on shooter knee-bend",
-                "3. DEFENSE ON THREE! - Section 114 unified wave prompt"
-            ]
-        else:
-            return [
-                "1. BLOCK THAT KICK! - Sustained 111 dB roar on 0:03 snap",
-                "2. ICE THE KICKER! - Rhythmic low-end bleacher stomps during timeout delay",
-                "3. THIRD DOWN WALL! - Pre-snap acoustic crescendo breaking QB cadence"
-            ]
-            
-    prompt = f"""You are the Kinetic FanLab Tailgate Coordinator powered by IBM Granite.
-Synthesize the following raw fan chant proposals for this week's {sport} game into the TOP 3 unified defensive stadium chants.
-Each chant must be punchy, rhythmic, and include an exact timing cue.
+  """Synthesizes raw fan chant proposals into the top 3 unified stadium chants."""
+  is_basketball = "basket" in sport.lower()
+  default_chants = (
+      [
+          (
+              "1. MISS IT! OFF THE RIM! - Synchronized side-to-side waving at"
+              " 10s release"
+          ),
+          (
+              "2. BRING THE NOISE! - Piercing acoustic roar on shooter knee"
+              " bend"
+          ),
+          "3. DEFENSE ON THREE! - Section 114 unified wave prompt",
+      ]
+      if is_basketball
+      else [
+          "1. BLOCK THAT KICK! - Sustained 111 dB roar on 0:03 snap",
+          (
+              "2. ICE THE KICKER! - Rhythmic low-end bleacher stomps during"
+              " timeout delay"
+          ),
+          (
+              "3. THIRD DOWN WALL! - Pre-snap acoustic crescendo breaking QB"
+              " cadence"
+          ),
+      ]
+  )
 
-Raw Fan Proposals:
-{proposals_text}
+  if not raw_proposals:
+    return default_chants
 
-Output ONLY the top 3 synthesized chants formatted as:
-1. [Chant Text] - [Timing Cue]
-2. [Chant Text] - [Timing Cue]
-3. [Chant Text] - [Timing Cue]"""
+  proposals_text = "\n".join([f"- {p}" for p in raw_proposals])
+  system_prompt = (
+      "You are the Kinetic FanLab Tailgate Coordinator powered by IBM"
+      " Granite.\n"
+      f"Synthesize raw fan chant proposals for this week's {sport} game into"
+      " the TOP 3 unified defensive stadium chants.\n"
+      "Each chant must be punchy, rhythmic, and include an exact timing cue.\n"
+      "Format ONLY as:\n1. [Chant] - [Timing Cue]\n2. [Chant] - [Timing Cue]\n3."
+      " [Chant] - [Timing Cue]"
+  )
+  user_prompt = f"Raw Fan Proposals:\n{proposals_text}"
 
-    try:
-        raw_res = to_str(model.generate_text(prompt=prompt)).strip()
-        lines = [line.strip() for line in raw_res.split("\n") if line.strip() and line.strip()[0].isdigit()]
-        if len(lines) >= 3:
-            return lines[:3]
-        return lines if lines else ["1. MISS IT! - On release", "2. BRING THE NOISE! - Continuous", "3. DEFENSE! - Bleacher stomp"]
-    except Exception as e:
-        print(f"[watsonx Live Tailgate Engine] Error: {e}")
-        return ["1. MISS IT! OFF THE RIM! - On release", "2. BRING THE NOISE! - Continuous", "3. DEFENSE ON THREE! - Coordinated"]
+  res = invoke_watsonx_chat(system_prompt, user_prompt)
+  if res:
+    lines = [
+        line.strip()
+        for line in res.split("\n")
+        if line.strip() and line.strip()[0].isdigit()
+    ]
+    if len(lines) >= 3:
+      return lines[:3]
+    if lines:
+      return lines
+
+  return default_chants

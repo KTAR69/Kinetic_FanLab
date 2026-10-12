@@ -1,0 +1,104 @@
+{
+  "fan_passports": {
+    "0xMV-sec114-8f7a2": {
+      "_id": "passport:0xMV-sec114-8f7a2",
+      "type": "fan_passport",
+      "member_name": "Marcus Vance",
+      "member_hash": "0xMV-sec114-8f7a2",
+      "section_id": "Section 114",
+      "sport": "Basketball",
+      "role": "Section Director",
+      "tier": 4,
+      "device_anchor": "Apple Watch Ultra 2",
+      "early_multiplier": 1.25,
+      "updated_at": 1791836935.016993
+    },
+    "0xER-sec114-3c9b1": {
+      "_id": "passport:0xER-sec114-3c9b1",
+      "type": "fan_passport",
+      "member_name": "Elena Rostova",
+      "member_hash": "0xER-sec114-3c9b1",
+      "section_id": "Section 114",
+      "sport": "Basketball",
+      "role": "Prop Captain",
+      "tier": 2,
+      "device_anchor": "Apple Watch Series 9",
+      "early_multiplier": 1.0,
+      "updated_at": 1791837914.3902
+    }
+  },
+  "cmi_telemetry": [
+    {
+      "_id": "cmi:basketball:section114:1791836935018",
+      "type": "cmi_telemetry",
+      "section_id": "Section 114",
+      "sport": "Basketball",
+      "cmi": 81.9,
+      "tier": "Maximum",
+      "components": {
+        "acoustic_db": 106.5,
+        "heart_rate_bpm": 136.0,
+        "taps_per_sec": 12.2,
+        "vocal_urgency": 0.85
+      },
+      "fan_count": 50,
+      "timestamp": 1791836935.0186555
+    },
+    {
+      "_id": "cmi:basketball:section114:1791837914392",
+      "type": "cmi_telemetry",
+      "section_id": "Section 114",
+      "sport": "Basketball",
+      "cmi": 81.9,
+      "tier": "Maximum",
+      "components": {
+        "acoustic_db": 106.5,
+        "heart_rate_bpm": 136.0,
+        "taps_per_sec": 12.2,
+        "vocal_urgency": 0.85
+      },
+      "fan_count": 50,
+      "timestamp": 1791837914.392254
+    }
+  ],
+  "storycards": [
+    {
+      "_id": "storycard:section114:1791836935",
+      "type": "reality_delta_card",
+      "headline": "+44.1 PTS MOMENTUM SURGE",
+      "winning_section": "Section 114",
+      "outcome": "Opponent Missed Free Throw 2",
+      "pre_cmi": 37.8,
+      "peak_cmi": 81.9,
+      "surge": 44.1,
+      "defense_belt_awarded": true,
+      "granite_narrative": "Acoustic wall broke shooter concentration at release.",
+      "timestamp": 1791836935.0201
+    },
+    {
+      "_id": "storycard:section114:1791837914",
+      "type": "reality_delta_card",
+      "headline": "+44.1 PTS",
+      "winning_section": "Section 114",
+      "outcome": "Missed Free Throw",
+      "pre_cmi": 37.8,
+      "peak_cmi": 81.9,
+      "surge": 44.1,
+      "defense_belt_awarded": true,
+      "granite_narrative": "Roar broke focus.",
+      "timestamp": 1791837914.3933935
+    }
+  ],
+  "uncommitted_queue": [
+    {
+      "op": "save_passport",
+      "id": "passport:0xMV-sec114-8f7a2",
+      "timestamp": 1791836935.0179963
+    },
+    {
+      "op": "save_passport",
+      "id": "passport:0xER-sec114-3c9b1",
+      "timestamp": 1791837914.392254
+    }
+  ]
+}

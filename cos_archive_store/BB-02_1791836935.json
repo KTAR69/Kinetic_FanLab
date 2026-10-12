@@ -1,0 +1,23 @@
+{
+  "metadata": {
+    "version": "v5.0-watsonx",
+    "fixture_id": "BB-02",
+    "sport": "Basketball",
+    "season": "2026-season",
+    "timestamp": 1791836935.02113
+  },
+  "momentum_box_score": {
+    "final_cmi": 81.9,
+    "clutch_surge": 44.1,
+    "winning_section": "Section 114",
+    "play_outcome": "Opponent Free Throw 2 Miss",
+    "defense_belt_awarded": true
+  },
+  "granite_insights": {
+    "verified_narrative": "Coordinated 106.5 dB roar disrupted shooter release.",
+    "sampled_fan_reactions": [
+      "MISS IT! OFF THE RIM!",
+      "DEFENSE ON THREE!"
+    ]
+  }
+}

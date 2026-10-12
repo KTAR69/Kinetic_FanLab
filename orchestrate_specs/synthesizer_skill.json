@@ -1,0 +1,89 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Kinetic FanLab \u2014 Knowledge Synthesizer Skill",
+    "description": "Ingests multimodal acoustic, biometric, and tap telemetry to compute the contract-exact CMI.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.kineticfanlab.com/v1/synthesizer"
+    }
+  ],
+  "paths": {
+    "/synthesize_momentum": {
+      "post": {
+        "summary": "Computes 0\u2013100 Calculated Momentum Index (CMI) from normalized signals",
+        "operationId": "synthesizeMomentum",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "decibels",
+                  "heart_rate_bpm",
+                  "taps_per_sec",
+                  "vocal_urgency"
+                ],
+                "properties": {
+                  "decibels": {
+                    "type": "number",
+                    "minimum": 60.0,
+                    "maximum": 115.0
+                  },
+                  "heart_rate_bpm": {
+                    "type": "number",
+                    "minimum": 60.0,
+                    "maximum": 160.0
+                  },
+                  "taps_per_sec": {
+                    "type": "number",
+                    "minimum": 0.0,
+                    "maximum": 15.0
+                  },
+                  "vocal_urgency": {
+                    "type": "number",
+                    "minimum": 0.0,
+                    "maximum": 1.0
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Computed CMI score and operational tier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "cmi": {
+                      "type": "number",
+                      "example": 81.9
+                    },
+                    "tier": {
+                      "type": "string",
+                      "enum": [
+                        "Baseline",
+                        "Moderate",
+                        "High",
+                        "Maximum"
+                      ]
+                    },
+                    "normalized_components": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

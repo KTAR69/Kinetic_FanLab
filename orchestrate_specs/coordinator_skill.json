@@ -1,0 +1,79 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Kinetic FanLab \u2014 Invisible Coordinator Skill",
+    "description": "Coordinates stadium crowd pacing, bleacher stomps, and clutch multipliers based on live game clock.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.kineticfanlab.com/v1/coordinator"
+    }
+  ],
+  "paths": {
+    "/evaluate_game_clock": {
+      "post": {
+        "summary": "Evaluates game context and returns crowd pacing directives",
+        "operationId": "evaluateGameClock",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "sport",
+                  "game_context"
+                ],
+                "properties": {
+                  "sport": {
+                    "type": "string",
+                    "enum": [
+                      "Basketball",
+                      "Football"
+                    ]
+                  },
+                  "game_context": {
+                    "type": "string",
+                    "example": "Opponent Free Throw 2 (Clutch)"
+                  },
+                  "time_remaining_sec": {
+                    "type": "number",
+                    "example": 10.0
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Calculated pacing directive and multiplier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "clutch_active": {
+                      "type": "boolean"
+                    },
+                    "multiplier": {
+                      "type": "number",
+                      "example": 2.0
+                    },
+                    "pacing_directive": {
+                      "type": "string"
+                    },
+                    "tactic": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
