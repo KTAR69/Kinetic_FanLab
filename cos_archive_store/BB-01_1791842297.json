@@ -1,0 +1,23 @@
+{
+  "metadata": {
+    "version": "v5.0-watsonx",
+    "fixture_id": "BB-01",
+    "sport": "Basketball",
+    "season": "2026-season",
+    "timestamp": 1791842297.9588673
+  },
+  "momentum_box_score": {
+    "final_cmi": 85.0,
+    "clutch_surge": 47.2,
+    "winning_section": "Section 114 (Thunder Row)",
+    "play_outcome": "PENDING PLAY EXECUTION (Free Throw 1)",
+    "defense_belt_awarded": true
+  },
+  "granite_insights": {
+    "verified_narrative": "The kinetic energy from Section 114's thunderous roar at 0.82 VU created a disruptive acoustic pressure wave that fragmented the opposing team's concentration during the free throw attempt, leading to a noticeable dip in their shooting mechanics and rhythm. This surge in crowd momentum translated into an 85.0/100 CMI peak, effectively capitalizing on the pre-play baseline of 37.8/100 CMI by amplifying the home team's psychological edge and contributing to the pending play execution outcome.",
+    "sampled_fan_reactions": [
+      "Watch the shooter, need this stop",
+      "DEFENSE ON THREE! (0.82 VU)"
+    ]
+  }
+}

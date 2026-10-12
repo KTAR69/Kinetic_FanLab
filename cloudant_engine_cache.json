@@ -5,13 +5,13 @@
       "type": "fan_passport",
       "member_name": "Marcus Vance",
       "member_hash": "0xMV-sec114-8f7a2",
-      "section_id": "Section 114",
+      "section_id": "Section114",
       "sport": "Basketball",
-      "role": "Section Director",
+      "role": "Student Section Director",
       "tier": 4,
-      "device_anchor": "Apple Watch Ultra 2",
-      "early_multiplier": 1.25,
-      "updated_at": 1791836935.016993
+      "device_anchor": "Wearable Sensor Anchor",
+      "early_multiplier": 1.0,
+      "updated_at": 1791842219.6287146
     },
     "0xER-sec114-3c9b1": {
       "_id": "passport:0xER-sec114-3c9b1",
@@ -99,6 +99,11 @@
       "op": "save_passport",
       "id": "passport:0xER-sec114-3c9b1",
       "timestamp": 1791837914.392254
+    },
+    {
+      "op": "save_passport",
+      "id": "passport:0xMV-sec114-8f7a2",
+      "timestamp": 1791842219.6301525
     }
   ]
 }
