@@ -1,0 +1,24 @@
+{
+  "metadata": {
+    "version": "v5.0-watsonx",
+    "fixture_id": "BB-01",
+    "sport": "Basketball",
+    "season": "2026-season",
+    "timestamp": 1791997690.9212801
+  },
+  "momentum_box_score": {
+    "final_cmi": 58.8,
+    "clutch_surge": 21.0,
+    "winning_section": "Section 114 (Thunder Row)",
+    "play_outcome": "PENDING PLAY EXECUTION (Free Throw 1)",
+    "defense_belt_awarded": true
+  },
+  "granite_insights": {
+    "verified_narrative": "The crowd's acoustic pressure surged by +21.0 pts (peaking at 58.8/100), amplifying tension on the opponent and directly influencing the PENDING PLAY EXECUTION (Free Throw 1) result.",
+    "sampled_fan_reactions": [
+      "Watch the shooter, need this stop",
+      "MISS IT! OFF THE RIM! (0.85 VU)",
+      "BRING THE NOISE! (0.90 VU)"
+    ]
+  }
+}

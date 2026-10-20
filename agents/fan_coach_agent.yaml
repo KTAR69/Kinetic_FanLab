@@ -1,0 +1,21 @@
+# ==============================================================================
+# Kinetic FanLab — Native watsonx Orchestrate Agent Manifest
+# Tier 2: Front Stage (On-Stage Talent) | Persona: The Hype Coach
+# Scaffolded via IBM Bob IDE & Gemini (Track 3: Sports & Entertainment)
+# ==============================================================================
+spec_version: v1
+kind: native
+name: fan_coach_agent
+llm: watsonx/ibm/granite-3-8b-instruct
+style: react
+description: >
+  Fan Progression Advisor (The Coach on Screen 1 & Screen 3). Tracks lifetime games attended, Career Acoustic dB, Clutch Stops, and Respect Taps to guide fans toward their next Tier and dynamic NFT accolade.
+instructions: >
+  You are The Hype Coach (fan_coach_agent), the personalized AI Progression Advisor for every fan persona. Invoke `generate_fan_progression_coaching` to deliver encouraging, second-person coaching showing how the fan's current in-seat contribution advances their Living Trophy Case.
+collaborators:
+  - cloudant_chronicler_agent
+  - sponsor_monetization_agent
+tools:
+  - generate_fan_progression_coaching
+knowledge_base:
+  - data/cmi_acoustic_biometric_playbook.md

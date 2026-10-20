@@ -11,7 +11,7 @@
       "tier": 4,
       "device_anchor": "Wearable Sensor Anchor",
       "early_multiplier": 1.0,
-      "updated_at": 1791842219.6287146
+      "updated_at": 1791996978.293407
     },
     "0xER-sec114-3c9b1": {
       "_id": "passport:0xER-sec114-3c9b1",
@@ -24,7 +24,7 @@
       "tier": 2,
       "device_anchor": "Apple Watch Series 9",
       "early_multiplier": 1.0,
-      "updated_at": 1791837914.3902
+      "updated_at": 1791996721.4216926
     }
   },
   "cmi_telemetry": [
@@ -59,6 +59,22 @@
       },
       "fan_count": 50,
       "timestamp": 1791837914.392254
+    },
+    {
+      "_id": "cmi:basketball:section114:1791996721423",
+      "type": "cmi_telemetry",
+      "section_id": "Section 114",
+      "sport": "Basketball",
+      "cmi": 81.9,
+      "tier": "Maximum",
+      "components": {
+        "acoustic_db": 106.5,
+        "heart_rate_bpm": 136.0,
+        "taps_per_sec": 12.2,
+        "vocal_urgency": 0.85
+      },
+      "fan_count": 50,
+      "timestamp": 1791996721.423695
     }
   ],
   "storycards": [
@@ -87,6 +103,19 @@
       "defense_belt_awarded": true,
       "granite_narrative": "Roar broke focus.",
       "timestamp": 1791837914.3933935
+    },
+    {
+      "_id": "storycard:section114:1791996721",
+      "type": "reality_delta_card",
+      "headline": "+44.1 PTS",
+      "winning_section": "Section 114",
+      "outcome": "Missed Free Throw",
+      "pre_cmi": 37.8,
+      "peak_cmi": 81.9,
+      "surge": 44.1,
+      "defense_belt_awarded": true,
+      "granite_narrative": "Roar broke focus.",
+      "timestamp": 1791996721.4246953
     }
   ],
   "uncommitted_queue": [
@@ -104,6 +133,21 @@
       "op": "save_passport",
       "id": "passport:0xMV-sec114-8f7a2",
       "timestamp": 1791842219.6301525
+    },
+    {
+      "op": "save_passport",
+      "id": "passport:0xMV-sec114-8f7a2",
+      "timestamp": 1791992475.5939066
+    },
+    {
+      "op": "save_passport",
+      "id": "passport:0xER-sec114-3c9b1",
+      "timestamp": 1791996721.4226952
+    },
+    {
+      "op": "save_passport",
+      "id": "passport:0xMV-sec114-8f7a2",
+      "timestamp": 1791996978.293407
     }
   ]
 }

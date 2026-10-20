@@ -1,6 +1,6 @@
 # ==============================================================================
 # Kinetic FanLab — Scaffolded & Refactored via IBM Bob IDE
-# Track 3: Fan-Centric Sports & Entertainment (Week 5 Milestone Update)
+# Track 3: Fan-Centric Sports & Entertainment (Week 4 Milestone Update)
 # ==============================================================================
 
 import streamlit as st
@@ -142,6 +142,7 @@ st.sidebar.title("⚡ Kinetic FanLab")
 st.sidebar.caption("Track 3: Fan-Centric Sports & Entertainment")
 
 st.sidebar.markdown("---")
+st.sidebar.markdown("**IBM Cloud Stack Status:**")
 st.sidebar.markdown("**IBM Cloud & Edge Architecture (Week 5):**")
 if WATSONX_LIVE:
     st.sidebar.success("🟢 watsonx.ai Live (Granite 4.0)")
@@ -171,7 +172,6 @@ with st.sidebar.expander("📋 OpenAPI 3.0 Agent Manifests (ADK)", expanded=Fals
         "Knowledge Synthesizer (POST /synthesize_momentum)",
         "System Optimizer (POST /calculate_section_standings)"
     ], key="sb_openapi_select")
-    
     spec_map = {
         "Invisible Coordinator": ("coordinator_skill.json", "orchestrate_specs/coordinator_skill.json"),
         "Knowledge Synthesizer": ("synthesizer_skill.json", "orchestrate_specs/synthesizer_skill.json"),
@@ -179,7 +179,6 @@ with st.sidebar.expander("📋 OpenAPI 3.0 Agent Manifests (ADK)", expanded=Fals
     }
     short_name = spec_choice.split(" (")[0]
     filename, spec_rel_path = spec_map[short_name]
-    
     manifest_data = None
     possible_paths = [
         spec_rel_path,
@@ -195,7 +194,6 @@ with st.sidebar.expander("📋 OpenAPI 3.0 Agent Manifests (ADK)", expanded=Fals
                 break
             except Exception:
                 pass
-    
     if manifest_data:
         st.json(manifest_data)
         import json
@@ -208,7 +206,6 @@ with st.sidebar.expander("📋 OpenAPI 3.0 Agent Manifests (ADK)", expanded=Fals
         )
     else:
         st.caption(f"Manifest `{filename}` registered in `orchestrate_specs/`.")
-
 st.sidebar.markdown("---")
 
 screen = st.sidebar.radio("Navigate Platform:", [
@@ -526,7 +523,6 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                     st.success(f"✅ Fan Passport `{passport_doc_id}` synchronized to Cloudant Engine ({c_res.get('status', 'SUCCESS')})!")
                 else:
                     st.success(f"✅ Fan Passport `{passport_doc_id}` verified in thread-safe NoSQL cache!")
-
         with col_b:
             st.subheader("📊 Lifetime Career Telemetry Statline")
             stat1, stat2, stat3, stat4 = st.columns(4)
@@ -1167,12 +1163,12 @@ elif screen == "📊 Screen 4: Narrative Delta & Story Card":
         st.write(f"* Peak Physiological Stress: **{int(st.session_state.hr)} BPM**")
         st.write(f"* Peak Acoustic Contribution: **{st.session_state.db} dB**")
 
-    # IBM Cloud Object Storage — Partitioned Lakehouse Archiving (Week 5)
+    # IBM Cloud Object Storage — Archive Official Crowd Box Score
     st.markdown("---")
     arc_col1, arc_col2, arc_col3 = st.columns([1, 2, 1])
     with arc_col2:
-        fixture_id = active_preset.split(":")[0].strip()
         if st.button("💾 Archive Official Crowd Box Score to IBM Cloud Object Storage", key="btn_archive_cos", use_container_width=True):
+            fixture_id = active_preset.split(":")[0].strip()
             fan_contribution_payload = {
                 "tap_count": st.session_state.tap_count,
                 "peak_hr_bpm": int(st.session_state.hr),

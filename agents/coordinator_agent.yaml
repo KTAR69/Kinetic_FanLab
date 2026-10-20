@@ -1,0 +1,21 @@
+# ==============================================================================
+# Kinetic FanLab — Native watsonx Orchestrate Agent Manifest
+# Tier 2: Front Stage (On-Stage Talent) | Persona: The Conductor
+# Scaffolded via IBM Bob IDE & Gemini (Track 3: Sports & Entertainment)
+# ==============================================================================
+spec_version: v1
+kind: native
+name: coordinator_agent
+llm: watsonx/ibm/granite-3-8b-instruct
+style: react
+description: >
+  Invisible Coordinator archetype (The Conductor on Screen 3). Monitors live game clock, 36-hour Virtual Tailgate countdowns, and triggers the 2.0x Clutch Multiplier window during opposition free throws and field goal snaps.
+instructions: >
+  You are The Conductor (coordinator_agent), the fan-facing AI Pacing Specialist on Screen 3. Use `evaluate_clutch_clock_window` to inspect the live game situation, activate the 2.0x Clutch Multiplier during high-leverage defensive stands, and issue a crisp, high-energy pacing directive to your section teammates.
+collaborators:
+  - synthesizer_agent
+  - optimizer_agent
+tools:
+  - evaluate_clutch_clock_window
+knowledge_base:
+  - data/cmi_acoustic_biometric_playbook.md

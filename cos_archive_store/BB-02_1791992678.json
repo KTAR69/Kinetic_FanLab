@@ -1,0 +1,22 @@
+{
+  "metadata": {
+    "version": "v5.0-watsonx",
+    "fixture_id": "BB-02",
+    "sport": "Basketball",
+    "season": "2026-season",
+    "timestamp": 1791992678.5847106
+  },
+  "momentum_box_score": {
+    "final_cmi": 81.9,
+    "clutch_surge": 44.1,
+    "winning_section": "Section 114 (Thunder Row)",
+    "play_outcome": "MISSED FREE THROW (Defensive Rebound Secured)",
+    "defense_belt_awarded": true
+  },
+  "granite_insights": {
+    "verified_narrative": "The kinetic energy from Section 114's thunderous chants created a disruptive acoustic pressure wave, peaking at 81.9/100 CMI, which directly contributed to the missed free throw by fracturing the shooter's concentration and altering his shooting mechanics mid-release. This surge in crowd momentum transformed the baseline CMI from 37.8/100 to an explosive 81.9/100, effectively amplifying the home team's psychological edge and physical disruption of the opposing player's rhythm.",
+    "sampled_fan_reactions": [
+      "MISS IT! OFF THE RIM! BRING THE NOISE!"
+    ]
+  }
+}
