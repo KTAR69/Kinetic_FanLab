@@ -30,3 +30,4 @@ knowledge_base: []
 rag_playbooks:
 - data/user_discovery_interview_framework.md
 - data/unit_economics_and_sponsor_roi.md
+wxo_agent_id: 9728392e-784b-428f-b431-0c4f00a98f59

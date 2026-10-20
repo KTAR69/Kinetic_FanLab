@@ -30,6 +30,197 @@ DEFAULT_DB_PATH = os.path.join(DB_DIR, "kinetic_fanlab.sqlite3")
 JSON_MIRROR_PATH = os.path.join(DB_DIR, "kinetic_fanlab_tables.json")
 
 
+# ==============================================================================
+# STEP 4B: 8-PERSONA USER DISCOVERY SESSIONS & PROTOTYPE ITERATIONS (SLIDE 24)
+# ==============================================================================
+
+USER_DISCOVERY_PERSONA_SESSIONS: List[Dict[str, Any]] = [
+    {
+        "member_name": "Marcus Vance",
+        "member_hash": "0xMV-sec114-8f7a2",
+        "sport": "Basketball",
+        "section_id": "Section 114 (Thunder Row)",
+        "tier": 4,
+        "role": "Student Section Director",
+        "budget_allocation_100": {
+            "FEAT-01_edge_spl": 35,
+            "FEAT-02_raw_cloud_audio": 0,
+            "FEAT-03_tapper_ble": 20,
+            "FEAT-04_granite_storycard": 25,
+            "FEAT-05_sponsor_perks": 20,
+        },
+        "usability_finding": "Needs instant <250ms visual cue (T-10s to T-2s) without looking down at phone during free-throw release.",
+        "prototype_iteration_id": "ITER-03",
+        "trust_privacy_approved": True,
+    },
+    {
+        "member_name": "Elena Rostova",
+        "member_hash": "0xER-sec114-3c9b1",
+        "sport": "Basketball",
+        "section_id": "Section 114 (Thunder Row)",
+        "tier": 2,
+        "role": "Hype & Prop Captain",
+        "budget_allocation_100": {
+            "FEAT-01_edge_spl": 30,
+            "FEAT-02_raw_cloud_audio": 0,
+            "FEAT-03_tapper_ble": 25,
+            "FEAT-04_granite_storycard": 20,
+            "FEAT-05_sponsor_perks": 25,
+        },
+        "usability_finding": "Wanted prop-waving cadence synchronized with adjacent rows even when arena Wi-Fi congests.",
+        "prototype_iteration_id": "ITER-03",
+        "trust_privacy_approved": True,
+    },
+    {
+        "member_name": "Devon Miller",
+        "member_hash": "0xDM-sec114-6d4e8",
+        "sport": "Basketball",
+        "section_id": "Section 114 (Thunder Row)",
+        "tier": 3,
+        "role": "Vocal Tactician",
+        "budget_allocation_100": {
+            "FEAT-01_edge_spl": 35,
+            "FEAT-02_raw_cloud_audio": 0,
+            "FEAT-03_tapper_ble": 15,
+            "FEAT-04_granite_storycard": 25,
+            "FEAT-05_sponsor_perks": 25,
+        },
+        "usability_finding": "Uses regional student slang; worried automated safety filters would falsely block clean hype chants.",
+        "prototype_iteration_id": "ITER-04",
+        "trust_privacy_approved": True,
+    },
+    {
+        "member_name": "Jordan Lee",
+        "member_hash": "0xJL-sec114-1f4a9",
+        "sport": "Basketball",
+        "section_id": "Section 114 (Thunder Row)",
+        "tier": 1,
+        "role": "Rookie Section Member",
+        "budget_allocation_100": {
+            "FEAT-01_edge_spl": 30,
+            "FEAT-02_raw_cloud_audio": 0,
+            "FEAT-03_tapper_ble": 20,
+            "FEAT-04_granite_storycard": 20,
+            "FEAT-05_sponsor_perks": 30,
+        },
+        "usability_finding": "Felt intimidated by 30-game veterans dominating raw cumulative leaderboards.",
+        "prototype_iteration_id": "ITER-03",
+        "trust_privacy_approved": True,
+    },
+    {
+        "member_name": "Sarah Jenkins",
+        "member_hash": "0xSJ-sec115-7b2a5",
+        "sport": "Football",
+        "section_id": "Section 115 (End Zone Loyals)",
+        "tier": 5,
+        "role": "10-Year Season Ticket Holder",
+        "budget_allocation_100": {
+            "FEAT-01_edge_spl": 40,
+            "FEAT-02_raw_cloud_audio": 0,
+            "FEAT-03_tapper_ble": 15,
+            "FEAT-04_granite_storycard": 20,
+            "FEAT-05_sponsor_perks": 25,
+        },
+        "usability_finding": "Refuses any app that uploads raw voice audio to the cloud and noted PA music inflates decibel meters.",
+        "prototype_iteration_id": "ITER-01",
+        "trust_privacy_approved": True,
+    },
+    {
+        "member_name": "Carlos Mendez",
+        "member_hash": "0xCM-sec115-4e8f9",
+        "sport": "Football",
+        "section_id": "Section 115 (End Zone Loyals)",
+        "tier": 4,
+        "role": "Lot B Tailgate Host",
+        "budget_allocation_100": {
+            "FEAT-01_edge_spl": 35,
+            "FEAT-02_raw_cloud_audio": 0,
+            "FEAT-03_tapper_ble": 15,
+            "FEAT-04_granite_storycard": 20,
+            "FEAT-05_sponsor_perks": 30,
+        },
+        "usability_finding": "Wanted Lot B tailgate chant ideas synthesized before kickoff and tied to real concession perks.",
+        "prototype_iteration_id": "ITER-01",
+        "trust_privacy_approved": True,
+    },
+    {
+        "member_name": "Maya Patel",
+        "member_hash": "0xMP-sec115-1a5c3",
+        "sport": "Football",
+        "section_id": "Section 115 (End Zone Loyals)",
+        "tier": 2,
+        "role": "Biometric & Tech Superfan",
+        "budget_allocation_100": {
+            "FEAT-01_edge_spl": 35,
+            "FEAT-02_raw_cloud_audio": 0,
+            "FEAT-03_tapper_ble": 20,
+            "FEAT-04_granite_storycard": 20,
+            "FEAT-05_sponsor_perks": 25,
+        },
+        "usability_finding": "Observed smartwatch optical HR sensors drop to 0 BPM or spike >205 BPM when clapping hard on bleachers.",
+        "prototype_iteration_id": "ITER-02",
+        "trust_privacy_approved": True,
+    },
+    {
+        "member_name": "Alex Taylor",
+        "member_hash": "0xAT-sec115-5c2d3",
+        "sport": "Football",
+        "section_id": "Section 115 (End Zone Loyals)",
+        "tier": 1,
+        "role": "General Season Ticket Holder",
+        "budget_allocation_100": {
+            "FEAT-01_edge_spl": 32,
+            "FEAT-02_raw_cloud_audio": 0,
+            "FEAT-03_tapper_ble": 16,
+            "FEAT-04_granite_storycard": 18,
+            "FEAT-05_sponsor_perks": 34,
+        },
+        "usability_finding": "Wanted verifiable cryptographic proof that Section 115 caused the missed 48-yard FG to share on social media.",
+        "prototype_iteration_id": "ITER-04",
+        "trust_privacy_approved": True,
+    },
+]
+
+PROTOTYPE_ITERATIONS_SLIDE24: List[Dict[str, Any]] = [
+    {
+        "iteration_id": "ITER-01",
+        "title": "Edge-Only Acoustic Log SPL & -3.5 dB PA Bleed Filter",
+        "module": "telemetry_dsp.py",
+        "triggered_by": "Sarah Jenkins (Privacy) & Coach Denis Zakharov (FinOps Cloud Cost)",
+        "before_state": "Continuous raw audio streaming ($0.4200/seat) vulnerable to stadium PA speaker bleed.",
+        "after_state": "On-device Logarithmic SPL summation + -3.5 dB PA attenuation transmitting a 4-byte float ($0.0000 cloud DSP cost).",
+        "quantified_impact": "100% raw audio privacy compliance & $0.4063/seat compute savings ($32,504/game saved at 80,000 seats).",
+    },
+    {
+        "iteration_id": "ITER-02",
+        "title": "Biometric Hampel Outlier Filter (50-205 BPM)",
+        "module": "telemetry_dsp.py",
+        "triggered_by": "Maya Patel (Wearable Sensor Motion Artifacts)",
+        "before_state": "Clapping and bleacher stomping injected 0.0 BPM dropouts and 225.0 BPM optical sensor spikes.",
+        "after_state": "Local Hampel filter rejects <50 BPM and >205 BPM artifacts prior to 25%-weighted HR normalization.",
+        "quantified_impact": "Eliminated 100% of synthetic HR distortion across canonical fixtures BB-01..FB-02.",
+    },
+    {
+        "iteration_id": "ITER-03",
+        "title": "Eyes-Free Burst Tapper (+5) & Per-Capita Section Normalization",
+        "module": "app.py & tools/front_stage_tools.py",
+        "triggered_by": "Marcus Vance, Elena Rostova & Jordan Lee (In-Arena Usability)",
+        "before_state": "Single-tap button required looking down at screen; raw cumulative points favored large veteran sections.",
+        "after_state": "Added single-thumb Burst Tap (+5), 50-seat BLE mesh pod sync (98% backhaul reduction), and per-capita Chaser Alerts.",
+        "quantified_impact": "<250ms eyes-free interaction latency and fair rookie/veteran section competition.",
+    },
+    {
+        "iteration_id": "ITER-04",
+        "title": "EEOC 4/5ths Dialect Fairness Gate & SHA-256 Proof Cards",
+        "module": "governance_fairness.py & cos_archive.py",
+        "triggered_by": "Devon Miller (Dialect Fairness) & Alex Taylor (Verifiable Social Proof)",
+        "before_state": "Generic toxicity filter risked false positives on student slang; post-game cards lacked cryptographic verification.",
+        "after_state": "5-cohort dialect fairness calibration (DIR = 0.953 >= 0.80) + IBM COS S3 64-hex SHA-256 box-score receipts.",
+        "quantified_impact": "Zero false-positive dialect rejections (DIR = 0.953) & 100% tamper-evident social story cards.",
+    },
+]
+
+
 class FanLabDatabase:
     """Thread-safe 6-table relational audit and FinOps database for Kinetic FanLab."""
 
@@ -272,19 +463,27 @@ class FanLabDatabase:
                     INSERT INTO discovery_feature_matrix VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, features)
 
-            # Seed initial Unit Economics baseline if empty
+            # Seed multi-fixture & multi-scale Unit Economics baseline if empty
             cur.execute("SELECT COUNT(*) FROM unit_economics_ledger")
             if cur.fetchone()[0] == 0:
-                cur.execute("""
+                seed_entries = [
+                    # 4 Canonical Fixtures at 50-seat BLE Pod scale
+                    ("BB-01", 50, 0.0000, 0, 0.0400, 0.0008, "SPON-BASELINE-IDLE", 0.0000, -0.0008, 0.00, now_iso),
+                    ("BB-02", 50, 0.0000, 1420, 0.6850, 0.0137, "SPON-111DB-CONCESSION", 4.8500, 4.8363, 99.72, now_iso),
+                    ("FB-01", 50, 0.0000, 0, 0.0400, 0.0008, "SPON-BASELINE-IDLE", 0.0000, -0.0008, 0.00, now_iso),
+                    ("FB-02", 50, 0.0000, 1420, 0.6850, 0.0137, "SPON-111DB-CONCESSION", 4.8500, 4.8363, 99.72, now_iso),
+                    # Multi-scale stadium benchmarks (Section, Arena, Stadium)
+                    ("BB-02-SECTION-1500", 1500, 0.0000, 42600, 20.5500, 0.0137, "SPON-111DB-CONCESSION", 4.8500, 4.8363, 99.72, now_iso),
+                    ("BB-02-ARENA-18000", 18000, 0.0000, 511200, 246.6000, 0.0137, "SPON-111DB-CONCESSION", 4.8500, 4.8363, 99.72, now_iso),
+                    ("FB-02-STADIUM-80000", 80000, 0.0000, 2272000, 1096.0000, 0.0137, "SPON-111DB-CONCESSION", 4.8500, 4.8363, 99.72, now_iso),
+                ]
+                cur.executemany("""
                     INSERT INTO unit_economics_ledger (
                         fixture_id, seat_count, edge_dsp_cost_usd, granite_tokens_used,
                         granite_compute_cost_usd, total_cost_per_seat_usd, sponsor_campaign_id,
                         sponsor_revenue_per_seat_usd, net_margin_per_seat_usd, gross_margin_pct, created_at
                     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """, (
-                    "FB-02", 50, 0.0000, 1420, 0.6850, 0.0137,
-                    "SPON-111DB-CONCESSION", 4.8500, 4.8363, 99.72, now_iso
-                ))
+                """, seed_entries)
 
             conn.commit()
 
@@ -304,6 +503,8 @@ class FanLabDatabase:
             for t in tables:
                 cur.execute(f"SELECT * FROM {t}")
                 snapshot[t] = [dict(r) for r in cur.fetchall()]
+        snapshot["user_discovery_persona_sessions"] = USER_DISCOVERY_PERSONA_SESSIONS
+        snapshot["prototype_iterations_slide24"] = PROTOTYPE_ITERATIONS_SLIDE24
         try:
             with open(self.json_mirror_path, "w", encoding="utf-8") as f:
                 json.dump(snapshot, f, indent=2)
@@ -396,6 +597,10 @@ class FanLabDatabase:
             (net_margin_per_seat / sponsor_revenue_per_seat_usd) * 100.0, 2
         ) if sponsor_revenue_per_seat_usd > 0 else 0.0
 
+        raw_cloud_audio_cost_total = round(0.4200 * seat_count, 2)
+        hybrid_cost_total = round(total_cost_per_seat * seat_count, 2)
+        cloud_savings_total = round(raw_cloud_audio_cost_total - hybrid_cost_total, 2)
+
         with self._lock, self._connect() as conn:
             cur = conn.cursor()
             cur.execute("""
@@ -418,10 +623,49 @@ class FanLabDatabase:
             "fixture_id": fixture_id,
             "seat_count": seat_count,
             "total_cost_per_seat_usd": total_cost_per_seat,
+            "raw_cloud_audio_cost_per_seat_usd": 0.4200,
+            "cloud_cost_saved_per_seat_usd": round(0.4200 - total_cost_per_seat, 4),
+            "cloud_cost_saved_total_usd": cloud_savings_total,
             "sponsor_revenue_per_seat_usd": sponsor_revenue_per_seat_usd,
             "net_margin_per_seat_usd": net_margin_per_seat,
             "gross_margin_pct": gross_margin_pct,
             "within_cost_ceiling": total_cost_per_seat <= 0.0150,
+        }
+
+    def evaluate_stadium_scale_economics(
+        self,
+        seat_count: int = 80000,
+        is_clutch_or_tailgate: bool = True,
+        sponsor_revenue_per_seat_usd: float = 4.85,
+    ) -> Dict[str, Any]:
+        """
+        Computes full venue-scale Two-Sided Unit Economics & Cloud Cost Avoidance
+        across 50-seat pods, 1,500-seat sections, 18,000-seat arenas, or 80,000-seat stadiums.
+        """
+        pods = max(1, seat_count // 50)
+        unit_cost = 0.0137 if is_clutch_or_tailgate else 0.0008
+        raw_audio_unit_cost = 0.4200
+        total_hybrid_cost = round(unit_cost * seat_count, 2)
+        total_raw_audio_cost = round(raw_audio_unit_cost * seat_count, 2)
+        total_cloud_savings = round(total_raw_audio_cost - total_hybrid_cost, 2)
+        total_sponsor_rev = round(sponsor_revenue_per_seat_usd * seat_count, 2) if is_clutch_or_tailgate else 0.0
+        total_net_margin = round(total_sponsor_rev - total_hybrid_cost, 2)
+        gross_margin_pct = round((total_net_margin / total_sponsor_rev) * 100.0, 2) if total_sponsor_rev > 0 else 0.0
+
+        return {
+            "seat_count": seat_count,
+            "ble_pods_50_to_1": pods,
+            "unit_cost_per_seat_usd": unit_cost,
+            "raw_cloud_audio_unit_cost_usd": raw_audio_unit_cost,
+            "total_hybrid_compute_cost_usd": total_hybrid_cost,
+            "total_raw_cloud_audio_cost_usd": total_raw_audio_cost,
+            "total_cloud_cost_saved_usd": total_cloud_savings,
+            "cost_reduction_vs_raw_audio_pct": round((1.0 - (unit_cost / raw_audio_unit_cost)) * 100.0, 2),
+            "sponsor_revenue_per_seat_usd": sponsor_revenue_per_seat_usd if is_clutch_or_tailgate else 0.0,
+            "total_sponsor_revenue_usd": total_sponsor_rev,
+            "total_net_margin_usd": total_net_margin,
+            "gross_margin_pct": gross_margin_pct,
+            "within_cost_ceiling": unit_cost <= 0.0150,
         }
 
     def log_section_standing(
@@ -499,6 +743,12 @@ class FanLabDatabase:
             cur = conn.cursor()
             cur.execute("SELECT * FROM discovery_feature_matrix ORDER BY value_to_cost_index DESC")
             return [dict(r) for r in cur.fetchall()]
+
+    def get_user_discovery_persona_sessions(self) -> List[Dict[str, Any]]:
+        return list(USER_DISCOVERY_PERSONA_SESSIONS)
+
+    def get_prototype_iterations(self) -> List[Dict[str, Any]]:
+        return list(PROTOTYPE_ITERATIONS_SLIDE24)
 
 
 _GLOBAL_DB: Optional[FanLabDatabase] = None

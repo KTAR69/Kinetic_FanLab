@@ -177,8 +177,8 @@ def evaluate_seat_unit_economics(
     """
     db = get_db()
     edge_dsp_cost = 0.0000
-    granite_tokens = 1420 if is_clutch_or_tailgate else 0
-    granite_cost_total = round(0.0137 * seat_count, 4) if is_clutch_or_tailgate else 0.0008 * seat_count
+    granite_tokens = 1420 * max(1, seat_count // 50) if is_clutch_or_tailgate else 0
+    granite_cost_total = round(0.0137 * seat_count, 4) if is_clutch_or_tailgate else round(0.0008 * seat_count, 4)
 
     ledger_entry = db.log_unit_economics(
         fixture_id=fixture_id,
@@ -187,11 +187,18 @@ def evaluate_seat_unit_economics(
         granite_tokens_used=granite_tokens,
         granite_compute_cost_usd=granite_cost_total,
         sponsor_campaign_id="SPON-111DB-CONCESSION" if is_clutch_or_tailgate else "SPON-BASELINE-IDLE",
+        sponsor_revenue_per_seat_usd=sponsor_revenue_per_seat_usd if is_clutch_or_tailgate else 0.0,
+    )
+    stadium_scale = db.evaluate_stadium_scale_economics(
+        seat_count=80000,
+        is_clutch_or_tailgate=is_clutch_or_tailgate,
         sponsor_revenue_per_seat_usd=sponsor_revenue_per_seat_usd,
     )
     ledger_entry["agent"] = "unit_economics_agent"
     ledger_entry["persona"] = "The FinOps Producer"
     ledger_entry["granite_gate_status"] = "AUTHORIZED_EVENT_DRIVEN" if is_clutch_or_tailgate else "GATED_ZERO_LLM_COST"
+    ledger_entry["stadium_80k_cloud_savings_usd"] = stadium_scale["total_cloud_cost_saved_usd"]
+    ledger_entry["stadium_80k_net_margin_usd"] = stadium_scale["total_net_margin_usd"]
     return ledger_entry
 
 
@@ -199,11 +206,13 @@ def evaluate_seat_unit_economics(
 def score_discovery_feature_value() -> Dict[str, Any]:
     """
     [Agent #12: discovery_insights_agent — The Audience Director]
-    Queries the User Discovery Feature Matrix to evaluate fan demand against
-    cloud compute cost per seat for every platform capability.
+    Queries the User Discovery Feature Matrix, 8-Persona Usability Sessions,
+    and Slide 24 Prototype Iterations to evaluate fan demand against compute cost.
     """
     db = get_db()
     matrix = db.get_discovery_matrix()
+    persona_sessions = db.get_user_discovery_persona_sessions()
+    iterations = db.get_prototype_iterations()
     keep_features = [f["feature_name"] for f in matrix if f["verdict"].startswith("KEEP")]
     deprecated_features = [f["feature_name"] for f in matrix if "DEPRECATED" in f["verdict"]]
     return {
@@ -212,5 +221,9 @@ def score_discovery_feature_value() -> Dict[str, Any]:
         "features_evaluated": len(matrix),
         "validated_keep_features": keep_features,
         "deprecated_high_cost_features": deprecated_features,
+        "personas_tested_count": len(persona_sessions),
+        "prototype_iterations_completed": len(iterations),
         "matrix": matrix,
+        "persona_sessions": persona_sessions,
+        "prototype_iterations": iterations,
     }

@@ -28,3 +28,4 @@ tools:
 knowledge_base: []
 rag_playbooks:
 - data/governance_dialect_fairness_policy.md
+wxo_agent_id: 00405383-384c-4919-9b51-a641153b89a5

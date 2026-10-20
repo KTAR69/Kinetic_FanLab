@@ -38,6 +38,40 @@ except ImportError:
 
 
 # ==============================================================================
+# LIVE DEPLOYED IBM WATSONX ORCHESTRATE AGENT UUID REGISTRY (`eu-de-0ec71755`)
+# Instance: https://api.eu-de.watson-orchestrate.cloud.ibm.com/instances/0ec71755-fb9f-4e85-8f8a-ba4ce2ea6097
+# ==============================================================================
+
+LIVE_WXO_ENVIRONMENT = {
+    "env_name": "eu-de-0ec71755",
+    "region": "eu-de (Frankfurt)",
+    "workspace": "Global workspace",
+    "instance_id": "0ec71755-fb9f-4e85-8f8a-ba4ce2ea6097",
+    "auth_type": "ibm_iam",
+    "adk_version": "2.6.0",
+}
+
+LIVE_WXO_AGENT_IDS: Dict[str, str] = {
+    "ticket_bouncer_agent": "fac5eccf-95de-4470-acc0-94712404ee28",
+    "supervisor_agent": "e4370510-1643-4450-835b-61c285affd77",
+    "coordinator_agent": "aff3048f-d490-4ab2-8058-e1da04b5a60d",
+    "synthesizer_agent": "c5d257b0-bb2e-454a-b120-3b691d5c526d",
+    "optimizer_agent": "d004e589-4a0d-4efd-8fcf-6f51928cfbc5",
+    "fan_coach_agent": "41d1ce50-bb17-483c-801b-8070ec07b987",
+    "sound_telemetry_agent": "e3a26c43-588d-4cad-9df6-06a4aab684c7",
+    "mesh_rigging_agent": "db6af6d9-e6f9-4ed9-8473-f2567f26c6b3",
+    "trust_safety_agent": "00405383-384c-4919-9b51-a641153b89a5",
+    "cot_inspector_agent": "ee07ebfe-be76-4128-b02e-33da0903f151",
+    "unit_economics_agent": "7df57fe7-3b24-4ac5-a045-6fcce95099b5",
+    "discovery_insights_agent": "9728392e-784b-428f-b431-0c4f00a98f59",
+    "cloudant_chronicler_agent": "3e02cfda-b7e1-4e79-a8ad-7b728a38136c",
+    "lakehouse_archivist_agent": "e20d3278-bb40-4a80-838d-7918970b5544",
+    "sponsor_monetization_agent": "734c3abc-7c61-4843-adcf-2d95295e4c58",
+    "stadium_dispatch_agent": "3d95dbd5-00fd-4164-ac7c-5b74a87d5290",
+}
+
+
+# ==============================================================================
 # OFFICIAL 8 IBM AGENTIC AI ARCHETYPES REGISTRY (2-for-1 Cast Mapping)
 # ==============================================================================
 
@@ -164,6 +198,7 @@ for _arch in EIGHT_IBM_ARCHETYPES:
             "archetype_name": _arch["archetype_name"],
             "persona": _arch["personas"][_idx],
             "appendix_page": _arch["appendix_page"],
+            "wxo_agent_id": LIVE_WXO_AGENT_IDS.get(_ag, ""),
         }
 
 
@@ -595,4 +630,5 @@ def get_co_captain_huddle(
         "strategist": strategist,
         "coach": coach,
         "active_ibm_archetypes": [a["archetype_name"] for a in EIGHT_IBM_ARCHETYPES],
+        "live_wxo_agent_ids": LIVE_WXO_AGENT_IDS,
     }

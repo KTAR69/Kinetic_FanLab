@@ -31,3 +31,4 @@ tools:
 knowledge_base: []
 rag_playbooks:
 - data/cmi_acoustic_biometric_playbook.md
+wxo_agent_id: fac5eccf-95de-4470-acc0-94712404ee28

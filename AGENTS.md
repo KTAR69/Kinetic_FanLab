@@ -6,10 +6,10 @@
 - **Team**: Kinetic FanLab | **Team Lead**: Troy Resendez
 - **Team Composition**: Troy Resendez (Team Lead), IBM Bob IDE (Autonomous Agentic Scaffolding), and Gemini (Enterprise Architecture, FinOps & Multi-Agent Co-Architect)
 - **Primary IDE & Scaffolding**: IBM Bob IDE (Autonomous Agentic Scaffolding with Custom Modes, Subagents, Skills, Rules, MCP & `.bobignore`)
-- **Cloud Infrastructure**: IBM Cloud (`us-south` / Dallas region)
+- **Cloud Infrastructure**: IBM Cloud (`us-south` / Dallas region for `watsonx.ai` & `eu-de-0ec71755` / Frankfurt `Global workspace` for live `watsonx Orchestrate`)
 - **Foundation Models**: IBM watsonx.ai (`ibm/granite-4.0` / `ibm/granite-3-8b-instruct`)
 - **Safety & Trust Layer**: IBM watsonx.governance (Content Auditing, Prompt-Injection Shield & Dialect Fairness `DIR = 0.953`)
-- **Multi-Agent Orchestration**: IBM watsonx Orchestrate ADK (v2.18.0 — 16-Agent Theatre Production Cast mapped 2-for-1 across all 8 Official IBM Agentic AI Archetypes)
+- **Multi-Agent Orchestration**: IBM watsonx Orchestrate ADK (`v2.6.0` CLI — 16-Agent Theatre Production Cast mapped 2-for-1 across all 8 Official IBM Agentic AI Archetypes)
 
 ---
 
@@ -96,32 +96,35 @@ Endpoints registered for IBM watsonx Orchestrate skill discovery (`/calculate_cm
 
 ---
 
-## 7. Week 6 Enterprise Upgrade: 16-Agent Theatre Production Cast (`agents/`, `tools/`, `data/`, `db/`)
+## 7. Week 6 Enterprise Upgrade: 16-Agent Theatre Production Cast (`eu-de-0ec71755` Live Deployment)
 
-Modeled after the native `watsonx Orchestrate` multi-agent architecture (`spec_version: v1`, `kind: native`, `style: react`), while keeping `app.py` strictly as a **4-Screen Fan HUD**:
+All 16 native YAML agents and 16 Python `@tool` functions are live-deployed in IBM Cloud `watsonx Orchestrate` (`eu-de-0ec71755` / `Global workspace`), while keeping `app.py` strictly as a **4-Screen Fan HUD**:
 
-### 7.1 The 16-Agent Production Cast (`agents/*.yaml`)
+### 7.1 The 16-Agent Production Cast & Live IBM Cloud Agent UUIDs
 
-| Theatre Tier | # | Agent Manifest (`agents/`) | Persona | Official IBM Archetype | Tool Module (`tools/`) | Primary Function |
+| Theatre Tier | # | Agent Manifest (`agents/`) | Live `watsonx Orchestrate` UUID (`eu-de-0ec71755`) | Persona | Official IBM Archetype | Tool Module (`tools/`) |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **🚪 1. Front Door** | 1 | `ticket_bouncer_agent.yaml` | **The Box Office Bouncer** | **#3 Context-Aware Expert** | `front_door_tools.py` | Verifies cryptographic `member_hash`, BLE beacon RSSI (`-90` to `-25 dBm`) & `1.25x` Early Arrival Multiplier. |
-| **🚪 1. Front Door** | 2 | `supervisor_agent.yaml` | **The Showrunner** | **#1 Cognitive Load Reducer** | `front_door_tools.py` | Master ReAct Supervisor; enforces intent confidence $\ge 0.55$ and orchestrates all 15 cast collaborators. |
-| **🏟️ 2. Front Stage** | 3 | `coordinator_agent.yaml` | **The Conductor** | **#2 Invisible Coordinator** | `front_stage_tools.py` | Monitors live play clock, 36h Virtual Tailgate countdowns & triggers `2.0x` Clutch Multiplier. |
-| **🏟️ 2. Front Stage** | 4 | `synthesizer_agent.yaml` | **The Scout** | **#6 Knowledge Synthesizer** | `front_stage_tools.py` | Fuses sanitized SPL dB (35%), BPM (25%), Taps (20%) & Granite VU (20%) into the 0–100 CMI score. |
-| **🏟️ 2. Front Stage** | 5 | `optimizer_agent.yaml` | **The Strategist** | **#8 System Optimizer** | `front_stage_tools.py` | Computes per-capita section standings, fires Chaser Alerts & generates Reality Delta StoryCards. |
-| **🏟️ 2. Front Stage** | 6 | `fan_coach_agent.yaml` | **The Hype Coach** | **#3 Context-Aware Expert** | `front_stage_tools.py` | Tracks lifetime games, Career dB & Clutch Stops to guide Tier and dynamic NFT badge unlocks. |
-| **🛠️ 3. Backstage Crew** | 7 | `sound_telemetry_agent.yaml` | **The Sound Engineer** | **#6 Knowledge Synthesizer** | `backstage_crew_tools.py` | Executes local Log SPL math, `-3.5 dB` PA bleed filter & Hampel BPM outlier scrubbing at `$0.00` cloud cost. |
-| **🛠️ 3. Backstage Crew** | 8 | `mesh_rigging_agent.yaml` | **The Master Rigger** | **#2 Invisible Coordinator** | `backstage_crew_tools.py` | Aggregates 50 BLE seat packets into 1 Pod Leader uplink (`98.0%` cellular backhaul reduction). |
-| **🛠️ 3. Backstage Crew** | 9 | `trust_safety_agent.yaml` | **The Safety Steward** | **#4 Decision Gatekeeper** | `backstage_crew_tools.py` | Runs `watsonx.governance` prompt-injection defense, PII scrubbing & EEOC 4/5ths dialect fairness (`DIR = 0.953`). |
-| **🛠️ 3. Backstage Crew** | 10 | `cot_inspector_agent.yaml` | **The Stage Manager** | **#7 Human–AI Boundary Mgr** | `backstage_crew_tools.py` | Verifies multi-agent Chain-of-Thought traces, `< 250ms` latency SLAs & logs to SQL `audit_trail`. |
-| **🛠️ 3. Backstage Crew** | 11 | `unit_economics_agent.yaml` | **The FinOps Producer** | **#4 Decision Gatekeeper** | `backstage_crew_tools.py` | **Cost Side:** Gates paid Granite LLM calls to clutch/tailgate moments (`$0.0137/seat` $\le \$0.015$ ceiling). |
-| **🛠️ 3. Backstage Crew** | 12 | `discovery_insights_agent.yaml` | **The Audience Director** | **#1 Cognitive Load Reducer** | `backstage_crew_tools.py` | Evaluates User Discovery Interview scores vs. compute cost per feature in `discovery_feature_matrix`. |
-| **🔐 4. Back Door** | 13 | `cloudant_chronicler_agent.yaml` | **The House Chronicler** | **#5 Long-Horizon Planner** | `back_door_tools.py` | Persists Fan Passports, Respect Taps & standings to `db/fanlab_db.py` and IBM Cloudant NoSQL. |
-| **🔐 4. Back Door** | 14 | `lakehouse_archivist_agent.yaml` | **The Vault Curator** | **#5 Long-Horizon Planner** | `back_door_tools.py` | Archives Crowd Box Scores with tamper-evident `SHA-256` checksums to IBM COS S3 Lakehouse. |
-| **🔐 4. Back Door** | 15 | `sponsor_monetization_agent.yaml` | **The Commercial Promoter** | **#8 System Optimizer** | `back_door_tools.py` | **Revenue Side:** Unlocks dynamic sponsor concession perks (`$4.85/seat`, `99.72%` gross margin). |
-| **🔐 4. Back Door** | 16 | `stadium_dispatch_agent.yaml` | **The Stage Door Dispatcher** | **#7 Human–AI Boundary Mgr** | `back_door_tools.py` | Broadcasts Section Defense Belt winners to Jumbotron feed & triggers `escalate_to_human` Stadium Ops alerts. |
+| **🚪 1. Front Door** | 1 | `ticket_bouncer_agent.yaml` | `fac5eccf-95de-4470-acc0-94712404ee28` | **The Box Office Bouncer** | **#3 Context-Aware Expert** | `front_door_tools.py` |
+| **🚪 1. Front Door** | 2 | `supervisor_agent.yaml` | `e4370510-1643-4450-835b-61c285affd77` | **The Showrunner** | **#1 Cognitive Load Reducer** | `front_door_tools.py` |
+| **🏟️ 2. Front Stage** | 3 | `coordinator_agent.yaml` | `aff3048f-d490-4ab2-8058-e1da04b5a60d` | **The Conductor** | **#2 Invisible Coordinator** | `front_stage_tools.py` |
+| **🏟️ 2. Front Stage** | 4 | `synthesizer_agent.yaml` | `c5d257b0-bb2e-454a-b120-3b691d5c526d` | **The Scout** | **#6 Knowledge Synthesizer** | `front_stage_tools.py` |
+| **🏟️ 2. Front Stage** | 5 | `optimizer_agent.yaml` | `d004e589-4a0d-4efd-8fcf-6f51928cfbc5` | **The Strategist** | **#8 System Optimizer** | `front_stage_tools.py` |
+| **🏟️ 2. Front Stage** | 6 | `fan_coach_agent.yaml` | `41d1ce50-bb17-483c-801b-8070ec07b987` | **The Hype Coach** | **#3 Context-Aware Expert** | `front_stage_tools.py` |
+| **🛠️ 3. Backstage Crew** | 7 | `sound_telemetry_agent.yaml` | `e3a26c43-588d-4cad-9df6-06a4aab684c7` | **The Sound Engineer** | **#6 Knowledge Synthesizer** | `backstage_crew_tools.py` |
+| **🛠️ 3. Backstage Crew** | 8 | `mesh_rigging_agent.yaml` | `db6af6d9-e6f9-4ed9-8473-f2567f26c6b3` | **The Master Rigger** | **#2 Invisible Coordinator** | `backstage_crew_tools.py` |
+| **🛠️ 3. Backstage Crew** | 9 | `trust_safety_agent.yaml` | `00405383-384c-4919-9b51-a641153b89a5` | **The Safety Steward** | **#4 Decision Gatekeeper** | `backstage_crew_tools.py` |
+| **🛠️ 3. Backstage Crew** | 10 | `cot_inspector_agent.yaml` | `ee07ebfe-be76-4128-b02e-33da0903f151` | **The Stage Manager** | **#7 Human–AI Boundary Mgr** | `backstage_crew_tools.py` |
+| **🛠️ 3. Backstage Crew** | 11 | `unit_economics_agent.yaml` | `7df57fe7-3b24-4ac5-a045-6fcce95099b5` | **The FinOps Producer** | **#4 Decision Gatekeeper** | `backstage_crew_tools.py` |
+| **🛠️ 3. Backstage Crew** | 12 | `discovery_insights_agent.yaml` | `9728392e-784b-428f-b431-0c4f00a98f59` | **The Audience Director** | **#1 Cognitive Load Reducer** | `backstage_crew_tools.py` |
+| **🔐 4. Back Door** | 13 | `cloudant_chronicler_agent.yaml` | `3e02cfda-b7e1-4e79-a8ad-7b728a38136c` | **The House Chronicler** | **#5 Long-Horizon Planner** | `back_door_tools.py` |
+| **🔐 4. Back Door** | 14 | `lakehouse_archivist_agent.yaml` | `e20d3278-bb40-4a80-838d-7918970b5544` | **The Vault Curator** | **#5 Long-Horizon Planner** | `back_door_tools.py` |
+| **🔐 4. Back Door** | 15 | `sponsor_monetization_agent.yaml` | `734c3abc-7c61-4843-adcf-2d95295e4c58` | **The Commercial Promoter** | **#8 System Optimizer** | `back_door_tools.py` |
+| **🔐 4. Back Door** | 16 | `stadium_dispatch_agent.yaml` | `3d95dbd5-00fd-4164-ac7c-5b74a87d5290` | **The Stage Door Dispatcher** | **#7 Human–AI Boundary Mgr** | `back_door_tools.py` |
 
-### 7.2 RAG Knowledge Base (`data/`), Hybrid Database (`db/fanlab_db.py`) & Verification (`94 / 94 PASS`)
+### 7.2 RAG Knowledge Base (`data/`), Hybrid Database (`db/fanlab_db.py`) & Verification (`121 / 121 PASS`)
 - **`data/` (4 RAG Markdown Playbooks):** `cmi_acoustic_biometric_playbook.md`, `unit_economics_and_sponsor_roi.md`, `user_discovery_interview_framework.md`, and `governance_dialect_fairness_policy.md`.
-- **`db/fanlab_db.py` + `db/kinetic_fanlab_tables.json` (6 Relational Tables):** `fan_passports`, `cmi_telemetry_logs`, `section_standings`, `audit_trail`, `unit_economics_ledger`, and `discovery_feature_matrix`.
-- **Verification Suite (`tests/test_16_agent_production.py`):** **43 / 43 PASS (100%)** (**94 / 94** total checks passing when combined with `tests/test_full_suite_week5.py` `51 / 51 PASS`).
+- **`db/fanlab_db.py` + `db/kinetic_fanlab_tables.json` (6 Relational Tables + 8-Persona Discovery & Slide 24 Iteration Logs):** `fan_passports`, `cmi_telemetry_logs`, `section_standings`, `audit_trail`, `unit_economics_ledger`, and `discovery_feature_matrix`.
+- **Automated Verification Suites (`121 / 121 PASS — 100%`):**
+  - `tests/test_full_suite_week5.py`: **51 / 51 PASS (100%)**
+  - `tests/test_16_agent_production.py`: **44 / 44 PASS (100%)**
+  - `tests/test_step4_finops_and_discovery.py`: **26 / 26 PASS (100%)**
