@@ -1,6 +1,6 @@
-"""
+﻿"""
 ==============================================================================
-Kinetic FanLab — IBM watsonx.ai Modern Chat Engine (/ml/v1/text/chat)
+Kinetic FanLab â€” IBM watsonx.ai Modern Chat Engine (/ml/v1/text/chat)
 Week 5 Milestone (Track 3: Fan-Centric Sports & Entertainment)
 
 Refactored to eliminate SDK deprecation warnings:
@@ -62,7 +62,7 @@ def get_model():
         credentials=credentials,
         project_id=PROJECT_ID,
         params={
-            "max_new_tokens": 300,
+            "max_tokens": 300,
             "temperature": 0.1,
             "top_p": 0.9,
             "repetition_penalty": 1.05,
@@ -106,7 +106,7 @@ def invoke_watsonx_chat(system_prompt: str, user_prompt: str) -> Optional[str]:
 
 
 def analyze_vocal_urgency_live(fan_text: str) -> float:
-  """Evaluates emotional urgency and distraction intensity of fan outburst (0.00–1.00 VU).
+  """Evaluates emotional urgency and distraction intensity of fan outburst (0.00â€“1.00 VU).
 
   Powered by IBM Granite via modern /ml/v1/text/chat.
   """
