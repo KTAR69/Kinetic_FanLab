@@ -9,16 +9,28 @@ Agents:
 ==============================================================================
 """
 
+import os
+import sys
 from typing import Any, Dict, List
-from cloudant_engine import save_fan_passport, save_telemetry_snapshot
-from cos_archive import archive_crowd_box_score
-from db.fanlab_db import get_db
+
+_KINETIC_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if _KINETIC_ROOT not in sys.path:
+    sys.path.insert(0, _KINETIC_ROOT)
+
+try:
+    from Kinetic_FanLab.cloudant_engine import save_fan_passport, save_telemetry_snapshot
+    from Kinetic_FanLab.cos_archive import archive_crowd_box_score
+    from Kinetic_FanLab.db.fanlab_db import get_db
+except ImportError:
+    from cloudant_engine import save_fan_passport, save_telemetry_snapshot
+    from cos_archive import archive_crowd_box_score
+    from db.fanlab_db import get_db
 
 try:
     from ibm_watsonx_orchestrate.agent_builder.tools import tool
 except Exception:
-    def tool(*args, **kwargs):
-        def decorator(fn):
+    def tool(*args: Any, **kwargs: Any) -> Any:
+        def decorator(fn: Any) -> Any:
             return fn
         if len(args) == 1 and callable(args[0]):
             return args[0]

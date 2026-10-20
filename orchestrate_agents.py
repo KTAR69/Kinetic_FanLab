@@ -1,31 +1,178 @@
+"""
+==============================================================================
+Kinetic FanLab — watsonx Orchestrate Multi-Agent Swarm (All 8 Official IBM Archetypes)
+Scaffolded via IBM Bob IDE & Gemini (Track 3: Fan-Centric Sports & Entertainment)
+
+Operationalizes all 8 Official IBM Agentic AI Archetypes defined in
+`US Fall 2026 - Industry Challenges AI Experiential Learning Lab with Bob.pdf`
+(Appendix 1, Pages 6-8), mapped 2-for-1 across the 16-Agent Theatre Production Cast:
+
+1. The Cognitive Load Reducer  -> supervisor_agent & discovery_insights_agent
+2. The Invisible Coordinator   -> coordinator_agent & mesh_rigging_agent
+3. The Context-Aware Expert    -> fan_coach_agent & ticket_bouncer_agent
+4. The Decision Gatekeeper     -> unit_economics_agent & trust_safety_agent
+5. The Long-Horizon Planner    -> cloudant_chronicler_agent & lakehouse_archivist_agent
+6. The Knowledge Synthesizer   -> synthesizer_agent & sound_telemetry_agent
+7. The Human-AI Boundary Mgr   -> stadium_dispatch_agent & cot_inspector_agent
+8. The System Optimizer        -> optimizer_agent & sponsor_monetization_agent
+==============================================================================
+"""
+
 import time
 from typing import Dict, Any, List, Optional
 
 try:
     from watsonx_live import analyze_vocal_urgency_live, generate_narrative_live
 except ImportError:
-    def analyze_vocal_urgency_live(fan_text: str) -> float:
+    def analyze_vocal_urgency_live(text: str) -> float:
         return 0.85
 
-    def generate_narrative_live(
-        sport: str, outcome: str, pre_cmi: float, peak_cmi: float, fan_notes: List[Any]
-    ) -> str:
-        return f"Coordinated crowd surge of +{round(peak_cmi - pre_cmi, 1)} pts disrupted opponent execution."
+    def generate_narrative_live(sport: str, outcome: str, pre: float, peak: float, notes: list) -> str:
+        return f"Coordinated crowd surge of +{round(peak - pre, 1)} pts disrupted opponent execution."
 
 try:
     from governance_check import evaluate_fan_content_safety
 except ImportError:
-    def evaluate_fan_content_safety(raw_text: str) -> Dict[str, Any]:
-        return {
-            "input_text": raw_text,
-            "guardrail_status": "APPROVED",
-            "violations": [],
-            "action": "Proceed"
+    def evaluate_fan_content_safety(text: str) -> dict:
+        return {"input_text": text, "guardrail_status": "APPROVED", "violations": [], "action": "Proceed"}
+
+
+# ==============================================================================
+# OFFICIAL 8 IBM AGENTIC AI ARCHETYPES REGISTRY (2-for-1 Cast Mapping)
+# ==============================================================================
+
+EIGHT_IBM_ARCHETYPES: List[Dict[str, Any]] = [
+    {
+        "archetype_id": 1,
+        "archetype_name": "1. The Cognitive Load Reducer",
+        "appendix_page": "Appendix 1, p. 6",
+        "core_purpose": "Filters, prioritizes, and frames fragmented stadium information so fans and operators act without overload.",
+        "ibm_technical_patterns": [
+            "Retrieval-Augmented Generation (RAG) over fragmented knowledge",
+            "Multi-step reasoning (gather -> compare -> recommend)",
+            "Evaluation / ranking logic",
+            "Confidence thresholds (>= 0.55) to know when NOT to answer",
+        ],
+        "assigned_agents": ["supervisor_agent", "discovery_insights_agent"],
+        "personas": ["The Showrunner", "The Audience Director"],
+    },
+    {
+        "archetype_id": 2,
+        "archetype_name": "2. The Invisible Coordinator",
+        "appendix_page": "Appendix 1, p. 6",
+        "core_purpose": "Synchronizes multi-step crowd pacing and 50-seat BLE mesh handoffs behind the scenes.",
+        "ibm_technical_patterns": [
+            "Multi-agent systems (planner, executor, validator)",
+            "Tool calling & API orchestration",
+            "Event-driven architectures (triggers, webhooks, queues)",
+            "State tracking across steps & human-in-the-loop escalation",
+        ],
+        "assigned_agents": ["coordinator_agent", "mesh_rigging_agent"],
+        "personas": ["The Conductor", "The Master Rigger"],
+    },
+    {
+        "archetype_id": 3,
+        "archetype_name": "3. The Context-Aware Expert",
+        "appendix_page": "Appendix 1, pp. 6-7",
+        "core_purpose": "Adapts guidance to who the fan is, their seat beacon proximity, and their 365-day tier progression.",
+        "ibm_technical_patterns": [
+            "RAG + memory (session or user state)",
+            "Context selection / filtering logic",
+            "Personalization without overfitting",
+            "Rule + reasoning hybrids",
+        ],
+        "assigned_agents": ["fan_coach_agent", "ticket_bouncer_agent"],
+        "personas": ["The Hype Coach", "The Box Office Bouncer"],
+    },
+    {
+        "archetype_id": 4,
+        "archetype_name": "4. The Decision Gatekeeper",
+        "appendix_page": "Appendix 1, p. 7",
+        "core_purpose": "Evaluates high-cost/high-risk actions (paid LLM inference & content safety) before execution proceeds.",
+        "ibm_technical_patterns": [
+            "Evaluation against multiple criteria ($0.015/seat ceiling & EEOC DIR >= 0.80)",
+            "Evidence gathering & validation",
+            "Confidence scoring",
+            "Explainability & failure/escalation logic",
+        ],
+        "assigned_agents": ["unit_economics_agent", "trust_safety_agent"],
+        "personas": ["The FinOps Producer", "The Safety Steward"],
+    },
+    {
+        "archetype_id": 5,
+        "archetype_name": "5. The Long-Horizon Planner",
+        "appendix_page": "Appendix 1, p. 7",
+        "core_purpose": "Maintains longitudinal 365-day Fan Passport state and tamper-evident seasonal Lakehouse archives.",
+        "ibm_technical_patterns": [
+            "Planning and re-planning loops across games/seasons",
+            "Memory of prior actions & outcomes (Cloudant + COS S3)",
+            "Trigger-based execution",
+            "Multi-step goal decomposition",
+        ],
+        "assigned_agents": ["cloudant_chronicler_agent", "lakehouse_archivist_agent"],
+        "personas": ["The House Chronicler", "The Vault Curator"],
+    },
+    {
+        "archetype_id": 6,
+        "archetype_name": "6. The Knowledge Synthesizer",
+        "appendix_page": "Appendix 1, p. 7",
+        "core_purpose": "Fuses noisy acoustic dB, wearable BPM, tap velocity, and vocal urgency into the 0-100 CMI.",
+        "ibm_technical_patterns": [
+            "Advanced RAG & multi-document reasoning",
+            "Comparison and abstraction (Log SPL vs. Linear average)",
+            "Summarization across perspectives",
+            "Conflict / outlier detection (Hampel BPM filter & -3.5 dB PA bleed)",
+        ],
+        "assigned_agents": ["synthesizer_agent", "sound_telemetry_agent"],
+        "personas": ["The Scout", "The Sound Engineer"],
+    },
+    {
+        "archetype_id": 7,
+        "archetype_name": "7. The Human-AI Boundary Manager",
+        "appendix_page": "Appendix 1, pp. 7-8",
+        "core_purpose": "Audits Chain-of-Thought confidence/SLAs and knows when to pause automation and escalate to Stadium Ops.",
+        "ibm_technical_patterns": [
+            "Confidence thresholds (>= 0.55 intent gate)",
+            "Ambiguity & anomaly detection (< 250ms latency SLA)",
+            "Escalation logic (escalate_to_human)",
+            "Graceful failure & transparent audit logging",
+        ],
+        "assigned_agents": ["stadium_dispatch_agent", "cot_inspector_agent"],
+        "personas": ["The Stage Door Dispatcher", "The Stage Manager"],
+    },
+    {
+        "archetype_id": 8,
+        "archetype_name": "8. The System Optimizer",
+        "appendix_page": "Appendix 1, p. 8",
+        "core_purpose": "Compounds stadium rivalry loops, per-capita section standings, and two-sided sponsor ROI over time.",
+        "ibm_technical_patterns": [
+            "Pattern detection (Chaser Alerts & per-capita normalization)",
+            "Feedback loops (Reality Delta StoryCards)",
+            "Metrics-driven decisions ($4.85/seat sponsor ROI, 99.72% gross margin)",
+            "Iterative longitudinal refinement",
+        ],
+        "assigned_agents": ["optimizer_agent", "sponsor_monetization_agent"],
+        "personas": ["The Strategist", "The Commercial Promoter"],
+    },
+]
+
+AGENT_TO_IBM_ARCHETYPE: Dict[str, Dict[str, Any]] = {}
+for _arch in EIGHT_IBM_ARCHETYPES:
+    for _idx, _ag in enumerate(_arch["assigned_agents"]):
+        AGENT_TO_IBM_ARCHETYPE[_ag] = {
+            "archetype_id": _arch["archetype_id"],
+            "archetype_name": _arch["archetype_name"],
+            "persona": _arch["personas"][_idx],
+            "appendix_page": _arch["appendix_page"],
         }
+
+
+# --- Normalization Utility (Contract Invariant) ---
 
 def normalize_signal(val: float, min_val: float, max_val: float) -> float:
     clamped = max(min_val, min(val, max_val))
     return (clamped - min_val) / (max_val - min_val)
+
 
 def compute_cmi_index(db: float, hr: float, taps: float, vu: float) -> float:
     n_db = normalize_signal(db, 60.0, 115.0)
@@ -33,6 +180,7 @@ def compute_cmi_index(db: float, hr: float, taps: float, vu: float) -> float:
     n_taps = normalize_signal(taps, 0.0, 15.0)
     n_vu = normalize_signal(vu, 0.0, 1.0)
     return round((n_db * 0.35 + n_hr * 0.25 + n_taps * 0.20 + n_vu * 0.20) * 100, 1)
+
 
 def evaluate_tier(cmi: float) -> str:
     if cmi >= 80.0:
@@ -44,270 +192,50 @@ def evaluate_tier(cmi: float) -> str:
     else:
         return "Baseline"
 
-# ---------------------------------------------------------------------------
-# Section AI Co-Captains — role-aware, warm, motivating dialogue agents
-# ---------------------------------------------------------------------------
 
-_BASKETBALL_LEADERS = {"Student Section Director"}
-_BASKETBALL_SPECIALISTS = {"Hype & Prop Captain", "Vocal Tactician"}
-_BASKETBALL_ROOKIES = {"Rookie Section Member"}
+# ==============================================================================
+# ARCHETYPE 1: THE COGNITIVE LOAD REDUCER
+# (`supervisor_agent` & `discovery_insights_agent`)
+# ==============================================================================
 
-_FOOTBALL_LEADERS = {"10-Year Season Ticket Holder"}
-_FOOTBALL_SPECIALISTS = {"Lot B Tailgate Host", "Biometric & Tech Superfan"}
-_FOOTBALL_ROOKIES = {"General Season Ticket Holder"}
-
-
-def _build_conductor_line(
-    member_name: str,
-    role: str,
-    sport: str,
-    tier: str,
-    is_clutch: bool,
-) -> str:
-    """The Conductor — sets the tempo, reads the room, deploys the synchronized wave."""
-    is_basketball = "basket" in sport.lower()
-
-    if role in _BASKETBALL_LEADERS or role in _FOOTBALL_LEADERS:
-        if is_basketball:
-            signal = "DEAFENING SCREAM" if is_clutch else "steady hoop chant"
-            return (
-                f"🎵 The Conductor — {member_name}, you ARE the 6th Man heartbeat right now. "
-                f"Section 114 eyes are on you. Call the {signal} on that 10-second free-throw clock. "
-                f"Let's make this hoop feel impossible for them."
-            )
-        else:
-            signal = "111 dB WALL" if is_clutch else "bleacher stomp rhythm"
-            return (
-                f"🎵 The Conductor — {member_name}, ten years in Section 115 says you know exactly when "
-                f"to lift the crowd. Hold the {signal} through the timeout. "
-                f"That kicker is already feeling the 12th Man pressure."
-            )
-
-    if role in _BASKETBALL_SPECIALISTS:
-        if role == "Hype & Prop Captain":
-            wave = "thunderstick wave" if not is_clutch else "LEFT-RIGHT synchronized wave on knee bend"
-            return (
-                f"🎵 The Conductor — Elena, your {wave} is the visual anchor for the whole section. "
-                f"When that shooter grips the ball, you lead — Section 114 follows. "
-                f"We trust your timing completely. The hoop is ours to defend."
-            )
-        else:
-            chant = "MISS IT! OFF THE RIM!" if is_clutch else "keep the defensive chant alive"
-            return (
-                f"🎵 The Conductor — Devon, your vocal cadence sets the tempo for everyone around you. "
-                f"Hit {chant} right when the elbow bends. "
-                f"Your voice log is already elite — let's add another clutch stop to Section 114's record."
-            )
-
-    if role in _FOOTBALL_SPECIALISTS:
-        if role == "Lot B Tailgate Host":
-            energy = "3rd down redzone roar" if is_clutch else "sustained bleacher stomp"
-            return (
-                f"🎵 The Conductor — Carlos, that tailgate energy you brought from Lot B? "
-                f"Carry it straight to row 18. Lead the {energy} and Section 115 will lock in. "
-                f"The kicker is about to hear the whole End Zone Loyals crew."
-            )
-        else:
-            beat = "sync your heart rate spike" if is_clutch else "keep your biometric pacing steady"
-            return (
-                f"🎵 The Conductor — Maya, your wearable data is the section's pulse monitor. "
-                f"{beat.capitalize()} with the crowd wave. "
-                f"When Section 115 sees your tap rate go up, they know it's time to get loud at the 0:03 snap."
-            )
-
-    # Rookies / General members — welcoming, zero pressure
-    if is_basketball:
-        return (
-            f"🎵 The Conductor — Welcome, {member_name}! Section 114 is really glad you're here. "
-            f"You don't need to do anything special — just cheer along with us at the hoop when the free throw goes up. "
-            f"Every voice in Thunder Row counts, and yours matters just as much as everyone else's. Enjoy the game! 🏀"
-        )
-    else:
-        return (
-            f"🎵 The Conductor — Hey {member_name}, so glad you joined Section 115! "
-            f"There's no pressure at all — just feel the bleacher energy and stomp along when the crowd rises. "
-            f"Every single fan in the End Zone Loyals makes the 12th Man wall stronger. Welcome home! 🏈"
-        )
-
-
-def _build_scout_line(
-    member_name: str,
-    role: str,
-    sport: str,
-    tier: str,
-    cmi: float,
-) -> str:
-    """The Scout — reads live telemetry, surfaces situational insight, encourages action."""
-    is_basketball = "basket" in sport.lower()
-
-    if role in _BASKETBALL_LEADERS or role in _FOOTBALL_LEADERS:
-        if is_basketball:
-            return (
-                f"🔭 The Scout — {member_name}, live CMI is at {cmi}/100. "
-                f"Acoustic trend shows the section is coiling for a big push. "
-                f"Historical data says a 6th Man surge above 80 pts correlates with a 68% miss rate on clutch free throws. "
-                f"You know what to call — we're ready to back you up."
-            )
-        else:
-            return (
-                f"🔭 The Scout — {member_name}, CMI sitting at {cmi}/100 going into this snap. "
-                f"The last three timeout-iced kickers facing 111+ dB missed two of them. "
-                f"Section 115's bleacher stomp frequency is already pushing the low-frequency wall. "
-                f"Your leadership sets the ceiling — take us there."
-            )
-
-    if role in _BASKETBALL_SPECIALISTS:
-        if role == "Hype & Prop Captain":
-            return (
-                f"🔭 The Scout — Elena, current acoustic CMI is {cmi}/100. "
-                f"Visual disruption props are most effective when timed within the 10-second free-throw clock window. "
-                f"Section 114 hoop defense is locked in — your thundersticks are the X-factor right now."
-            )
-        else:
-            return (
-                f"🔭 The Scout — Devon, vocal urgency readings on the section are tracking strong. "
-                f"CMI at {cmi}/100. Your chant leadership in the last clutch possession pushed the section's "
-                f"vocal score +0.12 VU. Keep the high-frequency energy alive around the hoop."
-            )
-
-    if role in _FOOTBALL_SPECIALISTS:
-        if role == "Lot B Tailgate Host":
-            return (
-                f"🔭 The Scout — Carlos, fan energy data shows Section 115 early check-in is at 87%. "
-                f"The tailgate rally you led is directly reflected in that number — CMI is at {cmi}/100. "
-                f"3rd down redzone stands are where that community cohesion pays off. Great work getting everyone here."
-            )
-        else:
-            return (
-                f"🔭 The Scout — Maya, your wearable data sync is giving us the cleanest biometric signal in the section. "
-                f"Current heart rate variance suggests the crowd is primed for a cardiac stress spike at the 0:03 snap. "
-                f"CMI at {cmi}/100. You're our most accurate data anchor in Section 115. Keep it coming!"
-            )
-
-    if is_basketball:
-        return (
-            f"🔭 The Scout — {member_name}, Section 114 CMI is at {cmi}/100 — every fan in Thunder Row is contributing to that. "
-            f"Your presence here today literally adds to the crowd pressure on the free-throw line. "
-            f"No experience needed — just stay loud and have fun at the hoop! 🏀"
-        )
-    else:
-        return (
-            f"🔭 The Scout — {member_name}, Section 115 CMI is reading {cmi}/100 and every person in the bleachers helps. "
-            f"Your cheering adds real acoustic pressure on that kicker at the 0:03 snap. "
-            f"Just be yourself and enjoy — you're already part of the 12th Man wall! 🏈"
-        )
-
-
-def _build_strategist_line(
-    member_name: str,
-    role: str,
-    sport: str,
-    tier: str,
-    is_clutch: bool,
-    cmi: float,
-) -> str:
-    """The Strategist — game-plan advisor, tactic deployer, section synergy builder."""
-    is_basketball = "basket" in sport.lower()
-
-    if role in _BASKETBALL_LEADERS or role in _FOOTBALL_LEADERS:
-        if is_basketball:
-            tactic = "synchronized thunderstick wave + piercing scream on knee bend" if is_clutch else "rhythmic possession chant to wear down the shooter"
-            return (
-                f"🧠 The Strategist — {member_name}, the play call for this possession is {tactic}. "
-                f"Signal the section at T-5 seconds on the free-throw clock. "
-                f"A 6th Man wall above 100 dB at the hoop release is our defensive target. You've done it before. Let's go!"
-            )
-        else:
-            tactic = "sustained 111 dB acoustic wall at the 0:03 snap" if is_clutch else "bleacher stomp endurance pacing through the full timeout delay"
-            return (
-                f"🧠 The Strategist — {member_name}, game plan is {tactic}. "
-                f"Section 115's 12th Man protocol says the kicker has already heard 62 games worth of End Zone Loyals pressure. "
-                f"Hold the wall through the snap — this is what we've been building toward."
-            )
-
-    if role in _BASKETBALL_SPECIALISTS:
-        if role == "Hype & Prop Captain":
-            tactic = "left-right wave on the shooter's second dribble, hold through the release" if is_clutch else "steady prop visibility to maintain baseline hoop disruption"
-            return (
-                f"🧠 The Strategist — Elena, execute the {tactic}. "
-                f"Your prop timing is the visual trigger that sets the whole section in motion. "
-                f"The 6th Man needs that synchronized moment to hit maximum disruption on the free throw. You've got this."
-            )
-        else:
-            chant = "MISS IT! OFF THE RIM! right as the elbow snaps up" if is_clutch else "start a low-level DEFENSE chant to build tension"
-            return (
-                f"🧠 The Strategist — Devon, call the {chant}. "
-                f"Your chant leadership is the sonic blueprint for Section 114 around the hoop. "
-                f"Own the 6th Man moment — we're all following your lead."
-            )
-
-    if role in _FOOTBALL_SPECIALISTS:
-        if role == "Lot B Tailgate Host":
-            tactic = "pump up the bleacher stomp in rows 17-20 for the redzone snap" if is_clutch else "coordinate a rolling timeout stomp wave to keep the kicker cold"
-            return (
-                f"🧠 The Strategist — Carlos, your assignment is to {tactic}. "
-                f"The community you built at Lot B is Section 115's social backbone. "
-                f"Channel that into one loud, unified 12th Man roar when that 0:03 snap hits."
-            )
-        else:
-            tactic = "flag peak cardiac stress window for the snap — that's when wearable-synced taps hit maximum" if is_clutch else "log baseline biometrics through the timeout to track the crowd's stress buildup"
-            return (
-                f"🧠 The Strategist — Maya, {tactic}. "
-                f"Your tech lens on Section 115 turns raw fan energy into real defensive intelligence. "
-                f"The 12th Man wall is stronger because you're tracking it. Keep that data flowing!"
-            )
-
-    if is_basketball:
-        return (
-            f"🧠 The Strategist — {member_name}, here's the only thing we need from you: "
-            f"when the crowd rises at the free-throw line, rise with them. Clap, shout, wave — whatever feels natural. "
-            f"Section 114 Thunder Row is a family, and every 6th Man voice builds the wall around the hoop. "
-            f"You're going to have a blast — we promise! 🏀"
-        )
-    else:
-        return (
-            f"🧠 The Strategist — {member_name}, your only playbook tonight: "
-            f"when Section 115 stomps, stomp. When they roar at the snap, roar with them. "
-            f"The 12th Man isn't about experience — it's about heart. "
-            f"You've got that already or you wouldn't be here in the End Zone Loyals bleachers! 🏈"
-        )
-
-
-def get_co_captain_huddle(
-    member_name: str,
-    persona_data: Dict[str, Any],
-    sport: str,
-    cmi: float,
-    is_clutch: bool,
-) -> Dict[str, str]:
+class CognitiveLoadReducerAgent:
     """
-    Returns a dict of three Co-Captain speech lines tailored to the active member.
-
-    Args:
-        member_name: Display name of the fan (e.g. "Marcus Vance").
-        persona_data: The persona dict from PERSONA_REGISTRY.
-        sport: "Basketball" or "Football".
-        cmi: Current Calculated Momentum Index float (0–100).
-        is_clutch: Whether a clutch moment is active.
-
-    Returns:
-        {"conductor": str, "scout": str, "strategist": str}
+    Archetype 1 (The Cognitive Load Reducer):
+    Filters fragmented stadium events and user discovery telemetry into clear,
+    confidence-gated priorities so neither fans nor operators face overload.
     """
-    role: str = persona_data.get("role", "General Member")
-    tier: str = persona_data.get("tier", "Tier 1")
+    ibm_archetype = "1. The Cognitive Load Reducer"
 
-    return {
-        "conductor": _build_conductor_line(member_name, role, sport, tier, is_clutch),
-        "scout": _build_scout_line(member_name, role, sport, tier, cmi),
-        "strategist": _build_strategist_line(member_name, role, sport, tier, is_clutch, cmi),
-    }
+    def __init__(self, confidence_threshold: float = 0.55):
+        self.confidence_threshold = confidence_threshold
+
+    def prioritize_and_route(self, sport: str, event_type: str, is_clutch: bool, confidence: float = 0.96) -> Dict[str, Any]:
+        proceed = confidence >= self.confidence_threshold
+        return {
+            "agent": "CognitiveLoadReducer",
+            "ibm_archetype": self.ibm_archetype,
+            "sport": sport,
+            "event_type": event_type,
+            "confidence": confidence,
+            "proceed": proceed,
+            "escalate_to_human": not proceed,
+            "recommended_focus": "CLUTCH_DEFENSIVE_DISRUPTION" if is_clutch else "BASELINE_CADENCE",
+        }
 
 
-# ---------------------------------------------------------------------------
-# Existing agent classes (unchanged)
-# ---------------------------------------------------------------------------
+# ==============================================================================
+# ARCHETYPE 2: THE INVISIBLE COORDINATOR
+# (`coordinator_agent` & `mesh_rigging_agent`)
+# ==============================================================================
 
 class InvisibleCoordinatorAgent:
+    """
+    Archetype 2 (The Invisible Coordinator):
+    Continuously monitors game clock, possession leverage, and 50-seat BLE mesh
+    synchronization so crowd vocal stamina peaks at opponent execution.
+    """
+    ibm_archetype = "2. The Invisible Coordinator"
+
     def __init__(self, sport: str = "Basketball"):
         self.sport = sport.capitalize()
         self.clutch_active = False
@@ -351,16 +279,124 @@ class InvisibleCoordinatorAgent:
 
         return {
             "agent": "InvisibleCoordinator",
+            "ibm_archetype": self.ibm_archetype,
             "sport": self.sport,
             "clutch_active": self.clutch_active,
             "multiplier": clutch_multiplier,
             "tactic": tactic,
             "pacing_directive": pacing_directive,
             "trigger_event": trigger_event,
-            "timestamp": time.time()
+            "timestamp": time.time(),
         }
 
+
+# ==============================================================================
+# ARCHETYPE 3: THE CONTEXT-AWARE EXPERT
+# (`fan_coach_agent` / `FanCoachAgent` & `ticket_bouncer_agent`)
+# ==============================================================================
+
+class FanCoachAgent:
+    """
+    Archetype 3 (The Context-Aware Expert):
+    Adapts guidance to who the fan is, their seat role, their BLE proximity,
+    and their longitudinal 365-day Living Trophy Case progression.
+    """
+    ibm_archetype = "3. The Context-Aware Expert"
+
+    def coach(self, member_name: str, persona_data: Dict[str, Any], current_cmi: float, is_clutch: bool) -> str:
+        role = persona_data.get("role", "Section Member")
+        tier = persona_data.get("tier", "Tier 1")
+        games = persona_data.get("career_games", persona_data.get("games", 10))
+        stops = persona_data.get("clutch_stops", 5)
+        mode_str = "2.0x Clutch Stop" if is_clutch else "Baseline Rhythm"
+        return (
+            f"{member_name} ({role} — {tier}): At {current_cmi}/100 CMI ({mode_str}), "
+            f"your {games} career games and {stops} verified stops put you right on track for your next Living Trophy Case badge!"
+        )
+
+
+ContextAwareExpertAgent = FanCoachAgent
+
+
+# ==============================================================================
+# ARCHETYPE 4: THE DECISION GATEKEEPER
+# (`unit_economics_agent` & `trust_safety_agent`)
+# ==============================================================================
+
+class DecisionGatekeeperAgent:
+    """
+    Archetype 4 (The Decision Gatekeeper):
+    Governs high-cost/high-risk execution gates: enforces the <= $0.015/seat
+    cloud compute ceiling and the EEOC 4/5ths dialect fairness gate (DIR = 0.953).
+    """
+    ibm_archetype = "4. The Decision Gatekeeper"
+
+    def evaluate_gate(
+        self,
+        unit_cost_usd: float = 0.0137,
+        cost_ceiling_usd: float = 0.0150,
+        dir_score: float = 0.953,
+        guardrail_status: str = "APPROVED",
+    ) -> Dict[str, Any]:
+        cost_ok = unit_cost_usd <= cost_ceiling_usd
+        fairness_ok = dir_score >= 0.80
+        safety_ok = guardrail_status == "APPROVED"
+        approved = cost_ok and fairness_ok and safety_ok
+        return {
+            "agent": "DecisionGatekeeper",
+            "ibm_archetype": self.ibm_archetype,
+            "gate_approved": approved,
+            "cost_within_ceiling": cost_ok,
+            "eeoc_fairness_compliant": fairness_ok,
+            "safety_approved": safety_ok,
+            "unit_cost_usd": unit_cost_usd,
+            "dir_score": dir_score,
+        }
+
+
+# ==============================================================================
+# ARCHETYPE 5: THE LONG-HORIZON PLANNER
+# (`cloudant_chronicler_agent` & `lakehouse_archivist_agent`)
+# ==============================================================================
+
+class LongHorizonPlannerAgent:
+    """
+    Archetype 5 (The Long-Horizon Planner):
+    Plans and tracks fan identity progression across a 365-day season using
+    IBM Cloudant NoSQL passports and tamper-evident COS S3 Lakehouse archives.
+    """
+    ibm_archetype = "5. The Long-Horizon Planner"
+
+    def plan_season_milestone(self, member_name: str, games_attended: int, target_games: int = 50) -> Dict[str, Any]:
+        remaining = max(0, target_games - games_attended)
+        progress_pct = round(min(1.0, games_attended / max(1, target_games)) * 100, 1)
+        return {
+            "agent": "LongHorizonPlanner",
+            "ibm_archetype": self.ibm_archetype,
+            "member_name": member_name,
+            "games_attended": games_attended,
+            "target_games": target_games,
+            "games_remaining": remaining,
+            "season_progress_pct": progress_pct,
+        }
+
+
+# ==============================================================================
+# ARCHETYPE 6: THE KNOWLEDGE SYNTHESIZER
+# (`synthesizer_agent` & `sound_telemetry_agent`)
+# ==============================================================================
+
 class KnowledgeSynthesizerAgent:
+    """
+    Archetype 6 (The Knowledge Synthesizer):
+    Ingests noisy multimodal sensor streams (Log SPL acoustics, Hampel-filtered
+    smartwatch BPM, tap rate, and Granite vocal urgency) and synthesizes CMI.
+    """
+    ibm_archetype = "6. The Knowledge Synthesizer"
+
+    def __init__(self, sport: str = "Basketball"):
+        self.sport = sport.capitalize()
+
     def evaluate_voice_outburst(self, raw_transcript: str) -> Dict[str, Any]:
         gov_result = evaluate_fan_content_safety(raw_transcript)
         if gov_result.get("guardrail_status") == "REJECTED":
@@ -368,15 +404,14 @@ class KnowledgeSynthesizerAgent:
                 "transcript": raw_transcript,
                 "governance_status": "REJECTED",
                 "violations": gov_result.get("violations", ["Content safety violation"]),
-                "urgency_score": 0.0
+                "urgency_score": 0.0,
             }
-
         urgency = analyze_vocal_urgency_live(raw_transcript)
         return {
             "transcript": raw_transcript,
             "governance_status": "APPROVED",
             "violations": [],
-            "urgency_score": urgency
+            "urgency_score": urgency,
         }
 
     def synthesize_telemetry(self, db: float, hr: float, taps: float, vu: float) -> Dict[str, Any]:
@@ -384,19 +419,66 @@ class KnowledgeSynthesizerAgent:
         tier = evaluate_tier(cmi)
         return {
             "agent": "KnowledgeSynthesizer",
+            "ibm_archetype": self.ibm_archetype,
             "cmi": cmi,
             "tier": tier,
             "normalized_components": {
                 "acoustic_pct": round(normalize_signal(db, 60.0, 115.0) * 35, 1),
                 "biometric_pct": round(normalize_signal(hr, 60.0, 160.0) * 25, 1),
                 "taps_pct": round(normalize_signal(taps, 0.0, 15.0) * 20, 1),
-                "urgency_pct": round(normalize_signal(vu, 0.0, 1.0) * 20, 1)
+                "urgency_pct": round(normalize_signal(vu, 0.0, 1.0) * 20, 1),
             },
             "raw_values": {"db": db, "hr": hr, "taps": taps, "vu": vu},
-            "timestamp": time.time()
+            "timestamp": time.time(),
         }
 
+
+# ==============================================================================
+# ARCHETYPE 7: THE HUMAN-AI BOUNDARY MANAGER
+# (`stadium_dispatch_agent` & `cot_inspector_agent`)
+# ==============================================================================
+
+class HumanAiBoundaryManagerAgent:
+    """
+    Archetype 7 (The Human-AI Boundary Manager):
+    Designed around when NOT to act autonomously—enforcing confidence thresholds,
+    < 250ms latency SLAs, and escalating safety or biometric anomalies to human
+    Stadium Operations.
+    """
+    ibm_archetype = "7. The Human-AI Boundary Manager"
+
+    def evaluate_boundary(
+        self,
+        confidence_score: float = 0.96,
+        latency_ms: float = 18.4,
+        guardrail_status: str = "APPROVED",
+    ) -> Dict[str, Any]:
+        escalate = (confidence_score < 0.55) or (latency_ms > 250.0) or (guardrail_status == "REJECTED")
+        return {
+            "agent": "HumanAiBoundaryManager",
+            "ibm_archetype": self.ibm_archetype,
+            "autonomous_action_permitted": not escalate,
+            "escalate_to_human": escalate,
+            "confidence_score": confidence_score,
+            "latency_ms": latency_ms,
+            "guardrail_status": guardrail_status,
+        }
+
+
+# ==============================================================================
+# ARCHETYPE 8: THE SYSTEM OPTIMIZER
+# (`optimizer_agent` & `sponsor_monetization_agent`)
+# ==============================================================================
+
 class SystemOptimizerAgent:
+    """
+    Archetype 8 (The System Optimizer):
+    Drives longitudinal ecosystem compounding. Calculates per-capita section
+    standings, emits Chaser Alerts, unlocks sponsor perks ($4.85/seat), and
+    prompts IBM Granite for Reality Delta StoryCards.
+    """
+    ibm_archetype = "8. The System Optimizer"
+
     def __init__(self, sport: str = "Basketball"):
         self.sport = sport.capitalize()
 
@@ -415,7 +497,7 @@ class SystemOptimizerAgent:
                 "score": final_score,
                 "fans": fans,
                 "early_mult": early_mult,
-                "clutch_mult": clutch_mult
+                "clutch_mult": clutch_mult,
             })
 
         standings.sort(key=lambda x: x["score"], reverse=True)
@@ -428,18 +510,18 @@ class SystemOptimizerAgent:
 
         return {
             "agent": "SystemOptimizer",
+            "ibm_archetype": self.ibm_archetype,
             "standings": standings,
             "leader": winner["section"] if winner else "None",
-            "chaser_alert": chaser_alert
+            "chaser_alert": chaser_alert,
         }
 
     def generate_reality_delta(self, outcome_label: str, pre_cmi: float, peak_cmi: float, fan_notes: List[str]) -> Dict[str, Any]:
         surge = round(peak_cmi - pre_cmi, 1)
         narrative = generate_narrative_live(self.sport, outcome_label, pre_cmi, peak_cmi, fan_notes)
-
         winning_sec = "Section 114 (Thunder Row)" if "basket" in self.sport.lower() else "Section 115 (End Zone Loyals)"
 
-        storycard = {
+        return {
             "headline": f"+{surge} PTS MOMENTUM SURGE",
             "subtitle": f"CLUTCH DEFENSIVE STOP VERIFIED ({self.sport})",
             "winning_section": winning_sec,
@@ -449,104 +531,68 @@ class SystemOptimizerAgent:
             "surge_delta": surge,
             "outcome": outcome_label,
             "granite_narrative": narrative,
-            "timestamp": time.time()
+            "ibm_archetype": self.ibm_archetype,
+            "timestamp": time.time(),
         }
 
-        return storycard
 
+# ==============================================================================
+# HUDDLE HELPER FOR SCREEN 3 (`get_co_captain_huddle`)
+# ==============================================================================
 
-# ---------------------------------------------------------------------------
-# FanCoachAgent — tier-aware progression advisor (4th Co-Captain)
-# ---------------------------------------------------------------------------
-
-class FanCoachAgent:
+def get_co_captain_huddle(
+    member_name: str,
+    persona_data: Dict[str, Any],
+    sport: str,
+    cmi: float,
+    is_clutch: bool,
+) -> Dict[str, Any]:
     """
-    Generates a personalized, one-line coaching message for a fan based on
-    their current passport data (tier progress, career stats) and the live
-    game moment (CMI, clutch state).
-
-    This is the fourth Co-Captain alongside The Conductor, The Scout, and
-    The Strategist. It creates the progression feedback loop that converts
-    a static accolade display into an in-game call to action.
+    Returns real-time Screen 3 Huddle briefings from the Front-Stage AI Team
+    Members, grounded in the 8 Official IBM Agentic AI Archetypes.
     """
+    role = persona_data.get("role", "Section Captain")
+    is_bball = "basket" in sport.lower()
 
-    # Games required to reach each tier boundary
-    _TIER_THRESHOLDS: dict = {
-        "Rookie Member (Tier 1)":            10,
-        "Tier 1":                            10,
-        "Prop Captain (Tier 2)":             20,
-        "Tech Superfan (Tier 2)":            25,
-        "Vocal Tactician (Tier 3)":          35,
-        "Section Director (Tier 4)":         50,
-        "Tailgate Host (Tier 4)":            50,
-        "Stadium Veteran (Tier 5)":          75,
-        "General Season Ticket Holder":      10,
-        "General Member (Tier 1)":           10,
+    if is_bball:
+        if is_clutch:
+            conductor = (
+                f"{member_name} ({role}), 2.0x Clutch Window is LIVE! Keep Section 114 silent on the first bounce, "
+                f"then wave props left-to-right and unleash 106.5 dB on the shooter's knee bend!"
+            )
+        else:
+            conductor = (
+                f"{member_name} ({role}), we are in baseline possession flow. Pace Section 114's vocal stamina "
+                f"so our decibel wall is fresh for the next 4th-quarter free throw!"
+            )
+    else:
+        if is_clutch:
+            conductor = (
+                f"{member_name} ({role}), 2.0x Clutch Snap Window is LIVE! Transition Section 115 from bleacher stomps "
+                f"into a sustained 111.8 dB roar right as the center puts his hand on the football!"
+            )
+        else:
+            conductor = (
+                f"{member_name} ({role}), timeout delay ('Icing the Kicker') in progress. Keep Section 115 stomping "
+                f"the bleachers at 95 Hz to rest vocal cords until the 0:03 snap!"
+            )
+
+    scout = (
+        f"Live CMI is {cmi}/100 ({evaluate_tier(cmi)} Tier). Edge DSP scrubbed PA speaker bleed (-3.5 dB) "
+        f"and biometric Hampel outliers at $0.00 cloud cost; watsonx.governance dialect fairness holds at DIR = 0.953."
+    )
+    lead_sec = "Section 114 (Thunder Row)" if is_bball else "Section 115 (End Zone Loyals)"
+    rival_sec = "Section 115" if is_bball else "Section 114"
+    strategist = (
+        f"{lead_sec} holds #1 per-capita standing! {rival_sec} is chasing within single digits—log a Burst Tap "
+        f"or approved voice chant to lock in the Section Defense Belt and $4.85/seat sponsor perk!"
+    )
+    coach = FanCoachAgent().coach(member_name, persona_data, cmi, is_clutch)
+
+    return {
+        "conductor": conductor,
+        "scout": scout,
+        "strategist": strategist,
+        "coach": coach,
+        "active_ibm_archetypes": [a["archetype_name"] for a in EIGHT_IBM_ARCHETYPES],
     }
-
-    def coach(
-        self,
-        member_name: str,
-        persona_data: Dict[str, Any],
-        cmi: float,
-        is_clutch: bool,
-    ) -> str:
-        """
-        Returns a single coaching line tailored to this fan's tier progress
-        and the current game moment.
-
-        Args:
-            member_name:  Fan display name.
-            persona_data: Dict from PERSONA_REGISTRY with tier, career stats.
-            cmi:          Current CMI float (0–100).
-            is_clutch:    Whether a clutch moment is active.
-
-        Returns:
-            A non-empty coaching string.
-        """
-        tier: str  = persona_data.get("tier", "Tier 1")
-        games: int = int(persona_data.get("career_games", 0))
-        stops: int = int(persona_data.get("clutch_stops", 0))
-        taps:  int = int(persona_data.get("respect_taps", 0))
-        role:  str = persona_data.get("role", "Fan")
-        is_basketball = "basket" in str(persona_data.get("sport", "Basketball")).lower()
-
-        # Find how many games until the next tier
-        threshold = self._TIER_THRESHOLDS.get(tier, 10)
-        remaining = max(0, threshold - games)
-
-        # Build the clutch-moment performance nudge
-        if is_clutch and cmi >= 80.0:
-            performance = (
-                f"CMI is peaking at {cmi}/100 right now — this clutch stop counts double toward your Proof-of-Momentum record."
-            )
-        elif is_clutch:
-            performance = (
-                f"CMI is at {cmi}/100 — push the section energy higher and this clutch moment will register on your career ledger."
-            )
-        else:
-            performance = (
-                f"Live CMI is {cmi}/100. Every tap and chant you contribute tonight compounds your Acoustic Wall career total."
-            )
-
-        # Tier-progress message
-        if remaining == 0:
-            progress_msg = f"You have reached the top of your current tier ({tier}). Lead by example tonight — your actions inspire the whole section."
-        elif remaining <= 3:
-            progress_msg = f"Only {remaining} more game(s) to unlock your next tier upgrade. Tonight could be the one."
-        else:
-            progress_msg = f"{remaining} game(s) remaining to unlock your next tier. Keep showing up — {games} games of verified impact already on record."
-
-        # Role-specific achievement nudge
-        if stops >= 20:
-            achievement = f"With {stops} verified clutch stops, you are already operating at Hall of Fame pace."
-        elif stops >= 10:
-            achievement = f"{stops} verified clutch stops and counting — you are the defensive backbone of this section."
-        else:
-            achievement = f"Every clutch stop adds to your {stops} career total and boosts the section's Season Defense Rating."
-
-        sport_emoji = "🏀" if is_basketball else "🏈"
-        return (
-            f"{sport_emoji} Coach to {member_name} ({role}): {performance} "
-            f"{progress_msg} {achievement}"
-        )

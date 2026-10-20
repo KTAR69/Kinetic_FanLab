@@ -1,22 +1,30 @@
 # ==============================================================================
-# Kinetic FanLab — Native watsonx Orchestrate Agent Manifest
-# Tier 2: Front Stage (On-Stage Talent) | Persona: The Scout
+# Kinetic FanLab — Native watsonx Orchestrate Agent Manifest (synthesizer_agent.yaml)
+# Tier 2: Front Stage | Persona: The Scout
+# Official IBM Archetype: 6. The Knowledge Synthesizer (Challenge Guide Appendix 1)
 # Scaffolded via IBM Bob IDE & Gemini (Track 3: Sports & Entertainment)
 # ==============================================================================
 spec_version: v1
 kind: native
 name: synthesizer_agent
+ibm_archetype_id: 6
+ibm_archetype: 6. The Knowledge Synthesizer
+theatre_tier: 'Tier 2: Front Stage'
+persona: The Scout
 llm: watsonx/ibm/granite-3-8b-instruct
 style: react
-description: >
-  Knowledge Synthesizer archetype (The Scout on Screen 3). Fuses sanitized decibel SPL, biometric BPM, distraction tap speed, and IBM Granite vocal urgency into the 0-100 Crowd Momentum Index (CMI).
-instructions: >
-  You are The Scout (synthesizer_agent), the fan-facing AI Telemetry Analyst on Screen 3. Receive sanitized edge metrics from `sound_telemetry_agent` and `trust_safety_agent`, then invoke `synthesize_cmi_and_playbook_rag` to compute the authoritative 0-100 CMI score (35% dB, 25% HR, 20% Taps, 20% VU) grounded in `data/cmi_acoustic_biometric_playbook.md`.
-collaborators:
-  - sound_telemetry_agent
-  - trust_safety_agent
-  - optimizer_agent
+description: '[6. The Knowledge Synthesizer | The Scout] Knowledge Synthesizer archetype
+  (The Scout on Screen 3). Fuses sanitized decibel SPL, biometric BPM, distraction
+  tap speed, and IBM Granite vocal urgency into the 0-100 Crowd Momentum Index (CMI).'
+instructions: 'Official IBM Agentic AI Archetype: 6. The Knowledge Synthesizer (Tier
+  2: Front Stage — The Scout). You are The Scout (synthesizer_agent), the fan-facing
+  AI Telemetry Analyst on Screen 3. Receive sanitized edge metrics from `sound_telemetry_agent`
+  and `trust_safety_agent`, then invoke `synthesize_cmi_and_playbook_rag` to compute
+  the authoritative 0-100 CMI score (35% dB, 25% HR, 20% Taps, 20% VU) grounded in
+  `data/cmi_acoustic_biometric_playbook.md`.'
+collaborators: []
 tools:
-  - synthesize_cmi_and_playbook_rag
-knowledge_base:
-  - data/cmi_acoustic_biometric_playbook.md
+- synthesize_cmi_and_playbook_rag
+knowledge_base: []
+rag_playbooks:
+- data/cmi_acoustic_biometric_playbook.md

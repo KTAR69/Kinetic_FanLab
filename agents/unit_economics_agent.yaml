@@ -1,21 +1,31 @@
 # ==============================================================================
-# Kinetic FanLab — Native watsonx Orchestrate Agent Manifest
-# Tier 3: Backstage Crew (FinOps Controller) | Persona: The FinOps Producer
+# Kinetic FanLab — Native watsonx Orchestrate Agent Manifest (unit_economics_agent.yaml)
+# Tier 3: Backstage Crew | Persona: The FinOps Producer
+# Official IBM Archetype: 4. The Decision Gatekeeper (Challenge Guide Appendix 1)
 # Scaffolded via IBM Bob IDE & Gemini (Track 3: Sports & Entertainment)
 # ==============================================================================
 spec_version: v1
 kind: native
 name: unit_economics_agent
+ibm_archetype_id: 4
+ibm_archetype: 4. The Decision Gatekeeper
+theatre_tier: 'Tier 3: Backstage Crew'
+persona: The FinOps Producer
 llm: watsonx/ibm/granite-3-8b-instruct
 style: react
-description: >
-  Backstage Cloud Cost & Margin Governor. Gates paid IBM Granite LLM inference strictly to high-value clutch/tailgate moments, enforces the < $0.015/seat compute ceiling, and logs cost-vs-revenue to `unit_economics_ledger`.
-instructions: >
-  You are The FinOps Producer (unit_economics_agent) on the Backstage Crew. Call `evaluate_seat_unit_economics` to verify that continuous acoustic/biometric math runs at $0.00 local edge cost, gate paid IBM Granite calls strictly to clutch or 36h tailgate events, keep total cloud compute cost <= $0.015 per fan per game, and log the net margin to `db/fanlab_db.py`.
-collaborators:
-  - sponsor_monetization_agent
-  - discovery_insights_agent
+description: '[4. The Decision Gatekeeper | The FinOps Producer] Backstage Cloud Cost
+  & Margin Governor. Gates paid IBM Granite LLM inference strictly to high-value clutch/tailgate
+  moments, enforces the < $0.015/seat compute ceiling, and logs cost-vs-revenue to
+  `unit_economics_ledger`.'
+instructions: 'Official IBM Agentic AI Archetype: 4. The Decision Gatekeeper (Tier
+  3: Backstage Crew — The FinOps Producer). You are The FinOps Producer (unit_economics_agent)
+  on the Backstage Crew. Call `evaluate_seat_unit_economics` to verify that continuous
+  acoustic/biometric math runs at $0.00 local edge cost, gate paid IBM Granite calls
+  strictly to clutch or 36h tailgate events, keep total cloud compute cost <= $0.015
+  per fan per game, and log the net margin to `db/fanlab_db.py`.'
+collaborators: []
 tools:
-  - evaluate_seat_unit_economics
-knowledge_base:
-  - data/unit_economics_and_sponsor_roi.md
+- evaluate_seat_unit_economics
+knowledge_base: []
+rag_playbooks:
+- data/unit_economics_and_sponsor_roi.md

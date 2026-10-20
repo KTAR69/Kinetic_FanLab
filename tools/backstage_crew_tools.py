@@ -11,18 +11,32 @@ Agents:
 ==============================================================================
 """
 
+import os
+import sys
 from typing import Any, Dict, List
-from telemetry_dsp import sanitize_pod_telemetry
-from edge_mesh_resilience import BleMeshPodCluster
-from governance_check import evaluate_fan_content_safety
-from governance_fairness import audit_demographic_dialect_fairness
-from db.fanlab_db import get_db
+
+_KINETIC_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if _KINETIC_ROOT not in sys.path:
+    sys.path.insert(0, _KINETIC_ROOT)
+
+try:
+    from Kinetic_FanLab.telemetry_dsp import sanitize_pod_telemetry
+    from Kinetic_FanLab.edge_mesh_resilience import BleMeshPodCluster
+    from Kinetic_FanLab.governance_check import evaluate_fan_content_safety
+    from Kinetic_FanLab.governance_fairness import audit_demographic_dialect_fairness
+    from Kinetic_FanLab.db.fanlab_db import get_db
+except ImportError:
+    from telemetry_dsp import sanitize_pod_telemetry
+    from edge_mesh_resilience import BleMeshPodCluster
+    from governance_check import evaluate_fan_content_safety
+    from governance_fairness import audit_demographic_dialect_fairness
+    from db.fanlab_db import get_db
 
 try:
     from ibm_watsonx_orchestrate.agent_builder.tools import tool
 except Exception:
-    def tool(*args, **kwargs):
-        def decorator(fn):
+    def tool(*args: Any, **kwargs: Any) -> Any:
+        def decorator(fn: Any) -> Any:
             return fn
         if len(args) == 1 and callable(args[0]):
             return args[0]

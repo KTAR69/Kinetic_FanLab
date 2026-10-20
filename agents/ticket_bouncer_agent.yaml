@@ -1,20 +1,33 @@
 # ==============================================================================
-# Kinetic FanLab — Native watsonx Orchestrate Agent Manifest
-# Tier 1: Front Door (Box Office) | Persona: The Box Office Bouncer
+# Kinetic FanLab — Native watsonx Orchestrate Agent Manifest (ticket_bouncer_agent.yaml)
+# Tier 1: Front Door | Persona: The Box Office Bouncer
+# Official IBM Archetype: 3. The Context-Aware Expert (Challenge Guide Appendix 1)
 # Scaffolded via IBM Bob IDE & Gemini (Track 3: Sports & Entertainment)
 # ==============================================================================
 spec_version: v1
 kind: native
 name: ticket_bouncer_agent
+ibm_archetype_id: 3
+ibm_archetype: 3. The Context-Aware Expert
+theatre_tier: 'Tier 1: Front Door'
+persona: The Box Office Bouncer
 llm: watsonx/ibm/granite-3-8b-instruct
 style: react
-description: >
-  Front-door credential gatekeeper that verifies cryptographic fan passport hashes, checks 50-seat BLE beacon proximity to block GPS/bot spoofing, and validates the 30-minute early arrival 1.25x multiplier.
-instructions: >
-  You are The Box Office Bouncer (ticket_bouncer_agent) at the Front Door of Kinetic FanLab. Before any fan telemetry or Respect Tap enters the stadium production pipeline, invoke `verify_seat_presence_and_hash` to confirm the fan's cryptographic `member_hash`, verify their Bluetooth Low Energy (BLE) seat beacon RSSI (-90 to -25 dBm), and determine whether the 1.25x Early Arrival Multiplier applies. If spoofing is detected, mark `SPOOF_BLOCKED` and hand off to `supervisor_agent` for immediate containment.
-collaborators:
-  - supervisor_agent
+description: '[3. The Context-Aware Expert | The Box Office Bouncer] Front-door credential
+  gatekeeper that verifies cryptographic fan passport hashes, checks 50-seat BLE beacon
+  proximity to block GPS/bot spoofing, and validates the 30-minute early arrival 1.25x
+  multiplier.'
+instructions: 'Official IBM Agentic AI Archetype: 3. The Context-Aware Expert (Tier
+  1: Front Door — The Box Office Bouncer). You are The Box Office Bouncer (ticket_bouncer_agent)
+  at the Front Door of Kinetic FanLab. Before any fan telemetry or Respect Tap enters
+  the stadium production pipeline, invoke `verify_seat_presence_and_hash` to confirm
+  the fan''s cryptographic `member_hash`, verify their Bluetooth Low Energy (BLE)
+  seat beacon RSSI (-90 to -25 dBm), and determine whether the 1.25x Early Arrival
+  Multiplier applies. If spoofing is detected, mark `SPOOF_BLOCKED` and hand off to
+  `supervisor_agent` for immediate containment.'
+collaborators: []
 tools:
-  - verify_seat_presence_and_hash
-knowledge_base:
-  - data/cmi_acoustic_biometric_playbook.md
+- verify_seat_presence_and_hash
+knowledge_base: []
+rag_playbooks:
+- data/cmi_acoustic_biometric_playbook.md

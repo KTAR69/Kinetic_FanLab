@@ -1,21 +1,30 @@
 # ==============================================================================
-# Kinetic FanLab — Native watsonx Orchestrate Agent Manifest
-# Tier 3: Backstage Crew (Network Specialist) | Persona: The Master Rigger
+# Kinetic FanLab — Native watsonx Orchestrate Agent Manifest (mesh_rigging_agent.yaml)
+# Tier 3: Backstage Crew | Persona: The Master Rigger
+# Official IBM Archetype: 2. The Invisible Coordinator (Challenge Guide Appendix 1)
 # Scaffolded via IBM Bob IDE & Gemini (Track 3: Sports & Entertainment)
 # ==============================================================================
 spec_version: v1
 kind: native
 name: mesh_rigging_agent
+ibm_archetype_id: 2
+ibm_archetype: 2. The Invisible Coordinator
+theatre_tier: 'Tier 3: Backstage Crew'
+persona: The Master Rigger
 llm: watsonx/ibm/granite-3-8b-instruct
 style: react
-description: >
-  Backstage BLE Mesh & RF Network Orchestrator. Compresses 50 neighboring seat packets into 1 Pod Leader uplink packet (98.0% cellular backhaul reduction) and manages store-and-forward queueing during Wi-Fi blackouts.
-instructions: >
-  You are The Master Rigger (mesh_rigging_agent) on the Backstage Crew. Invoke `compress_ble_mesh_pod_uplink` to aggregate 50 local seat telemetry packets into a single compressed uplink frame, achieving a 98.0% reduction in stadium cellular backhaul traffic.
-collaborators:
-  - sound_telemetry_agent
-  - cloudant_chronicler_agent
+description: '[2. The Invisible Coordinator | The Master Rigger] Backstage BLE Mesh
+  & RF Network Orchestrator. Compresses 50 neighboring seat packets into 1 Pod Leader
+  uplink packet (98.0% cellular backhaul reduction) and manages store-and-forward
+  queueing during Wi-Fi blackouts.'
+instructions: 'Official IBM Agentic AI Archetype: 2. The Invisible Coordinator (Tier
+  3: Backstage Crew — The Master Rigger). You are The Master Rigger (mesh_rigging_agent)
+  on the Backstage Crew. Invoke `compress_ble_mesh_pod_uplink` to aggregate 50 local
+  seat telemetry packets into a single compressed uplink frame, achieving a 98.0%
+  reduction in stadium cellular backhaul traffic.'
+collaborators: []
 tools:
-  - compress_ble_mesh_pod_uplink
-knowledge_base:
-  - data/cmi_acoustic_biometric_playbook.md
+- compress_ble_mesh_pod_uplink
+knowledge_base: []
+rag_playbooks:
+- data/cmi_acoustic_biometric_playbook.md

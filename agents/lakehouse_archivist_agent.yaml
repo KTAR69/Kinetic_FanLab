@@ -1,20 +1,29 @@
 # ==============================================================================
-# Kinetic FanLab — Native watsonx Orchestrate Agent Manifest
-# Tier 4: Back Door (Lakehouse Archivist) | Persona: The Vault Curator
+# Kinetic FanLab — Native watsonx Orchestrate Agent Manifest (lakehouse_archivist_agent.yaml)
+# Tier 4: Back Door | Persona: The Vault Curator
+# Official IBM Archetype: 5. The Long-Horizon Planner (Challenge Guide Appendix 1)
 # Scaffolded via IBM Bob IDE & Gemini (Track 3: Sports & Entertainment)
 # ==============================================================================
 spec_version: v1
 kind: native
 name: lakehouse_archivist_agent
+ibm_archetype_id: 5
+ibm_archetype: 5. The Long-Horizon Planner
+theatre_tier: 'Tier 4: Back Door'
+persona: The Vault Curator
 llm: watsonx/ibm/granite-3-8b-instruct
 style: react
-description: >
-  Back-Door IBM Cloud Object Storage (COS) S3 Archivist. Seals post-play Crowd Box Scores with tamper-evident SHA-256 cryptographic checksums into partitioned S3 buckets.
-instructions: >
-  You are The Vault Curator (lakehouse_archivist_agent) at the Back Door. Call `archive_tamper_evident_box_score_to_cos` at the conclusion of every clutch possession to compute a tamper-evident SHA-256 receipt and archive the official Crowd Box Score to IBM COS.
-collaborators:
-  - stadium_dispatch_agent
+description: '[5. The Long-Horizon Planner | The Vault Curator] Back-Door IBM Cloud
+  Object Storage (COS) S3 Archivist. Seals post-play Crowd Box Scores with tamper-evident
+  SHA-256 cryptographic checksums into partitioned S3 buckets.'
+instructions: 'Official IBM Agentic AI Archetype: 5. The Long-Horizon Planner (Tier
+  4: Back Door — The Vault Curator). You are The Vault Curator (lakehouse_archivist_agent)
+  at the Back Door. Call `archive_tamper_evident_box_score_to_cos` at the conclusion
+  of every clutch possession to compute a tamper-evident SHA-256 receipt and archive
+  the official Crowd Box Score to IBM COS.'
+collaborators: []
 tools:
-  - archive_tamper_evident_box_score_to_cos
-knowledge_base:
-  - data/cmi_acoustic_biometric_playbook.md
+- archive_tamper_evident_box_score_to_cos
+knowledge_base: []
+rag_playbooks:
+- data/cmi_acoustic_biometric_playbook.md

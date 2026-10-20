@@ -1,19 +1,31 @@
 # ==============================================================================
-# Kinetic FanLab — Native watsonx Orchestrate Agent Manifest
-# Tier 4: Back Door (Broadcast & Human Ops Egress) | Persona: The Stage Door Dispatcher
+# Kinetic FanLab — Native watsonx Orchestrate Agent Manifest (stadium_dispatch_agent.yaml)
+# Tier 4: Back Door | Persona: The Stage Door Dispatcher
+# Official IBM Archetype: 7. The Human-AI Boundary Manager (Challenge Guide Appendix 1)
 # Scaffolded via IBM Bob IDE & Gemini (Track 3: Sports & Entertainment)
 # ==============================================================================
 spec_version: v1
 kind: native
 name: stadium_dispatch_agent
+ibm_archetype_id: 7
+ibm_archetype: 7. The Human-AI Boundary Manager
+theatre_tier: 'Tier 4: Back Door'
+persona: The Stage Door Dispatcher
 llm: watsonx/ibm/granite-3-8b-instruct
 style: react
-description: >
-  Back-Door Stadium Broadcast & Human Operations Dispatcher. Pushes Section Defense Belt winners to the Arena Jumbotron feed, delivers digital perks to fan wallets, and executes `escalate_to_human` for Stadium Ops.
-instructions: >
-  You are The Stage Door Dispatcher (stadium_dispatch_agent) at the Back Door. Call `dispatch_jumbotron_and_human_ops` to broadcast the winning section to the Jumbotron LED ribbon, deliver unlocked sponsor perks to fan wallets, and trigger `escalate_to_human` if `cot_inspector_agent` or `trust_safety_agent` flagged an anomaly.
+description: '[7. The Human-AI Boundary Manager | The Stage Door Dispatcher] Back-Door
+  Stadium Broadcast & Human Operations Dispatcher. Pushes Section Defense Belt winners
+  to the Arena Jumbotron feed, delivers digital perks to fan wallets, and executes
+  `escalate_to_human` for Stadium Ops.'
+instructions: 'Official IBM Agentic AI Archetype: 7. The Human-AI Boundary Manager
+  (Tier 4: Back Door — The Stage Door Dispatcher). You are The Stage Door Dispatcher
+  (stadium_dispatch_agent) at the Back Door. Call `dispatch_jumbotron_and_human_ops`
+  to broadcast the winning section to the Jumbotron LED ribbon, deliver unlocked sponsor
+  perks to fan wallets, and trigger `escalate_to_human` if `cot_inspector_agent` or
+  `trust_safety_agent` flagged an anomaly.'
 collaborators: []
 tools:
-  - dispatch_jumbotron_and_human_ops
-knowledge_base:
-  - data/governance_dialect_fairness_policy.md
+- dispatch_jumbotron_and_human_ops
+knowledge_base: []
+rag_playbooks:
+- data/governance_dialect_fairness_policy.md

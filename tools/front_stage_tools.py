@@ -9,19 +9,34 @@ Agents:
 ==============================================================================
 """
 
-from typing import Any, Dict, List
-from orchestrate_agents import (
-    InvisibleCoordinatorAgent,
-    KnowledgeSynthesizerAgent,
-    SystemOptimizerAgent,
-)
-from db.fanlab_db import get_db
+import os
+import sys
+from typing import Any, Dict
+
+_KINETIC_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if _KINETIC_ROOT not in sys.path:
+    sys.path.insert(0, _KINETIC_ROOT)
+
+try:
+    from Kinetic_FanLab.orchestrate_agents import (
+        InvisibleCoordinatorAgent,
+        KnowledgeSynthesizerAgent,
+        SystemOptimizerAgent,
+    )
+    from Kinetic_FanLab.db.fanlab_db import get_db
+except ImportError:
+    from orchestrate_agents import (
+        InvisibleCoordinatorAgent,
+        KnowledgeSynthesizerAgent,
+        SystemOptimizerAgent,
+    )
+    from db.fanlab_db import get_db
 
 try:
     from ibm_watsonx_orchestrate.agent_builder.tools import tool
 except Exception:
-    def tool(*args, **kwargs):
-        def decorator(fn):
+    def tool(*args: Any, **kwargs: Any) -> Any:
+        def decorator(fn: Any) -> Any:
             return fn
         if len(args) == 1 and callable(args[0]):
             return args[0]
@@ -54,7 +69,7 @@ def synthesize_cmi_and_playbook_rag(
     Fuses sanitized SPL decibels, Hampel-filtered BPM, tap speed, and Granite
     vocal urgency into the 0-100 Crowd Momentum Index (CMI) and attaches RAG rules.
     """
-    agent = KnowledgeSynthesizerAgent()
+    agent = KnowledgeSynthesizerAgent(sport=sport)
     res = agent.synthesize_telemetry(clean_db, clean_hr, clean_taps, clean_vu)
     res["cmi_score"] = res.get("cmi", 92.0)
     res["agent"] = "synthesizer_agent"
@@ -77,7 +92,7 @@ def rank_sections_and_chaser_alert(
     Computes per-capita section standings, fires Chaser Alerts, and prepares
     the post-play Reality Delta summary.
     """
-    agent = SystemOptimizerAgent()
+    agent = SystemOptimizerAgent(sport=sport)
     rival_sec = "Section 115 (End Zone Loyals)" if "114" in lead_section else "Section 114 (Thunder Row)"
     third_sec = "Section 113 (Rider's Crew)"
     standings = agent.rank_sections_per_capita([
