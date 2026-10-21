@@ -24,7 +24,20 @@
       "tier": 2,
       "device_anchor": "Apple Watch Series 9",
       "early_multiplier": 1.0,
-      "updated_at": 1791996721.4216926
+      "updated_at": 1792607238.7835438
+    },
+    "0xSJ-sec115-7b2a5": {
+      "_id": "passport:0xSJ-sec115-7b2a5",
+      "type": "fan_passport",
+      "member_name": "Sarah Jenkins",
+      "member_hash": "0xSJ-sec115-7b2a5",
+      "section_id": "Section 115 (End Zone Loyals)",
+      "sport": "Football",
+      "role": "10-Year Season Ticket Holder",
+      "tier": 5,
+      "device_anchor": "Wearable BLE Anchor",
+      "early_multiplier": 1.25,
+      "updated_at": 1792607269.5024686
     }
   },
   "cmi_telemetry": [
@@ -75,6 +88,38 @@
       },
       "fan_count": 50,
       "timestamp": 1791996721.423695
+    },
+    {
+      "_id": "cmi:basketball:section114:1792607238791",
+      "type": "cmi_telemetry",
+      "section_id": "Section 114",
+      "sport": "Basketball",
+      "cmi": 81.9,
+      "tier": "Maximum",
+      "components": {
+        "acoustic_db": 106.5,
+        "heart_rate_bpm": 136.0,
+        "taps_per_sec": 12.2,
+        "vocal_urgency": 0.85
+      },
+      "fan_count": 50,
+      "timestamp": 1792607238.791573
+    },
+    {
+      "_id": "cmi:football:section115(endzoneloyals):1792607269503",
+      "type": "cmi_telemetry",
+      "section_id": "Section 115 (End Zone Loyals)",
+      "sport": "Football",
+      "cmi": 90.3,
+      "tier": "Maximum",
+      "components": {
+        "acoustic_db": 108.5,
+        "heart_rate_bpm": 149.5,
+        "taps_per_sec": 14.0,
+        "vocal_urgency": 0.92
+      },
+      "fan_count": 50,
+      "timestamp": 1792607269.5038052
     }
   ],
   "storycards": [
@@ -116,6 +161,19 @@
       "defense_belt_awarded": true,
       "granite_narrative": "Roar broke focus.",
       "timestamp": 1791996721.4246953
+    },
+    {
+      "_id": "storycard:section114:1792607238",
+      "type": "reality_delta_card",
+      "headline": "+44.1 PTS",
+      "winning_section": "Section 114",
+      "outcome": "Missed Free Throw",
+      "pre_cmi": 37.8,
+      "peak_cmi": 81.9,
+      "surge": 44.1,
+      "defense_belt_awarded": true,
+      "granite_narrative": "Roar broke focus.",
+      "timestamp": 1792607238.7925797
     }
   ],
   "uncommitted_queue": [
@@ -148,6 +206,16 @@
       "op": "save_passport",
       "id": "passport:0xMV-sec114-8f7a2",
       "timestamp": 1791996978.293407
+    },
+    {
+      "op": "save_passport",
+      "id": "passport:0xER-sec114-3c9b1",
+      "timestamp": 1792607238.7905338
+    },
+    {
+      "op": "save_passport",
+      "id": "passport:0xSJ-sec115-7b2a5",
+      "timestamp": 1792607269.5024686
     }
   ]
 }

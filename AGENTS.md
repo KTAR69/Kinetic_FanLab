@@ -98,7 +98,7 @@ Endpoints registered for IBM watsonx Orchestrate skill discovery (`/calculate_cm
 
 ## 7. Week 6 Enterprise Upgrade: 16-Agent Theatre Production Cast (`eu-de-0ec71755` Live Deployment)
 
-All 16 native YAML agents and 16 Python `@tool` functions are live-deployed in IBM Cloud `watsonx Orchestrate` (`eu-de-0ec71755` / `Global workspace`), while keeping `app.py` strictly as a **4-Screen Fan HUD**:
+All 16 native YAML agents and 16 Python `@tool` functions are live-deployed in IBM Cloud `watsonx Orchestrate` (`eu-de-0ec71755` / `Global workspace`), while keeping `app.py` strictly as a **5-Screen Fan & AI Squad HUD**:
 
 ### 7.1 The 16-Agent Production Cast & Live IBM Cloud Agent UUIDs
 
@@ -121,10 +121,10 @@ All 16 native YAML agents and 16 Python `@tool` functions are live-deployed in I
 | **🔐 4. Back Door** | 15 | `sponsor_monetization_agent.yaml` | `734c3abc-7c61-4843-adcf-2d95295e4c58` | **The Commercial Promoter** | **#8 System Optimizer** | `back_door_tools.py` |
 | **🔐 4. Back Door** | 16 | `stadium_dispatch_agent.yaml` | `3d95dbd5-00fd-4164-ac7c-5b74a87d5290` | **The Stage Door Dispatcher** | **#7 Human–AI Boundary Mgr** | `back_door_tools.py` |
 
-### 7.2 RAG Knowledge Base (`data/`), Hybrid Database (`db/fanlab_db.py`) & Verification (`121 / 121 PASS`)
+### 7.2 RAG Knowledge Base (`data/`), Hybrid Database (`db/fanlab_db.py`) & Verification (`151 / 151 PASS`)
 - **`data/` (4 RAG Markdown Playbooks):** `cmi_acoustic_biometric_playbook.md`, `unit_economics_and_sponsor_roi.md`, `user_discovery_interview_framework.md`, and `governance_dialect_fairness_policy.md`.
 - **`db/fanlab_db.py` + `db/kinetic_fanlab_tables.json` (6 Relational Tables + 8-Persona Discovery & Slide 24 Iteration Logs):** `fan_passports`, `cmi_telemetry_logs`, `section_standings`, `audit_trail`, `unit_economics_ledger`, and `discovery_feature_matrix`.
-- **Automated Verification Suites (`121 / 121 PASS — 100%`):**
+- **Automated Verification Suites (`151 / 151 PASS — 100%`):**
   - `tests/test_full_suite_week5.py`: **51 / 51 PASS (100%)**
   - `tests/test_16_agent_production.py`: **44 / 44 PASS (100%)**
   - `tests/test_step4_finops_and_discovery.py`: **26 / 26 PASS (100%)**

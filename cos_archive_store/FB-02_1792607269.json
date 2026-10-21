@@ -1,0 +1,22 @@
+{
+  "metadata": {
+    "version": "v5.0-watsonx",
+    "fixture_id": "FB-02",
+    "sport": "Football",
+    "season": "2026-season",
+    "timestamp": 1792607269.7426212
+  },
+  "momentum_box_score": {
+    "final_cmi": 90.3,
+    "clutch_surge": 51.3,
+    "winning_section": "Section 115 (End Zone Loyals)",
+    "play_outcome": "MISSED FIELD GOAL (Wide Left - Ice Successful)",
+    "defense_belt_awarded": true
+  },
+  "granite_insights": {
+    "verified_narrative": "Section 115 (End Zone Loyals) surged to 90.3 CMI, rattling the kicker Wide Left.",
+    "sampled_fan_reactions": [
+      "BLOCK THAT KICK! RATTLE THE KICKER! GET LOUD!"
+    ]
+  }
+}

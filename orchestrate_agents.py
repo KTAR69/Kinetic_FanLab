@@ -18,17 +18,21 @@ Operationalizes all 8 Official IBM Agentic AI Archetypes defined in
 ==============================================================================
 """
 
+import re
 import time
 from typing import Dict, Any, List, Optional
 
 try:
-    from watsonx_live import analyze_vocal_urgency_live, generate_narrative_live
+    from watsonx_live import analyze_vocal_urgency_live, generate_narrative_live, invoke_watsonx_chat
 except ImportError:
     def analyze_vocal_urgency_live(text: str) -> float:
         return 0.85
 
     def generate_narrative_live(sport: str, outcome: str, pre: float, peak: float, notes: list) -> str:
         return f"Coordinated crowd surge of +{round(peak - pre, 1)} pts disrupted opponent execution."
+
+    def invoke_watsonx_chat(system_prompt: str, user_prompt: str) -> Optional[str]:
+        return None
 
 try:
     from governance_check import evaluate_fan_content_safety
@@ -284,32 +288,32 @@ class InvisibleCoordinatorAgent:
                 self.clutch_active = True
                 clutch_multiplier = 2.0
                 tactic = "Synchronized Visual Waving & Piercing Knee-Bend Scream"
-                pacing_directive = "T-10s: Silent focus | T-5s: Wave props left-to-right | T-2s: DEAFENING SCREAM ON KNEE BEND!"
-                trigger_event = "OPPONENT FREE THROW DISRUPTION (6th Man Defense Active)"
+                pacing_directive = "T-10s: Silent focus | T-5s: Wave props left-to-right | T-2s: DEAFENING ROAR ON KNEE BEND!"
+                trigger_event = "CLUTCH FREE THROW WINDOW (6th Man Defense Active)"
             else:
                 self.clutch_active = False
                 clutch_multiplier = 1.0
                 tactic = "Rhythmic Possession Chant"
-                pacing_directive = "Maintain defensive vigilance and section spacing."
+                pacing_directive = "Maintain defensive energy and section rhythm."
                 trigger_event = "REGULAR POSSESSION FLOW"
         else:
             if "timeout" in ctx_lower or "ice" in ctx_lower:
                 self.clutch_active = False
                 clutch_multiplier = 1.25
                 tactic = "Bleacher Stomp Endurance Pacing"
-                pacing_directive = "TIMEOUT DELAY: Stomp bleachers in rhythm! Preserve vocal chords for the snap!"
+                pacing_directive = "TIMEOUT DELAY: Stomp bleachers in rhythm! Save full vocal roar for the snap!"
                 trigger_event = "TIMEOUT DELAY PACING ('Icing the Kicker')"
             elif "field goal" in ctx_lower or "snap" in ctx_lower or "clutch" in ctx_lower:
                 self.clutch_active = True
                 clutch_multiplier = 2.0
-                tactic = "111+ dB Acoustic Wall (Cadence Drowning)"
-                pacing_directive = "SNAP IMMINENT: 111 dB MAXIMUM ROAR! Drown out the quarterback cadence!"
+                tactic = "111+ dB Acoustic Wall (Cadence Surge)"
+                pacing_directive = "SNAP IMMINENT: 111 dB MAXIMUM ROAR! Overwhelm the snap count!"
                 trigger_event = "CLUTCH 48-YARD FG SNAP (12th Man Defense Active)"
             else:
                 self.clutch_active = False
                 clutch_multiplier = 1.0
                 tactic = "Zone Defensive Chant"
-                pacing_directive = "Steady stadium noise."
+                pacing_directive = "Steady stadium energy."
                 trigger_event = "BETWEEN DOWNS"
 
         return {
@@ -541,7 +545,7 @@ class SystemOptimizerAgent:
         chaser_alert = "All sections locked in competition."
         if len(standings) >= 2:
             gap = round(standings[0]["score"] - standings[1]["score"], 1)
-            chaser_alert = f"⚠️ CHASER ALERT: {standings[1]['section']} is trailing {standings[0]['section']} by only -{gap} pts! Tap to defend your lead!"
+            chaser_alert = f"⚠️ CHASER ALERT: {standings[1]['section']} is trailing {standings[0]['section']} by only -{gap} pts! Pulse-tap to defend your lead!"
 
         return {
             "agent": "SystemOptimizer",
@@ -572,7 +576,7 @@ class SystemOptimizerAgent:
 
 
 # ==============================================================================
-# HUDDLE HELPER FOR SCREEN 3 (`get_co_captain_huddle`)
+# HUDDLE HELPER & BACKEND MULTI-AGENT TEAMWORK ENGINE (SCREEN 5)
 # ==============================================================================
 
 def get_co_captain_huddle(
@@ -583,8 +587,8 @@ def get_co_captain_huddle(
     is_clutch: bool,
 ) -> Dict[str, Any]:
     """
-    Returns real-time Screen 3 Huddle briefings from the Front-Stage AI Team
-    Members, grounded in the 8 Official IBM Agentic AI Archetypes.
+    Returns clean, fan-facing briefings from the 4 Squad Agents (Conductor, Scout,
+    Strategist, Coach) while preserving all contract metadata keys for test suites.
     """
     role = persona_data.get("role", "Section Captain")
     is_bball = "basket" in sport.lower()
@@ -609,18 +613,19 @@ def get_co_captain_huddle(
         else:
             conductor = (
                 f"{member_name} ({role}), timeout delay ('Icing the Kicker') in progress. Keep Section 115 stomping "
-                f"the bleachers at 95 Hz to rest vocal cords until the 0:03 snap!"
+                f"the bleachers in rhythm to rest vocal cords until the 0:03 snap!"
             )
 
+    miss_prob = round(min(74.0, 22.0 + (cmi * 0.52)), 1)
     scout = (
-        f"Live CMI is {cmi}/100 ({evaluate_tier(cmi)} Tier). Edge DSP scrubbed PA speaker bleed (-3.5 dB) "
-        f"and biometric Hampel outliers at $0.00 cloud cost; watsonx.governance dialect fairness holds at DIR = 0.953."
+        f"Live Crowd Momentum is {cmi}/100 ({evaluate_tier(cmi)} Tier). At this intensity, opponent miss probability "
+        f"climbs to {miss_prob}% and your section's energy wave is +14% above arena average!"
     )
     lead_sec = "Section 114 (Thunder Row)" if is_bball else "Section 115 (End Zone Loyals)"
     rival_sec = "Section 115" if is_bball else "Section 114"
     strategist = (
-        f"{lead_sec} holds #1 per-capita standing! {rival_sec} is chasing within single digits—log a Burst Tap "
-        f"or approved voice chant to lock in the Section Defense Belt and $4.85/seat sponsor perk!"
+        f"{lead_sec} holds #1 per-capita standing! {rival_sec} is chasing within single digits—sync a pulse burst "
+        f"or chant with your row to lock in the Section Defense Belt and stadium concession perks!"
     )
     coach = FanCoachAgent().coach(member_name, persona_data, cmi, is_clutch)
 
@@ -631,4 +636,581 @@ def get_co_captain_huddle(
         "coach": coach,
         "active_ibm_archetypes": [a["archetype_name"] for a in EIGHT_IBM_ARCHETYPES],
         "live_wxo_agent_ids": LIVE_WXO_AGENT_IDS,
+    }
+
+
+def compute_game_situation_scenarios(
+    sport: str,
+    fixture_id: str,
+    cmi: float,
+    db: float,
+    hr: float,
+    taps: float,
+    vu: float,
+    is_clutch: bool,
+    early_checkin: bool,
+    synergy_score: int,
+) -> Dict[str, Any]:
+    """
+    Computes game-specific statistics, situational metrics, and 3 projected
+    game scenarios for Screen 5 (AI Squad & Game Intelligence Hub).
+    """
+    is_bball = "basket" in sport.lower()
+    synth = KnowledgeSynthesizerAgent(sport).synthesize_telemetry(db, hr, taps, vu)
+    coord = InvisibleCoordinatorAgent(sport).evaluate_game_state(
+        "clutch free throw" if (is_bball and is_clutch) else (
+            "clutch field goal snap" if (not is_bball and is_clutch) else (
+                "timeout ice the kicker" if not is_bball else "regular possession"
+            )
+        )
+    )
+    early_mult = 1.25 if early_checkin else 1.0
+    clutch_mult = coord["multiplier"]
+    lead_sec = "Section 114 (Thunder Row)" if is_bball else "Section 115 (End Zone Loyals)"
+    chase_sec = "Section 115 (End Zone Loyals)" if is_bball else "Section 114 (Thunder Row)"
+    opt = SystemOptimizerAgent(sport).rank_sections_per_capita([
+        {"name": lead_sec, "cmi": cmi, "checked_in_fans": 150, "early_multiplier": early_mult, "clutch_multiplier": clutch_mult},
+        {"name": chase_sec, "cmi": round(cmi * 0.92, 1), "checked_in_fans": 140, "early_multiplier": 1.0, "clutch_multiplier": 1.0},
+    ])
+    lead_pts = opt["standings"][0]["score"]
+    chase_pts = opt["standings"][1]["score"]
+    rivalry_lead = round(lead_pts - chase_pts, 1)
+
+    if is_bball:
+        base_make_pct = 76.4
+        # Higher CMI reduces shooter's make percentage
+        current_make_pct = round(max(42.0, base_make_pct - max(0.0, (cmi - 35.0) * 0.58)), 1)
+        current_miss_pct = round(100.0 - current_make_pct, 1)
+        win_prob_swing = round(max(1.5, (cmi - 30.0) * 0.28), 1)
+        clock_situation = "4th Quarter • 0:14.2 Remaining • Score Tied 88–88 (2nd Free Throw)" if is_clutch else "4th Quarter • 0:14.2 Remaining • Score Tied 88–88 (1st Free Throw)"
+        key_stat_label = "Shooter FT% Under Current Noise"
+        key_stat_val = f"{current_make_pct}%"
+        key_stat_delta = f"-{round(base_make_pct - current_make_pct, 1)}% vs. 76.4% season avg"
+        miss_label = "Forced Miss Probability"
+        scenarios = [
+            {
+                "scenario": "Scenario A: Hold Current Pace",
+                "target_cmi": f"{cmi}/100 ({evaluate_tier(cmi)})",
+                "required_action": f"Maintain {db} dB & {taps} taps/s",
+                "opponent_impact": f"{current_make_pct}% FT Make ({current_miss_pct}% Miss)",
+                "win_prob_delta": f"+{win_prob_swing}% Home Win Swing",
+                "section_outcome": f"Lead {chase_sec[:11]} by +{rivalry_lead} pts",
+            },
+            {
+                "scenario": "Scenario B: Row Pod Sync Surge",
+                "target_cmi": f"{min(100.0, round(cmi + 9.5, 1))}/100 ({evaluate_tier(min(100.0, cmi + 9.5))})",
+                "required_action": "+5 Pulse Taps & Row Chant on Release",
+                "opponent_impact": f"{round(max(39.0, current_make_pct - 6.8), 1)}% FT Make ({round(min(61.0, current_miss_pct + 6.8), 1)}% Miss)",
+                "win_prob_delta": f"+{round(win_prob_swing + 4.2, 1)}% Home Win Swing",
+                "section_outcome": "Extend Section 114 Lead + Unlock Row Boost",
+            },
+            {
+                "scenario": "Scenario C: Full 6th-Man Takeover (80+ CMI)",
+                "target_cmi": f"{max(85.0, round(cmi, 1))}/100 (Maximum Tier)",
+                "required_action": "106.5+ dB Knee-Bend Roar + 2.0x Clutch Window",
+                "opponent_impact": "46.2% FT Make (53.8% Forced Miss + Rebound)",
+                "win_prob_delta": "+18.4% Home Win Swing",
+                "section_outcome": "Lock Section Defense Belt + 15% Merch Perk",
+            },
+        ]
+    else:
+        base_fg_pct = 78.5
+        current_fg_pct = round(max(38.0, base_fg_pct - max(0.0, (cmi - 35.0) * 0.64)), 1)
+        current_miss_pct = round(100.0 - current_fg_pct, 1)
+        win_prob_swing = round(max(2.0, (cmi - 30.0) * 0.34), 1)
+        clock_situation = "4th Quarter • 0:03 Remaining • Visiting 48-Yd Field Goal Snap" if is_clutch else "4th Quarter • 0:03 Remaining • Visiting Timeout ('Icing the Kicker')"
+        key_stat_label = "Kicker 48-Yd FG% Under Roar"
+        key_stat_val = f"{current_fg_pct}%"
+        key_stat_delta = f"-{round(base_fg_pct - current_fg_pct, 1)}% vs. 78.5% season avg"
+        miss_label = "Wide-Left / Block Probability"
+        scenarios = [
+            {
+                "scenario": "Scenario A: Hold Current Pace",
+                "target_cmi": f"{cmi}/100 ({evaluate_tier(cmi)})",
+                "required_action": f"Maintain {db} dB & {taps} taps/s",
+                "opponent_impact": f"{current_fg_pct}% FG Make ({current_miss_pct}% Miss)",
+                "win_prob_delta": f"+{win_prob_swing}% Home Win Swing",
+                "section_outcome": f"Lead {chase_sec[:11]} by +{rivalry_lead} pts",
+            },
+            {
+                "scenario": "Scenario B: Bleacher Stomp Wave",
+                "target_cmi": f"{min(100.0, round(cmi + 10.5, 1))}/100 ({evaluate_tier(min(100.0, cmi + 10.5))})",
+                "required_action": "Sync 50-Seat Row Stomp + Early Check-In Boost",
+                "opponent_impact": f"{round(max(35.0, current_fg_pct - 7.5), 1)}% FG Make ({round(min(65.0, current_miss_pct + 7.5), 1)}% Miss)",
+                "win_prob_delta": f"+{round(win_prob_swing + 5.1, 1)}% Home Win Swing",
+                "section_outcome": "Widen Section 115 Lead + Rattle Snap Count",
+            },
+            {
+                "scenario": "Scenario C: Full 12th-Man Wall (90+ CMI)",
+                "target_cmi": f"{max(92.0, round(cmi, 1))}/100 (Maximum Tier)",
+                "required_action": "111.8+ dB Roar at 0:03 Snap + 2.0x Clutch Window",
+                "opponent_impact": "42.0% FG Make (58.0% Wide-Left Miss / False Start)",
+                "win_prob_delta": "+22.6% Home Win Swing",
+                "section_outcome": "Win Section Defense Belt + 20% Store & Concession Perk",
+            },
+        ]
+
+    return {
+        "sport": sport,
+        "fixture_id": fixture_id,
+        "clock_situation": clock_situation,
+        "key_stat_label": key_stat_label,
+        "key_stat_val": key_stat_val,
+        "key_stat_delta": key_stat_delta,
+        "miss_label": miss_label,
+        "current_miss_pct": current_miss_pct,
+        "win_prob_swing": win_prob_swing,
+        "rivalry_lead": rivalry_lead,
+        "lead_section": lead_sec,
+        "chase_section": chase_sec,
+        "lead_pts": lead_pts,
+        "chase_pts": chase_pts,
+        "multiplier": clutch_mult,
+        "trigger_event": coord["trigger_event"],
+        "pacing_directive": coord["pacing_directive"],
+        "normalized_components": synth["normalized_components"],
+        "scenarios": scenarios,
+    }
+
+
+def enforce_sport_isolation(text: str, sport: str) -> str:
+    """
+    Enforces strict sport isolation on text:
+    - If Basketball: guarantees NO football terms (field goal, kicker, snap, uprights, 48-yard, 12th Man)
+      or football emojis (🏈), replacing with basketball equivalents (free throw, shooter, release, rim, 6th Man, 🏀).
+    - If Football: guarantees NO basketball terms (free throw, shooter, FT%, rim, 6th Man)
+      or basketball emojis (🏀), replacing with football equivalents (field goal, kicker, FG%, uprights, 12th Man, 🏈).
+    """
+    if not text:
+        return text
+    is_bball = "basket" in sport.lower()
+    cleaned = text
+    if is_bball:
+        cleaned = cleaned.replace("🏈", "🏀")
+        subs = [
+            (r"\bfield goals?\b", "free throw"),
+            (r"\bField Goals?\b", "Free Throw"),
+            (r"\bFIELD GOALS?\b", "FREE THROW"),
+            (r"\bFG(?=%)", "FT"),
+            (r"\bkickers?\b", "shooter"),
+            (r"\bKickers?\b", "Shooter"),
+            (r"\bkick\b", "shot"),
+            (r"\bKick\b", "Shot"),
+            (r"\b12th Man\b", "6th Man"),
+            (r"\bSection 115\b", "Section 114"),
+            (r"\bEnd Zone Loyals\b", "Thunder Row"),
+            (r"\bEnd Zone\b", "Thunder Row"),
+            (r"\bend zone\b", "baseline"),
+            (r"\b48-yard\b", "clutch"),
+            (r"\b48-yd\b", "clutch"),
+            (r"\buprights\b", "rim"),
+            (r"\bwide left\b", "off the rim"),
+            (r"\bWide Left\b", "Off The Rim"),
+            (r"\bice the kicker\b", "rattle the shooter"),
+            (r"\bIce the kicker\b", "Rattle the shooter"),
+            (r"\bIce the Kicker\b", "Rattle the Shooter"),
+            (r"\bsnap count\b", "shot clock"),
+            (r"\bSnap count\b", "Shot clock"),
+            (r"\bSnap Count\b", "Shot Clock"),
+            (r"\bsnaps?\b", "shot"),
+            (r"\bSnaps?\b", "Shot"),
+        ]
+        for p, r in subs:
+            cleaned = re.sub(p, r, cleaned)
+    else:
+        cleaned = cleaned.replace("🏀", "🏈")
+        subs = [
+            (r"\bfree throws?\b", "field goal"),
+            (r"\bFree Throws?\b", "Field Goal"),
+            (r"\bFREE THROWS?\b", "FIELD GOAL"),
+            (r"\bFT(?=%)", "FG"),
+            (r"\bshooters?\b", "kicker"),
+            (r"\bShooters?\b", "Kicker"),
+            (r"\b6th Man\b", "12th Man"),
+            (r"\bSection 114\b", "Section 115"),
+            (r"\bThunder Row\b", "End Zone Loyals"),
+            (r"\bbackboard\b", "crossbar"),
+            (r"\brim\b", "uprights"),
+            (r"\boff the rim\b", "wide left"),
+            (r"\bOff The Rim\b", "Wide Left"),
+            (r"\boff the back iron\b", "wide left"),
+            (r"\bOff The Back Iron\b", "Wide Left"),
+            (r"\bshot clock\b", "play clock"),
+            (r"\bShot clock\b", "Play clock"),
+            (r"\bShot Clock\b", "Play Clock"),
+        ]
+        for p, r in subs:
+            cleaned = re.sub(p, r, cleaned)
+    return cleaned
+
+
+def get_agent_question_chips(
+    agent_tag: str,
+    sport: str,
+    member_name: str = "Marcus Vance",
+    persona_data: Optional[Dict[str, Any]] = None,
+) -> List[Dict[str, str]]:
+    """
+    Returns 3 dynamic, uniquely framed question chips tailored to the active
+    agent's exact domain of expertise and the current sport.
+    """
+    p = persona_data or {}
+    sec = p.get("sec", "Section 114" if "basket" in sport.lower() else "Section 115")
+    games = p.get("games", 34 if "basket" in sport.lower() else 62)
+    tier_title = p.get("tier", "Tier 4" if "basket" in sport.lower() else "Tier 5")
+    tag = agent_tag.lower().strip()
+    is_bball = "basket" in sport.lower()
+
+    if tag == "@coach":
+        if is_bball:
+            return [
+                {
+                    "chip_label": "🏅 Next Tier Milestone",
+                    "full_question": f"@coach, based on my {games} games and {tier_title} in {sec}, what do I need to reach my next perk?",
+                },
+                {
+                    "chip_label": "🛡️ 6th Man Defense Belt",
+                    "full_question": f"@coach, how do {member_name} and our row pod secure the 6th Man Defense Belt on this free throw?",
+                },
+                {
+                    "chip_label": "⚡ Early Roll Call Boost",
+                    "full_question": f"@coach, how does our 1.25x early check-in multiplier help my personal passport ranking in {sec}?",
+                },
+            ]
+        else:
+            return [
+                {
+                    "chip_label": "🏅 12th Man Milestone",
+                    "full_question": f"@coach, based on my {games} stadium games in {sec}, what milestone unlocks my next Trophy Case accolade?",
+                },
+                {
+                    "chip_label": "🛡️ End Zone Defense Belt",
+                    "full_question": f"@coach, how do {member_name} and {sec} lock down the Section Defense Belt on this 48-yard field goal snap?",
+                },
+                {
+                    "chip_label": "🔥 Lot B Tailgate Streak",
+                    "full_question": f"@coach, how does our tailgate streak and 1.25x pre-game arrival boost our section's concession perks?",
+                },
+            ]
+
+    elif tag == "@conductor":
+        if is_bball:
+            return [
+                {
+                    "chip_label": "⏱️ FT Roar Timing",
+                    "full_question": f"@conductor, at what exact second in the shooter's routine should {sec} peak our noise to rattle his release?",
+                },
+                {
+                    "chip_label": "⚡ 2.0x Clutch Window",
+                    "full_question": "@conductor, when does our 2.0x clutch multiplier window trigger on this free throw possession?",
+                },
+                {
+                    "chip_label": "🌊 Row Waving Cadence",
+                    "full_question": f"@conductor, what pulse tap tempo and waving cadence should we maintain across {sec}?",
+                },
+            ]
+        else:
+            return [
+                {
+                    "chip_label": "⏱️ 0:03 Snap Roar Timing",
+                    "full_question": f"@conductor, when on the play clock should our decibels peak to shatter the kicker and holder's cadence?",
+                },
+                {
+                    "chip_label": "🏟️ Timeout Stomp Cadence",
+                    "full_question": f"@conductor, how should {sec} pace our bleacher stomps during this kicker timeout to ice him?",
+                },
+                {
+                    "chip_label": "⚡ 2.0x Snap Window",
+                    "full_question": "@conductor, when does the 2.0x 12th Man defense multiplier lock in before the field goal snap?",
+                },
+            ]
+
+    elif tag == "@strategist":
+        if is_bball:
+            return [
+                {
+                    "chip_label": "🏆 Trigger Scenario C",
+                    "full_question": "@strategist, what exact CMI score and decibel surge do we need to trigger Scenario C and force a missed free throw?",
+                },
+                {
+                    "chip_label": "📊 Section Rivalry Lead",
+                    "full_question": f"@strategist, where does {sec} stand against Section 115 on the live per-capita leaderboard right now?",
+                },
+                {
+                    "chip_label": "📈 4th Quarter Win Swing",
+                    "full_question": "@strategist, how much does forcing a missed free throw right here shift our home win probability?",
+                },
+            ]
+        else:
+            return [
+                {
+                    "chip_label": "🏆 Force Wide-Left (Scenario C)",
+                    "full_question": "@strategist, what CMI target and acoustic wall triggers Scenario C to force a wide-left miss on this 48-yard field goal?",
+                },
+                {
+                    "chip_label": "📊 Section 115 Rivalry Lead",
+                    "full_question": f"@strategist, how many per-capita points does {sec} hold over Section 114 in our section rivalry standings?",
+                },
+                {
+                    "chip_label": "📈 Win Probability Delta",
+                    "full_question": f"@strategist, what is our projected win probability swing if {sec} forces a miss on this kick?",
+                },
+            ]
+
+    elif tag == "@scout":
+        if is_bball:
+            return [
+                {
+                    "chip_label": "📊 Shooter FT% Under Noise",
+                    "full_question": "@scout, what is the shooter's free throw percentage under 100+ dB noise compared to his season average?",
+                },
+                {
+                    "chip_label": "🎙️ Telemetry CMI Factors",
+                    "full_question": "@scout, break down how our current decibels, heart rate, pulse taps, and vocal urgency are weighting our CMI.",
+                },
+                {
+                    "chip_label": "🔥 Maximum Tier Target",
+                    "full_question": "@scout, what decibel and heart rate metrics do we need to push our momentum past 80.0 into Maximum Tier?",
+                },
+            ]
+        else:
+            return [
+                {
+                    "chip_label": "📊 Kicker 48-Yd FG% Stats",
+                    "full_question": "@scout, what are the visiting kicker's field goal percentages from 45+ yards in hostile 110+ dB stadiums?",
+                },
+                {
+                    "chip_label": "🎙️ 111.8 dB Roar Analysis",
+                    "full_question": f"@scout, how does {sec}'s current acoustic reading compare to our 111.8 dB season peak?",
+                },
+                {
+                    "chip_label": "📈 12th Man Telemetry Mix",
+                    "full_question": "@scout, break down our Log SPL decibels and wearable heart rates heading into this clutch snap.",
+                },
+            ]
+
+    else:  # @squad (All 4)
+        if is_bball:
+            return [
+                {
+                    "chip_label": "⚡ Full FT Game Plan",
+                    "full_question": "@squad, give me the combined 4-agent defensive briefing for this crucial free throw possession.",
+                },
+                {
+                    "chip_label": "🤝 4-Agent Section Sync",
+                    "full_question": f"@squad, how are Scout, Conductor, Strategist, and Coach aligning {sec} to force the miss?",
+                },
+                {
+                    "chip_label": "🎯 Scenario C Consensus",
+                    "full_question": "@squad, what is the squad consensus on our probability of hitting Scenario C before the buzzer?",
+                },
+            ]
+        else:
+            return [
+                {
+                    "chip_label": "⚡ Full FG Defense Plan",
+                    "full_question": "@squad, what is the full 4-agent defensive game plan to rattle the kicker and block this 48-yard kick?",
+                },
+                {
+                    "chip_label": "🤝 12th Man Coordination",
+                    "full_question": f"@squad, how are all 4 specialists coordinating {sec}'s bleacher pods for this clutch snap?",
+                },
+                {
+                    "chip_label": "🎯 4th Down Win Consensus",
+                    "full_question": "@squad, give us the squad consensus on our chances of forcing a wide-left miss on this kick.",
+                },
+            ]
+
+
+def get_agent_chat_placeholder(agent_tag: str, sport: str) -> str:
+    """Returns dynamic placeholder text for Screen 5 chat input based on agent & sport."""
+    tag = agent_tag.lower().strip()
+    is_bball = "basket" in sport.lower()
+    if tag == "@coach":
+        return f"Ask @coach about your {'6th Man' if is_bball else '12th Man'} milestones, clutch stops, or tier progression..."
+    elif tag == "@conductor":
+        return f"Ask @conductor about {'free throw timing, release cues, or wave tempo' if is_bball else 'play clock countdown, snap timing, or bleacher stomps'}..."
+    elif tag == "@strategist":
+        return f"Ask @strategist about {'Section 114 standings, Scenario A/B/C, or win swing' if is_bball else 'Section 115 rivalry lead, 48-yard kick odds, or Scenario C'}..."
+    elif tag == "@scout":
+        return f"Ask @scout about {'shooter FT%, arena acoustics, or CMI sensor breakdown' if is_bball else 'kicker FG% stats, stadium decibels, or 12th Man telemetry'}..."
+    else:
+        return f"Ask the full 4-agent squad for a coordinated {'free throw' if is_bball else 'field goal'} defensive briefing..."
+
+
+def run_backend_squad_teamwork(
+    target_agent_tag: str,
+    user_message: str,
+    member_name: str,
+    persona_data: Dict[str, Any],
+    sport: str,
+    fixture_id: str,
+    cmi: float,
+    db: float,
+    hr: float,
+    taps: float,
+    vu: float,
+    is_clutch: bool,
+    early_checkin: bool,
+    synergy_score: int,
+) -> Dict[str, Any]:
+    """
+    Executes multi-agent teamwork silently on the backend:
+    1. @scout computes live situational statistics, telemetry weights, and scenario odds.
+    2. @conductor aligns the play-clock timing cue and active multiplier.
+    3. @strategist calculates the section rivalry margin and optimal scenario target.
+    4. @coach connects the user's personal career stats and tier progression to the play.
+    Then the user-selected agent (@coach, @conductor, @strategist, @scout, or @squad)
+    delivers a cohesive response that synthesizes the entire team's intelligence.
+    """
+    intel = compute_game_situation_scenarios(
+        sport=sport,
+        fixture_id=fixture_id,
+        cmi=cmi,
+        db=db,
+        hr=hr,
+        taps=taps,
+        vu=vu,
+        is_clutch=is_clutch,
+        early_checkin=early_checkin,
+        synergy_score=synergy_score,
+    )
+    role = persona_data.get("role", "Section Member")
+    tier_name = persona_data.get("tier", "Tier 1")
+    games = persona_data.get("games", 10)
+    stops = persona_data.get("clutch_stops", 5)
+    cmi_needed = round(max(0.0, 80.0 - cmi), 1)
+    is_bball = "basket" in sport.lower()
+
+    # Individual specialist contributions assembled on the backend
+    scout_brief = (
+        f"CMI is {cmi}/100 ({evaluate_tier(cmi)} Tier: {db} dB, {int(hr)} BPM, {taps}/s taps, {vu} VU). "
+        f"{intel['key_stat_label']} is down to {intel['key_stat_val']} ({intel['current_miss_pct']}% miss odds, +{intel['win_prob_swing']}% win swing)."
+    )
+    conductor_brief = (
+        f"Clock is at {intel['clock_situation']} with a {intel['multiplier']}x multiplier ({intel['pacing_directive']})."
+    )
+    strategist_brief = (
+        f"{intel['lead_section']} leads {intel['chase_section']} by +{intel['rivalry_lead']} pts ({intel['lead_pts']} vs. {intel['chase_pts']}). "
+        + (f"Only +{cmi_needed} CMI pts needed to hit 80.0 Maximum Tier!" if cmi_needed > 0 else "Maximum Tier (80+ CMI) is locked in!")
+    )
+    coach_brief = (
+        f"{member_name} ({role}, {tier_name}) has {games} games, {stops} clutch stops, and {synergy_score}% Squad Synergy."
+    )
+
+    tag = target_agent_tag.lower().strip()
+    agent_labels = {
+        "@coach": ("🏅 @coach (The Hype Coach)", "Personal Progression & Perks Specialist"),
+        "@conductor": ("⏱️ @conductor (The Conductor)", "Live Clock, Tempo & Timing Specialist"),
+        "@strategist": ("🏆 @strategist (The Strategist)", "Section Rivalry & Game Scenario Lead"),
+        "@scout": ("📊 @scout (The Scout)", "Live Telemetry & Situational Stats Analyst"),
+        "@squad": ("⚡ @squad (Full AI Squad Consensus)", "Unified 4-Agent Team Synthesis"),
+    }
+    speaker_title, speaker_role = agent_labels.get(tag, agent_labels["@squad"])
+
+    # Strict sport isolation rules to prevent cross-sport contamination in LLM output
+    sport_rules = (
+        "STRICT SPORT ISOLATION: The current sport is BASKETBALL ONLY. Mention ONLY basketball concepts (free throw, shooter, rim, backboard, court, 6th Man, Section 114). "
+        "NEVER mention football, kickers, field goals, snaps, 12th Man, or use football emojis (🏈). Use ONLY basketball emoji (🏀) or neutral emojis (⚡, 🔥)."
+        if is_bball else
+        "STRICT SPORT ISOLATION: The current sport is FOOTBALL ONLY. Mention ONLY football concepts (field goal, kicker, snap, uprights, bleachers, 12th Man, Section 115). "
+        "NEVER mention basketball, shooters, free throws, rims, 6th Man, or use basketball emojis (🏀). Use ONLY football emoji (🏈) or neutral emojis (⚡, 🔥)."
+    )
+
+    # Try live IBM Granite synthesis with full backend team context
+    system_prompt = (
+        f"You are {speaker_title} ({speaker_role}) inside the Kinetic FanLab mobile app for {sport}.\n"
+        f"{sport_rules}\n"
+        "On the backend, you work as a seamless 4-agent team (@scout, @conductor, @strategist, @coach) supporting the fan.\n"
+        f"Backend Team Intelligence:\n- Scout Stats: {scout_brief}\n- Conductor Timing: {conductor_brief}\n"
+        f"- Strategist Scenarios: {strategist_brief}\n- Coach Profile: {coach_brief}\n"
+        "Respond directly to the fan in 2-3 energetic, concise sentences that answer their message using your specialty "
+        "while naturally weaving in complementary insights from your squadmates. Never mention backend code, DSP, or cloud databases."
+    )
+    live_reply = invoke_watsonx_chat(system_prompt, f"Fan ({member_name}) says to {tag}: {user_message}")
+
+    if live_reply:
+        live_reply = enforce_sport_isolation(live_reply, sport)
+    else:
+        # High-fidelity deterministic fallbacks tailored per agent & sport
+        if tag == "@coach":
+            if is_bball:
+                live_reply = (
+                    f"**{member_name}**, with **{games} games** and **{stops} clutch stops** in {intel['lead_section']}, your 6th Man energy is driving our defense! "
+                    f"**@scout** tracks our CMI at **{cmi}/100** (**{intel['current_miss_pct']}%** forced miss odds on the free throw), and **@conductor** has our **{intel['multiplier']}x** release window primed—"
+                    + (
+                        f"push **+{cmi_needed} CMI pts** with **@strategist**'s row surge to unlock your next {tier_name} Trophy Case perk!"
+                        if cmi_needed > 0
+                        else f"maintain this **80+ CMI** maximum pressure on the shooter to lock in the Section Defense Belt!"
+                    )
+                )
+            else:
+                live_reply = (
+                    f"**{member_name}**, with **{games} games** and **{stops} verified stops** in {intel['lead_section']}, your 12th Man roar anchors our end zone defense! "
+                    f"**@scout** tracks our CMI at **{cmi}/100** (**{intel['current_miss_pct']}%** miss probability on this 48-yard kick), and **@conductor** has our **{intel['multiplier']}x** snap window armed—"
+                    + (
+                        f"push **+{cmi_needed} CMI pts** with **@strategist**'s bleacher stomp wave to unlock your next {tier_name} Trophy Case reward!"
+                        if cmi_needed > 0
+                        else f"keep this **90+ CMI** acoustic wall rattling the kicker to win the Section Defense Belt!"
+                    )
+                )
+        elif tag == "@conductor":
+            if is_bball:
+                live_reply = (
+                    f"Right on cue, **{member_name}**! Clock situation: **{intel['clock_situation']}** (**{intel['multiplier']}x** impact multiplier). "
+                    f"**{intel['pacing_directive']}** **@scout** confirms our **{db} dB** roar and **{taps}/s** tap tempo already have shooter conversion down to **{intel['key_stat_val']}**, "
+                    f"and **@strategist** + **@coach** have your row pod synced at **{synergy_score}%** synergy for the free throw release!"
+                )
+            else:
+                live_reply = (
+                    f"Right on the snap, **{member_name}**! Clock situation: **{intel['clock_situation']}** (**{intel['multiplier']}x** impact multiplier). "
+                    f"**{intel['pacing_directive']}** **@scout** confirms our **{db} dB** bleacher roar has kicker accuracy down to **{intel['key_stat_val']}**, "
+                    f"and **@strategist** + **@coach** have your 50-seat pod locked at **{synergy_score}%** synergy heading into the 0:03 snap!"
+                )
+        elif tag == "@strategist":
+            if is_bball:
+                live_reply = (
+                    f"Here's the tactical play, **{member_name}**: **{intel['lead_section']}** leads **{intel['chase_section']}** by **+{intel['rivalry_lead']} pts** (**{intel['lead_pts']}** to **{intel['chase_pts']}**). "
+                    f"**@scout** shows our row-pod push shifts opponent miss odds to **{intel['current_miss_pct']}%+** (**+{intel['win_prob_swing']}%** home win swing), "
+                    f"so execute **@conductor**'s release cue now and **@coach** will credit the clutch stop to your **{tier_name}** passport!"
+                )
+            else:
+                live_reply = (
+                    f"Here's the tactical play, **{member_name}**: **{intel['lead_section']}** leads **{intel['chase_section']}** by **+{intel['rivalry_lead']} pts** (**{intel['lead_pts']}** to **{intel['chase_pts']}**). "
+                    f"**@scout** shows our bleacher wall shifts wide-left miss odds to **{intel['current_miss_pct']}%+** (**+{intel['win_prob_swing']}%** win swing), "
+                    f"so hit **@conductor**'s 0:03 snap crescendo and **@coach** will credit the stop to your **{tier_name}** passport!"
+                )
+        elif tag == "@scout":
+            if is_bball:
+                live_reply = (
+                    f"Live court telemetry for you, **{member_name}**: Crowd Momentum is **{cmi}/100** (**{db} dB** roar, **{int(hr)} BPM** pulse, **{taps}/s** tempo), "
+                    f"dropping **{intel['key_stat_label']}** to **{intel['key_stat_val']}** (**{intel['current_miss_pct']}%** forced miss odds and **+{intel['win_prob_swing']}%** win swing). "
+                    f"**@conductor** has the **{intel['multiplier']}x** window active and **@strategist** + **@coach** say a **+10 dB** row surge triggers Scenario C!"
+                )
+            else:
+                live_reply = (
+                    f"Live stadium telemetry for you, **{member_name}**: Crowd Momentum is **{cmi}/100** (**{db} dB** roar, **{int(hr)} BPM** pulse, **{taps}/s** tempo), "
+                    f"dropping **{intel['key_stat_label']}** to **{intel['key_stat_val']}** (**{intel['current_miss_pct']}%** wide-left probability and **+{intel['win_prob_swing']}%** win swing). "
+                    f"**@conductor** has the **{intel['multiplier']}x** snap window active and **@strategist** + **@coach** say an 111.8+ dB roar triggers Scenario C!"
+                )
+        else:
+            if is_bball:
+                live_reply = (
+                    f"All 4 of us are locked in on this free throw, **{member_name}**! **@scout** tracks live CMI at **{cmi}/100** (**{intel['current_miss_pct']}%** opponent miss odds), "
+                    f"**@conductor** has the **{intel['multiplier']}x** release cue set, **@strategist** is protecting our **+{intel['rivalry_lead']} pt** lead in {intel['lead_section']}, "
+                    f"and **@coach** has your Squad Synergy at **{synergy_score}%**!"
+                )
+            else:
+                live_reply = (
+                    f"All 4 of us are locked in on this 4th-down kick, **{member_name}**! **@scout** tracks live CMI at **{cmi}/100** (**{intel['current_miss_pct']}%** wide-left miss odds), "
+                    f"**@conductor** has the **{intel['multiplier']}x** snap window armed, **@strategist** is defending our **+{intel['rivalry_lead']} pt** lead in {intel['lead_section']}, "
+                    f"and **@coach** has your Squad Synergy at **{synergy_score}%**!"
+                )
+        live_reply = enforce_sport_isolation(live_reply, sport)
+
+    return {
+        "speaker_tag": tag,
+        "speaker_title": speaker_title,
+        "reply": live_reply,
+        "intel": intel,
     }
