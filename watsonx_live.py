@@ -1,16 +1,21 @@
 """
 ==============================================================================
 Kinetic FanLab — IBM watsonx.ai Modern Chat Engine (/ml/v1/text/chat)
-Week 5 Milestone (Track 3: Fan-Centric Sports & Entertainment)
+Week 5–6 Milestone (Track 3: Fan-Centric Sports & Entertainment)
 
-Refactored to eliminate SDK deprecation warnings:
+Refactored to eliminate SDK deprecation warnings & support dual-mode resilience:
 1. Migrated from legacy /ml/v1/text/generation to modern /ml/v1/text/chat.
 2. Uses `max_tokens` (Chat API contract) instead of `max_new_tokens` to prevent
    `unspecified_max_token` and `invalid_params_warning` on ModelInference.chat().
 3. Structured System/User message separation with robust JSON/text extraction.
+4. Dual-Mode Hybrid Engine: Connects to live IBM Granite (`ibm/granite-4-h-small`)
+   when `ibm-watsonx-ai` SDK and `.env` credentials are active, and falls back
+   cleanly to deterministic local edge intelligence during offline unit tests or
+   stadium Wi-Fi drops.
 ==============================================================================
 """
 
+import importlib.util
 import os
 import re
 from typing import Any, Dict, List, Optional
@@ -22,6 +27,28 @@ API_KEY = os.getenv("WO_API_KEY")
 PROJECT_ID = os.getenv("WATSONX_PROJECT_ID", "7be4956c-c4e8-4775-8559-f076dda7cfea")
 URL = os.getenv("WATSONX_URL", "https://us-south.ml.cloud.ibm.com")
 MODEL_ID = os.getenv("WATSONX_MODEL_ID", "ibm/granite-4-h-small")
+VERBOSE_LOG = os.getenv("WATSONX_VERBOSE", "0") == "1"
+
+
+def get_watsonx_engine_status() -> Dict[str, Any]:
+    """
+    Returns diagnostic metadata on whether the `ibm-watsonx-ai` SDK and cloud
+    credentials are active in the current Python environment, or if the engine
+    is operating in deterministic local edge fallback mode.
+    """
+    sdk_installed = importlib.util.find_spec("ibm_watsonx_ai") is not None
+    credentials_configured = bool(API_KEY and PROJECT_ID)
+    live_ready = sdk_installed and credentials_configured
+    return {
+        "sdk_package": "ibm-watsonx-ai",
+        "sdk_installed": sdk_installed,
+        "credentials_configured": credentials_configured,
+        "target_url": URL,
+        "model_id": MODEL_ID,
+        "active_mode": "LIVE_GRANITE_CLOUD" if live_ready else "EDGE_DETERMINISTIC_FALLBACK",
+        "zero_downtime_fallback_ready": True,
+    }
+
 
 def extract_content(response: Any) -> str:
     """Robustly extracts generated text from both Chat API responses and legacy fallback objects."""
@@ -42,6 +69,7 @@ def extract_content(response: Any) -> str:
             return str(response["generated_text"])
     return str(response)
 
+
 def get_model():
     """Initializes IBM watsonx.ai ModelInference client with modern parameters."""
     try:
@@ -52,7 +80,7 @@ def get_model():
             return None
 
         credentials = Credentials(url=URL, api_key=API_KEY)
-        
+
         # Modern /ml/v1/text/chat parameters: uses max_tokens (not max_new_tokens)
         model = ModelInference(
             model_id=MODEL_ID,
@@ -62,12 +90,14 @@ def get_model():
                 "max_tokens": 300,
                 "temperature": 0.1,
                 "top_p": 0.9,
-            }
+            },
         )
         return model
     except Exception as e:
-        print(f"[watsonx Live Engine] Model client initialization fallback: {e}")
+        if VERBOSE_LOG:
+            print(f"[watsonx Live Engine] Model client initialization fallback: {e}")
         return None
+
 
 def invoke_watsonx_chat(system_prompt: str, user_prompt: str) -> Optional[str]:
     """
@@ -80,7 +110,7 @@ def invoke_watsonx_chat(system_prompt: str, user_prompt: str) -> Optional[str]:
 
     messages = [
         {"role": "system", "content": system_prompt},
-        {"role": "user", "content": user_prompt}
+        {"role": "user", "content": user_prompt},
     ]
 
     try:
@@ -94,9 +124,11 @@ def invoke_watsonx_chat(system_prompt: str, user_prompt: str) -> Optional[str]:
             raw_res = model.generate_text(prompt=full_prompt)
             return extract_content(raw_res).strip()
     except Exception as e:
-        print(f"[watsonx Live Engine] API call exception: {e}")
+        if VERBOSE_LOG:
+            print(f"[watsonx Live Engine] API call exception: {e}")
         return None
     return None
+
 
 def analyze_vocal_urgency_live(fan_text: str) -> float:
     """
@@ -124,6 +156,7 @@ def analyze_vocal_urgency_live(fan_text: str) -> float:
     urgent_words = ["miss", "block", "loud", "defense", "freeze", "rattle", "stop", "noise", "vamos", "ruido"]
     hits = sum(1 for w in urgent_words if w in fan_text.lower())
     return min(1.0, round(0.55 + hits * 0.10, 2))
+
 
 def generate_narrative_live(sport: str, outcome: str, pre_cmi: float, peak_cmi: float, fan_notes: list) -> str:
     """
@@ -168,6 +201,7 @@ def generate_narrative_live(sport: str, outcome: str, pre_cmi: float, peak_cmi: 
     res = invoke_watsonx_chat(system_prompt, user_prompt)
     return res if res else fallback
 
+
 def summarize_tailgate_chants_live(sport: str, raw_proposals: list) -> list:
     """
     Synthesizes raw fan chant proposals into the top 3 unified stadium chants.
@@ -176,11 +210,11 @@ def summarize_tailgate_chants_live(sport: str, raw_proposals: list) -> list:
     default_chants = [
         "1. MISS IT! OFF THE RIM! - Synchronized side-to-side waving at 10s release",
         "2. BRING THE NOISE! - Piercing acoustic roar on shooter knee bend",
-        "3. DEFENSE ON THREE! - Section 114 unified wave prompt"
+        "3. DEFENSE ON THREE! - Section 114 unified wave prompt",
     ] if is_basketball else [
         "1. BLOCK THAT KICK! - Sustained 111 dB roar on 0:03 snap",
         "2. ICE THE KICKER! - Rhythmic low-end bleacher stomps during timeout delay",
-        "3. THIRD DOWN WALL! - Pre-snap acoustic crescendo breaking QB cadence"
+        "3. THIRD DOWN WALL! - Pre-snap acoustic crescendo breaking QB cadence",
     ]
 
     if not raw_proposals:
