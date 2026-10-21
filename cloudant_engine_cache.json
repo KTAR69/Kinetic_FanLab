@@ -24,7 +24,7 @@
       "tier": 2,
       "device_anchor": "Apple Watch Series 9",
       "early_multiplier": 1.0,
-      "updated_at": 1792607238.7835438
+      "updated_at": 1792610303.8415189
     },
     "0xSJ-sec115-7b2a5": {
       "_id": "passport:0xSJ-sec115-7b2a5",
@@ -37,7 +37,7 @@
       "tier": 5,
       "device_anchor": "Wearable BLE Anchor",
       "early_multiplier": 1.25,
-      "updated_at": 1792607269.5024686
+      "updated_at": 1792610306.3525882
     }
   },
   "cmi_telemetry": [
@@ -120,6 +120,38 @@
       },
       "fan_count": 50,
       "timestamp": 1792607269.5038052
+    },
+    {
+      "_id": "cmi:basketball:section114:1792610303842",
+      "type": "cmi_telemetry",
+      "section_id": "Section 114",
+      "sport": "Basketball",
+      "cmi": 81.9,
+      "tier": "Maximum",
+      "components": {
+        "acoustic_db": 106.5,
+        "heart_rate_bpm": 136.0,
+        "taps_per_sec": 12.2,
+        "vocal_urgency": 0.85
+      },
+      "fan_count": 50,
+      "timestamp": 1792610303.8425224
+    },
+    {
+      "_id": "cmi:football:section115(endzoneloyals):1792610306353",
+      "type": "cmi_telemetry",
+      "section_id": "Section 115 (End Zone Loyals)",
+      "sport": "Football",
+      "cmi": 90.3,
+      "tier": "Maximum",
+      "components": {
+        "acoustic_db": 108.5,
+        "heart_rate_bpm": 149.5,
+        "taps_per_sec": 14.0,
+        "vocal_urgency": 0.92
+      },
+      "fan_count": 50,
+      "timestamp": 1792610306.3538713
     }
   ],
   "storycards": [
@@ -174,6 +206,19 @@
       "defense_belt_awarded": true,
       "granite_narrative": "Roar broke focus.",
       "timestamp": 1792607238.7925797
+    },
+    {
+      "_id": "storycard:section114:1792610303",
+      "type": "reality_delta_card",
+      "headline": "+44.1 PTS",
+      "winning_section": "Section 114",
+      "outcome": "Missed Free Throw",
+      "pre_cmi": 37.8,
+      "peak_cmi": 81.9,
+      "surge": 44.1,
+      "defense_belt_awarded": true,
+      "granite_narrative": "Roar broke focus.",
+      "timestamp": 1792610303.8435256
     }
   ],
   "uncommitted_queue": [
@@ -216,6 +261,16 @@
       "op": "save_passport",
       "id": "passport:0xSJ-sec115-7b2a5",
       "timestamp": 1792607269.5024686
+    },
+    {
+      "op": "save_passport",
+      "id": "passport:0xER-sec114-3c9b1",
+      "timestamp": 1792610303.8415189
+    },
+    {
+      "op": "save_passport",
+      "id": "passport:0xSJ-sec115-7b2a5",
+      "timestamp": 1792610306.3525882
     }
   ]
 }
