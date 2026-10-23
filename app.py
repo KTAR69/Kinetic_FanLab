@@ -170,7 +170,7 @@ fb_members = ["Sarah Jenkins", "Carlos Mendez", "Maya Patel", "Alex Taylor"]
 
 # --- Sidebar: Ultra-Clean Navigation & Game Situation Switcher ---
 st.sidebar.title("⚡ Kinetic FanLab")
-st.sidebar.caption("Track 3: Fan-Centric Sports & Entertainment")
+
 
 screen = st.sidebar.radio("Navigate:", [
     "👤 Screen 1: Fan Passport & Roster",
@@ -240,6 +240,104 @@ if "last_fixture" not in st.session_state or st.session_state.last_fixture != ac
         elif st.session_state.sport == "Football" and st.session_state.get("active_member") not in fb_members:
             st.session_state.active_member = "Sarah Jenkins"
 
+# --- Sidebar: Live Section Fan Chat with Sports Emojis ---
+st.sidebar.markdown("---")
+is_bball_sidebar = ("BB-" in active_preset) or (st.session_state.get("sport") == "Basketball")
+sidebar_sec_name = "Section 114 (Thunder Row)" if is_bball_sidebar else "Section 115 (End Zone Loyals)"
+sidebar_sport_icon = "🏀" if is_bball_sidebar else "🏈"
+
+st.sidebar.markdown(f"**💬 Live Section Chat**  \n<span style='color:#0f62fe; font-size:8.5pt; font-weight:bold;'>{sidebar_sport_icon} {sidebar_sec_name}</span>", unsafe_allow_html=True)
+
+# Initialize sport-isolated sidebar chat channels
+if "sidebar_chat_bb" not in st.session_state:
+    st.session_state.sidebar_chat_bb = [
+        {"sender": "Marcus Vance", "handle": "@mvance_sec114", "msg": "Thunder Row pod locked in! Keep the noise steady. 🏀⚡", "time": "Just now"},
+        {"sender": "Elena Rostova", "handle": "@elena_props", "msg": "Waving thundersticks on 2nd dribble! 🌊🔥", "time": "1m ago"},
+        {"sender": "Devon Miller", "handle": "@devon_chants", "msg": "BRING THE NOISE on three! 📣🔊", "time": "2m ago"},
+    ]
+if "sidebar_chat_fb" not in st.session_state:
+    st.session_state.sidebar_chat_fb = [
+        {"sender": "Sarah Jenkins", "handle": "@sarah_115", "msg": "Section 115 shaking the bleachers! Ice him! 🏈❄️", "time": "Just now"},
+        {"sender": "Carlos Mendez", "handle": "@carlos_lotb", "msg": "Lot B crew is loud and ready for the snap! 🔥🥩", "time": "1m ago"},
+        {"sender": "Maya Patel", "handle": "@maya_pulse", "msg": "BLE pod telemetry reading 111 dB peak! ⌚⚡", "time": "2m ago"},
+    ]
+
+# Render chat feed in a neat scrollable container
+active_chat_list = st.session_state.sidebar_chat_bb if is_bball_sidebar else st.session_state.sidebar_chat_fb
+chat_html = ""
+for cm in active_chat_list[-4:]:
+    chat_html += f"""<div style="margin-bottom: 5px; padding-bottom: 4px; border-bottom: 1px solid #222;">
+<span style="color:#0f62fe; font-weight:bold; font-size:8pt;">{cm['sender']}</span> <span style="color:#777; font-size:7pt;">{cm.get('handle', '')} &bull; {cm.get('time', '')}</span><br/>
+<span style="color:#f4f4f4; font-size:8pt;">{cm['msg']}</span></div>"""
+
+st.sidebar.markdown(f"""
+<div style="background-color: #11141c; border: 1px solid #2a3345; border-radius: 8px; padding: 8px 10px; max-height: 150px; overflow-y: auto; margin-bottom: 8px;">
+    {chat_html}
+</div>
+""", unsafe_allow_html=True)
+
+# Quick Sports Emoji Reaction Buttons (4 columns x 2 rows)
+st.sidebar.caption("⚡ Quick Sports Reactions:")
+chat_author_name = st.session_state.get("member_name", "Rookie Fan") if st.session_state.get("is_logged_in") else "Guest Fan"
+chat_author_handle = st.session_state.get("member_handle", "@fan_rookie") if st.session_state.get("is_logged_in") else "@guest"
+
+if is_bball_sidebar:
+    emoji_reactions = [
+        ("🏀", "🏀 Swish! Need this stop!"),
+        ("🔥", "🔥 LET'S GET LOUD!"),
+        ("⚡", "⚡ SURGE ENERGY!"),
+        ("🛡️", "🛡️ DEFENSE ON THREE!"),
+        ("📣", "📣 BRING THE NOISE!"),
+        ("👏", "👏 Let's hear it Thunder Row!"),
+        ("🏆", "🏆 Defense Belt Winner!"),
+        ("🙌", "🙌 Distraction Wave!")
+    ]
+else:
+    emoji_reactions = [
+        ("🏈", "🏈 Block that kick! Rattle him!"),
+        ("🔥", "🔥 LET'S GET LOUD!"),
+        ("⚡", "⚡ 111 dB SURGE!"),
+        ("🛡️", "🛡️ DEFENSE WALL!"),
+        ("📣", "📣 FALSE START! MAKE NOISE!"),
+        ("👏", "👏 Stomp the bleachers!"),
+        ("🏆", "🏆 Defense Belt Winner!"),
+        ("💥", "💥 CRUNCH TIME STOP!")
+    ]
+
+ec_row1 = st.sidebar.columns(4)
+for i in range(4):
+    em_icon, em_text = emoji_reactions[i]
+    if ec_row1[i].button(em_icon, key=f"btn_em_{'bb' if is_bball_sidebar else 'fb'}_{i}", use_container_width=True):
+        active_chat_list.append({"sender": chat_author_name, "handle": chat_author_handle, "msg": em_text, "time": "Just now"})
+        if len(active_chat_list) > 20: active_chat_list.pop(0)
+        _append_fan_note(f"{em_text}")
+        st.rerun()
+
+ec_row2 = st.sidebar.columns(4)
+for i in range(4, 8):
+    em_icon, em_text = emoji_reactions[i]
+    if ec_row2[i-4].button(em_icon, key=f"btn_em_{'bb' if is_bball_sidebar else 'fb'}_{i}", use_container_width=True):
+        active_chat_list.append({"sender": chat_author_name, "handle": chat_author_handle, "msg": em_text, "time": "Just now"})
+        if len(active_chat_list) > 20: active_chat_list.pop(0)
+        _append_fan_note(f"{em_text}")
+        st.rerun()
+
+# Text chat input form
+with st.sidebar.form(key=f"sidebar_chat_form_{'bb' if is_bball_sidebar else 'fb'}", clear_on_submit=True):
+    sidebar_in = st.text_input("Send message:", placeholder=f"Chat in {sidebar_sec_name.split(' (')[0]}...", label_visibility="collapsed")
+    sidebar_submit = st.form_submit_button("Send 💬", use_container_width=True)
+
+if sidebar_submit and sidebar_in.strip():
+    gov_res = evaluate_fan_content_safety(sidebar_in)
+    if gov_res.get("guardrail_status") == "REJECTED":
+        st.sidebar.error("🚨 Filtered: please keep chat respectful.")
+    else:
+        active_chat_list.append({"sender": chat_author_name, "handle": chat_author_handle, "msg": sidebar_in.strip(), "time": "Just now"})
+        if len(active_chat_list) > 20: active_chat_list.pop(0)
+        _append_fan_note(f"{sidebar_in.strip()}")
+        st.rerun()
+
+
 # Global session states
 if "sport" not in st.session_state: st.session_state.sport = "Basketball"
 if "onboarding_mode" not in st.session_state: st.session_state.onboarding_mode = "Rookie Walkthrough"
@@ -254,9 +352,25 @@ if "member_seat" not in st.session_state: st.session_state.member_seat = "Sectio
 if "member_games" not in st.session_state: st.session_state.member_games = 0
 if "member_career_db" not in st.session_state: st.session_state.member_career_db = "0.0 dB"
 if "member_clutch_stops" not in st.session_state: st.session_state.member_clutch_stops = 0
+
+# Sport-isolated Tailgates & Meetups
+if "tailgates_attended_bb" not in st.session_state: st.session_state.tailgates_attended_bb = 0
+if "tailgates_attended_fb" not in st.session_state: st.session_state.tailgates_attended_fb = 0
+if "meetup_rsvps_bb" not in st.session_state: st.session_state.meetup_rsvps_bb = []
+if "meetup_rsvps_fb" not in st.session_state: st.session_state.meetup_rsvps_fb = []
 if "tailgates_attended" not in st.session_state: st.session_state.tailgates_attended = 0
 if "meetup_rsvps" not in st.session_state: st.session_state.meetup_rsvps = []
-if "social_x" not in st.session_state: st.session_state.social_x = "@fan_rookie"
+
+# Sport-isolated in-game action flags
+if "early_checkin_bb" not in st.session_state: st.session_state.early_checkin_bb = False
+if "early_checkin_fb" not in st.session_state: st.session_state.early_checkin_fb = False
+if "chant_action_taken_bb" not in st.session_state: st.session_state.chant_action_taken_bb = False
+if "chant_action_taken_fb" not in st.session_state: st.session_state.chant_action_taken_fb = False
+if "storycard_exported_bb" not in st.session_state: st.session_state.storycard_exported_bb = False
+if "storycard_exported_fb" not in st.session_state: st.session_state.storycard_exported_fb = False
+if "user_respect_taps_sent_bb" not in st.session_state: st.session_state.user_respect_taps_sent_bb = 0
+if "user_respect_taps_sent_fb" not in st.session_state: st.session_state.user_respect_taps_sent_fb = 0
+if "social_x" not in st.session_state: st.session_state.social_x = ""
 if "social_ig" not in st.session_state: st.session_state.social_ig = ""
 if "social_yt" not in st.session_state: st.session_state.social_yt = "@W3bHippo"
 if "social_tiktok" not in st.session_state: st.session_state.social_tiktok = ""
@@ -397,26 +511,6 @@ def _load_fans_db():
             "unlocked_mentors_bb": ["Marcus Vance"],
             "unlocked_mentors_fb": ["Sarah Jenkins"]
         },
-        "fan@gmail.com": {
-            "email": "fan@gmail.com",
-            "password": "password123",
-            "name": "Rookie Fan",
-            "handle": "@fan_rookie",
-            "seat": "Section 114, Row 3, Seat 12",
-            "hash": "0xROOKIE-sec114-8f7a2",
-            "sport": "Basketball",
-            "bb_level": "Both (NCAA D1 & NBA)",
-            "fb_level": "Both (NCAA D1 & NFL)",
-            "teams_bb": ["Duke Blue Devils", "Boston Celtics"],
-            "teams_fb": ["Michigan Wolverines", "Green Bay Packers"],
-            "role": "Rookie Member",
-            "tier": "Rookie Member (Tier 1)",
-            "games": 0,
-            "career_db": "0.0 dB",
-            "clutch_stops": 0,
-            "unlocked_mentors_bb": ["Marcus Vance"],
-            "unlocked_mentors_fb": ["Sarah Jenkins"]
-        },
         "mvance@thunderrow.org": {
             "email": "mvance@thunderrow.org",
             "password": "demo1234",
@@ -473,6 +567,159 @@ def _save_fans_db(db):
             json.dump(db, f, indent=2)
     except Exception as e:
         print(f"[_save_fans_db] warning: {e}")
+
+def _sync_and_persist_user_state():
+    """Persists all progress and state of the current user into memory and disk."""
+    if not st.session_state.get("is_logged_in"):
+        return
+    email = st.session_state.get("member_email", "")
+    if not email:
+        return
+    if "registered_fans_db" not in st.session_state:
+        st.session_state.registered_fans_db = _load_fans_db()
+    if email not in st.session_state.registered_fans_db:
+        st.session_state.registered_fans_db[email] = {}
+
+    user_rec = st.session_state.registered_fans_db[email]
+    user_rec["email"] = email
+    user_rec["name"] = st.session_state.get("member_name", user_rec.get("name", "Rookie Fan"))
+    user_rec["handle"] = st.session_state.get("member_handle", user_rec.get("handle", "@fan_rookie"))
+    user_rec["hash"] = st.session_state.get("member_hash", user_rec.get("hash", "0xROOKIE-sec114-8f7a2"))
+    user_rec["tier"] = st.session_state.get("member_tier", user_rec.get("tier", "Rookie Member (Tier 1)"))
+    user_rec["role"] = st.session_state.get("member_role", user_rec.get("role", "Rookie Member"))
+    user_rec["seat"] = st.session_state.get("member_seat", user_rec.get("seat", "Section 114, Row 3, Seat 12"))
+    user_rec["games"] = st.session_state.get("member_games", user_rec.get("games", 0))
+    user_rec["career_db"] = st.session_state.get("member_career_db", user_rec.get("career_db", "0.0 dB"))
+    user_rec["clutch_stops"] = st.session_state.get("member_clutch_stops", user_rec.get("clutch_stops", 0))
+
+    # Mentors and Capstones
+    user_rec["unlocked_mentors_bb"] = list(st.session_state.get("unlocked_mentors_bb", ["Marcus Vance"]))
+    user_rec["unlocked_mentors_fb"] = list(st.session_state.get("unlocked_mentors_fb", ["Sarah Jenkins"]))
+    user_rec["capstone_claimed_bb"] = st.session_state.get("capstone_claimed_bb", False)
+    user_rec["capstone_claimed_fb"] = st.session_state.get("capstone_claimed_fb", False)
+
+    # Sport-isolated Tailgates & Meetups
+    user_rec["tailgates_attended_bb"] = st.session_state.get("tailgates_attended_bb", 0)
+    user_rec["tailgates_attended_fb"] = st.session_state.get("tailgates_attended_fb", 0)
+    user_rec["meetup_rsvps_bb"] = list(st.session_state.get("meetup_rsvps_bb", []))
+    user_rec["meetup_rsvps_fb"] = list(st.session_state.get("meetup_rsvps_fb", []))
+    user_rec["tailgates_attended"] = user_rec["tailgates_attended_bb"] + user_rec["tailgates_attended_fb"]
+    user_rec["meetup_rsvps"] = user_rec["meetup_rsvps_bb"] + user_rec["meetup_rsvps_fb"]
+
+    # Sport-isolated in-game actions
+    user_rec["early_checkin_bb"] = st.session_state.get("early_checkin_bb", False)
+    user_rec["early_checkin_fb"] = st.session_state.get("early_checkin_fb", False)
+    user_rec["chant_action_taken_bb"] = st.session_state.get("chant_action_taken_bb", False)
+    user_rec["chant_action_taken_fb"] = st.session_state.get("chant_action_taken_fb", False)
+    user_rec["storycard_exported_bb"] = st.session_state.get("storycard_exported_bb", False)
+    user_rec["storycard_exported_fb"] = st.session_state.get("storycard_exported_fb", False)
+    user_rec["user_respect_taps_sent_bb"] = st.session_state.get("user_respect_taps_sent_bb", 0)
+    user_rec["user_respect_taps_sent_fb"] = st.session_state.get("user_respect_taps_sent_fb", 0)
+
+    # Teams & preferences
+    user_rec["sport"] = st.session_state.get("sport", "Basketball")
+    user_rec["bb_level"] = st.session_state.get("bb_level", "Both (NCAA D1 & NBA)")
+    user_rec["fb_level"] = st.session_state.get("fb_level", "Both (NCAA D1 & NFL)")
+    user_rec["teams_bb"] = list(st.session_state.get("teams_bb", []))
+    user_rec["teams_fb"] = list(st.session_state.get("teams_fb", []))
+
+    # Socials & Settings
+    user_rec["socials"] = {
+        "x": st.session_state.get("social_x", ""),
+        "instagram": st.session_state.get("social_ig", ""),
+        "youtube": st.session_state.get("social_yt", "@W3bHippo"),
+        "tiktok": st.session_state.get("social_tiktok", ""),
+        "discord": st.session_state.get("social_discord", "")
+    }
+    user_rec["settings"] = {
+        "wearable_device": st.session_state.get("wearable_device", "Apple Watch Ultra 2 (ECG/dB)"),
+        "ble_sensitivity": st.session_state.get("ble_sensitivity", -54),
+        "notif_clutch": st.session_state.get("notif_clutch", True),
+        "notif_tailgate": st.session_state.get("notif_tailgate", True),
+        "notif_chaser": st.session_state.get("notif_chaser", True),
+        "pref_leaderboard_public": st.session_state.get("pref_leaderboard_public", True),
+        "pref_anonymize_biometrics": st.session_state.get("pref_anonymize_biometrics", True),
+        "retention": "Gameday Session Only (Zero Cloud Raw Storage)"
+    }
+    _save_fans_db(st.session_state.registered_fans_db)
+
+def _load_user_into_session(user_data, email):
+    st.session_state.is_logged_in = True
+    st.session_state.just_signed_up = False
+    st.session_state.member_email = email
+    st.session_state.member_name = user_data.get("name", "Rookie Fan")
+    st.session_state.active_member = user_data.get("name", "Rookie Fan")
+    st.session_state.member_handle = user_data.get("handle", "@fan_rookie")
+    st.session_state.member_hash = user_data.get("hash", "0xROOKIE-sec114-8f7a2")
+    st.session_state.member_role = user_data.get("role", "Rookie Member")
+    st.session_state.member_tier = user_data.get("tier", "Rookie Member (Tier 1)")
+    st.session_state.member_seat = user_data.get("seat", "Section 114, Row 3, Seat 12")
+    st.session_state.member_games = user_data.get("games", 0)
+    st.session_state.member_career_db = user_data.get("career_db", "0.0 dB")
+    st.session_state.member_clutch_stops = user_data.get("clutch_stops", 0)
+
+    # Mentors and Capstones
+    st.session_state.unlocked_mentors_bb = list(user_data.get("unlocked_mentors_bb", ["Marcus Vance"]))
+    st.session_state.unlocked_mentors_fb = list(user_data.get("unlocked_mentors_fb", ["Sarah Jenkins"]))
+    st.session_state.capstone_claimed_bb = user_data.get("capstone_claimed_bb", False)
+    st.session_state.capstone_claimed_fb = user_data.get("capstone_claimed_fb", False)
+
+    # Sport-isolated Tailgates & Meetups
+    st.session_state.tailgates_attended_bb = user_data.get("tailgates_attended_bb", 0)
+    st.session_state.tailgates_attended_fb = user_data.get("tailgates_attended_fb", 0)
+    st.session_state.meetup_rsvps_bb = list(user_data.get("meetup_rsvps_bb", []))
+    st.session_state.meetup_rsvps_fb = list(user_data.get("meetup_rsvps_fb", []))
+
+    is_bb = user_data.get("sport", "Basketball") == "Basketball"
+    st.session_state.tailgates_attended = st.session_state.tailgates_attended_bb if is_bb else st.session_state.tailgates_attended_fb
+    st.session_state.meetup_rsvps = list(st.session_state.meetup_rsvps_bb if is_bb else st.session_state.meetup_rsvps_fb)
+
+    # In-game actions
+    st.session_state.early_checkin_bb = user_data.get("early_checkin_bb", False)
+    st.session_state.early_checkin_fb = user_data.get("early_checkin_fb", False)
+    st.session_state.early_checkin = st.session_state.early_checkin_bb if is_bb else st.session_state.early_checkin_fb
+
+    st.session_state.chant_action_taken_bb = user_data.get("chant_action_taken_bb", False)
+    st.session_state.chant_action_taken_fb = user_data.get("chant_action_taken_fb", False)
+    st.session_state.chant_action_taken = st.session_state.chant_action_taken_bb if is_bb else st.session_state.chant_action_taken_fb
+
+    st.session_state.storycard_exported_bb = user_data.get("storycard_exported_bb", False)
+    st.session_state.storycard_exported_fb = user_data.get("storycard_exported_fb", False)
+    st.session_state.storycard_exported_flag = st.session_state.storycard_exported_bb if is_bb else st.session_state.storycard_exported_fb
+
+    st.session_state.user_respect_taps_sent_bb = user_data.get("user_respect_taps_sent_bb", 0)
+    st.session_state.user_respect_taps_sent_fb = user_data.get("user_respect_taps_sent_fb", 0)
+    st.session_state.user_respect_taps_sent = st.session_state.user_respect_taps_sent_bb if is_bb else st.session_state.user_respect_taps_sent_fb
+
+    # Socials
+    soc = user_data.get("socials", {})
+    st.session_state.social_x = soc.get("x", "")
+    st.session_state.social_ig = soc.get("instagram", "")
+    st.session_state.social_yt = soc.get("youtube", "@W3bHippo")
+    st.session_state.social_tiktok = soc.get("tiktok", "")
+    st.session_state.social_discord = soc.get("discord", "")
+
+    # Settings
+    sett = user_data.get("settings", {})
+    st.session_state.wearable_device = sett.get("wearable_device", "Apple Watch Ultra 2 (ECG/dB)")
+    st.session_state.ble_sensitivity = sett.get("ble_sensitivity", -54)
+    st.session_state.notif_clutch = sett.get("notif_clutch", True)
+    st.session_state.notif_tailgate = sett.get("notif_tailgate", True)
+    st.session_state.notif_chaser = sett.get("notif_chaser", True)
+    st.session_state.pref_leaderboard_public = sett.get("pref_leaderboard_public", True)
+    st.session_state.pref_anonymize_biometrics = sett.get("pref_anonymize_biometrics", True)
+
+    # Sport & Teams
+    st.session_state.sport = user_data.get("sport", "Basketball")
+    st.session_state.bb_level = user_data.get("bb_level", "Both (NCAA D1 & NBA)")
+    st.session_state.fb_level = user_data.get("fb_level", "Both (NCAA D1 & NFL)")
+    st.session_state.teams_bb = list(user_data.get("teams_bb", ["Duke Blue Devils", "Boston Celtics"]))
+    st.session_state.teams_fb = list(user_data.get("teams_fb", ["Michigan Wolverines", "Green Bay Packers"]))
+
+    unlocked_curr = st.session_state.unlocked_mentors_bb if is_bb else st.session_state.unlocked_mentors_fb
+    lead_guide = "Marcus Vance" if is_bb else "Sarah Jenkins"
+    st.session_state.active_npc_guide = lead_guide if lead_guide in unlocked_curr else unlocked_curr[0]
+
 
 if "registered_fans_db" not in st.session_state:
     st.session_state.registered_fans_db = _load_fans_db()
@@ -663,7 +910,7 @@ def _ensure_member_in_persona_db():
 
     tier_title = st.session_state.get("member_tier", user_entry.get("tier", "Rookie Member (Tier 1)"))
     role_title = st.session_state.get("member_role", user_entry.get("role", "Rookie Member"))
-    hash_val = st.session_state.get("member_hash", user_entry.get("hash", "0xROOKIE-sec114-8f7a2" if is_bball else "0xTR-sec115-8f7a2"))
+    hash_val = st.session_state.get("member_hash", user_entry.get("hash", "0xTR-sec114-8f7a2" if is_bball else "0xTR-sec115-8f7a2"))
 
     PERSONA_DB[name] = {
         "hash": hash_val,
@@ -722,7 +969,7 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
 
             with st.form(key="member_signup_form"):
                 col_acc1, col_acc2 = st.columns(2)
-                signup_email = col_acc1.text_input("Email Address", placeholder="e.g., fan@gmail.com or fan@university.edu")
+                signup_email = col_acc1.text_input("Email Address", placeholder="e.g., fan@university.edu or fan@gmail.com")
                 signup_pwd = col_acc2.text_input("Password", type="password", placeholder="Enter secure password")
 
                 col_prof1, col_prof2, col_prof3 = st.columns(3)
@@ -894,8 +1141,8 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
             st.caption("Sign in to your registered account with your verified email and password.")
 
             with st.form(key="member_login_form"):
-                login_email = st.text_input("Registered Email Address", value="fan@gmail.com")
-                login_pwd = st.text_input("Password", type="password", value="password123")
+                login_email = st.text_input("Registered Email Address", value="", placeholder="e.g., fan@gmail.com")
+                login_pwd = st.text_input("Password", type="password", value="", placeholder="Enter your password")
                 submit_login = st.form_submit_button("🔑 Log In with Email & Password", use_container_width=True)
 
             if submit_login:
@@ -912,44 +1159,7 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                 else:
                     # Validated login!
                     user_data = fans_db[clean_email]
-                    st.session_state.is_logged_in = True
-                    st.session_state.just_signed_up = False  # NO balloons on normal login!
-                    st.session_state.member_email = clean_email
-                    st.session_state.member_name = user_data["name"]
-                    st.session_state.active_member = user_data["name"]
-                    st.session_state.member_handle = user_data.get("handle", "@fan")
-                    st.session_state.member_hash = user_data.get("hash", "0x" + hashlib.sha256(clean_email.encode()).hexdigest()[:16])
-                    st.session_state.member_role = user_data.get("role", "Rookie Member")
-                    st.session_state.member_tier = user_data.get("tier", "Rookie Member (Tier 1)")
-                    st.session_state.member_seat = user_data.get("seat", "Section 114, Row 3, Seat 12")
-                    st.session_state.member_games = user_data.get("games", 0)
-                    st.session_state.member_career_db = user_data.get("career_db", "0.0 dB")
-                    st.session_state.member_clutch_stops = user_data.get("clutch_stops", 0)
-                    st.session_state.tailgates_attended = user_data.get("tailgates_attended", 0)
-                    st.session_state.meetup_rsvps = list(user_data.get("meetup_rsvps", []))
-                    soc = user_data.get("socials", {})
-                    st.session_state.social_x = soc.get("x", "@fan_rookie")
-                    st.session_state.social_ig = soc.get("instagram", "")
-                    st.session_state.social_yt = soc.get("youtube", "@W3bHippo")
-                    st.session_state.social_tiktok = soc.get("tiktok", "")
-                    st.session_state.social_discord = soc.get("discord", "")
-                    sett = user_data.get("settings", {})
-                    st.session_state.wearable_device = sett.get("wearable_device", "Apple Watch Ultra 2 (ECG/dB)")
-                    st.session_state.ble_sensitivity = sett.get("ble_sensitivity", -54)
-                    st.session_state.notif_clutch = sett.get("notif_clutch", True)
-                    st.session_state.notif_tailgate = sett.get("notif_tailgate", True)
-                    st.session_state.notif_chaser = sett.get("notif_chaser", True)
-                    st.session_state.pref_leaderboard_public = sett.get("pref_leaderboard_public", True)
-                    st.session_state.pref_anonymize_biometrics = sett.get("pref_anonymize_biometrics", True)
-                    st.session_state.sport = user_data.get("sport", "Basketball")
-                    st.session_state.bb_level = user_data.get("bb_level", "Both (NCAA D1 & NBA)")
-                    st.session_state.fb_level = user_data.get("fb_level", "Both (NCAA D1 & NFL)")
-                    st.session_state.teams_bb = list(user_data.get("teams_bb", ["Duke Blue Devils", "Boston Celtics"]))
-                    st.session_state.teams_fb = list(user_data.get("teams_fb", ["Michigan Wolverines", "Green Bay Packers"]))
-                    st.session_state.unlocked_mentors_bb = list(user_data.get("unlocked_mentors_bb", ["Marcus Vance"]))
-                    st.session_state.unlocked_mentors_fb = list(user_data.get("unlocked_mentors_fb", ["Sarah Jenkins"]))
-                    st.session_state.active_npc_guide = "Marcus Vance" if st.session_state.sport == "Basketball" else "Sarah Jenkins"
-                    st.session_state.user_respect_taps_sent = 0
+                    _load_user_into_session(user_data, clean_email)
                     _ensure_member_in_persona_db()
                     st.rerun()
 
@@ -969,24 +1179,44 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
             selected_demo_persona = st.selectbox("Select canonical test persona:", demo_persona_options, index=0)
             if st.button("🚀 Fast Demo Sign-In as Selected Persona", key="btn_fast_demo_login", use_container_width=True):
                 p_name_clean = selected_demo_persona.split(" (")[0]
-                st.session_state.is_logged_in = True
-                st.session_state.just_signed_up = False
-                st.session_state.member_name = p_name_clean
-                st.session_state.active_member = p_name_clean
-                p_data = PERSONA_DB.get(p_name_clean, PERSONA_DB["Marcus Vance"])
-                st.session_state.member_hash = p_data["hash"]
-                st.session_state.member_role = p_data["role"]
-                st.session_state.member_tier = p_data["tier"]
-                st.session_state.sport = "Basketball" if "Basketball" in selected_demo_persona else "Football"
-                st.session_state.teams_bb = ["Texas Longhorns", "San Antonio Spurs"]
-                st.session_state.teams_fb = ["Texas Longhorns", "Dallas Cowboys"]
-                if st.session_state.sport == "Basketball":
-                    st.session_state.unlocked_mentors_bb = ["Marcus Vance"]
-                    st.session_state.active_npc_guide = "Marcus Vance"
+                demo_email = f"{p_name_clean.lower().replace(' ', '')}@demo.fanlab"
+                if demo_email in fans_db:
+                    demo_data = fans_db[demo_email]
                 else:
-                    st.session_state.unlocked_mentors_fb = ["Sarah Jenkins"]
-                    st.session_state.active_npc_guide = "Sarah Jenkins"
-                st.session_state.user_respect_taps_sent = 0
+                    p_data = PERSONA_DB.get(p_name_clean, PERSONA_DB["Marcus Vance"])
+                    is_bb_persona = "Basketball" in selected_demo_persona
+                    demo_data = {
+                        "email": demo_email,
+                        "name": p_name_clean,
+                        "handle": f"@{p_name_clean.lower().replace(' ', '_')}",
+                        "hash": p_data["hash"],
+                        "role": p_data["role"],
+                        "tier": p_data["tier"],
+                        "seat": p_data["sec"] + ", Row 1, Seat 1",
+                        "games": p_data["games"],
+                        "career_db": p_data["career_db"],
+                        "clutch_stops": p_data["clutch_stops"],
+                        "sport": "Basketball" if is_bb_persona else "Football",
+                        "unlocked_mentors_bb": ["Marcus Vance"],
+                        "unlocked_mentors_fb": ["Sarah Jenkins"],
+                        "capstone_claimed_bb": False,
+                        "capstone_claimed_fb": False,
+                        "tailgates_attended_bb": 0,
+                        "tailgates_attended_fb": 0,
+                        "meetup_rsvps_bb": [],
+                        "meetup_rsvps_fb": [],
+                        "teams_bb": ["Texas Longhorns", "San Antonio Spurs"],
+                        "teams_fb": ["Texas Longhorns", "Dallas Cowboys"],
+                        "bb_level": "Both (NCAA D1 & NBA)",
+                        "fb_level": "Both (NCAA D1 & NFL)",
+                        "socials": {"x": "", "instagram": "", "youtube": "@W3bHippo", "tiktok": "", "discord": ""},
+                        "settings": {"wearable_device": "Apple Watch Ultra 2 (ECG/dB)", "ble_sensitivity": -54, "notif_clutch": True, "notif_tailgate": True, "notif_chaser": True, "pref_leaderboard_public": True, "pref_anonymize_biometrics": True}
+                    }
+                    fans_db[demo_email] = demo_data
+                    _save_fans_db(fans_db)
+
+                _load_user_into_session(demo_data, demo_email)
+                _ensure_member_in_persona_db()
                 st.rerun()
 
     # ------------------------------------------------------------------
@@ -1007,6 +1237,7 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
             """, unsafe_allow_html=True)
         with col_status_act:
             if st.button("🚪 Sign Out", key="btn_logout_user", use_container_width=True):
+                _sync_and_persist_user_state()
                 st.session_state.is_logged_in = False
                 st.rerun()
 
@@ -1067,6 +1298,13 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
             new_sport_clean = "Basketball" if "Basketball" in picked_sport_radio else "Football"
             if new_sport_clean != st.session_state.sport:
                 st.session_state.sport = new_sport_clean
+                is_now_bb = (new_sport_clean == "Basketball")
+                st.session_state.tailgates_attended = st.session_state.get("tailgates_attended_bb", 0) if is_now_bb else st.session_state.get("tailgates_attended_fb", 0)
+                st.session_state.meetup_rsvps = list(st.session_state.get("meetup_rsvps_bb", []) if is_now_bb else st.session_state.get("meetup_rsvps_fb", []))
+                st.session_state.early_checkin = st.session_state.get("early_checkin_bb", False) if is_now_bb else st.session_state.get("early_checkin_fb", False)
+                st.session_state.chant_action_taken = st.session_state.get("chant_action_taken_bb", False) if is_now_bb else st.session_state.get("chant_action_taken_fb", False)
+                st.session_state.storycard_exported_flag = st.session_state.get("storycard_exported_bb", False) if is_now_bb else st.session_state.get("storycard_exported_fb", False)
+                st.session_state.user_respect_taps_sent = st.session_state.get("user_respect_taps_sent_bb", 0) if is_now_bb else st.session_state.get("user_respect_taps_sent_fb", 0)
                 if st.session_state.get("is_logged_in") and st.session_state.get("member_name"):
                     st.session_state.active_member = st.session_state.member_name
                 else:
@@ -1188,9 +1426,9 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
             current_respect_score = st.session_state.user_respect_taps_sent
             stat4.metric("Respect Taps", f"{current_respect_score}", delta=f"+{st.session_state.user_respect_taps_sent} Sent")
             stat5, stat6 = st.columns(2)
-            meetup_count = st.session_state.get("tailgates_attended", 0)
-            stat5.metric("Tailgates & Meetups", f"{meetup_count} RSVP'd", delta="Consistent Fan" if meetup_count > 0 else "Rookie Fan")
-            stat6.metric("Community Streak", f"{meetup_count} Streak", delta="NFT Accolade Progress" if meetup_count > 0 else "Join Meetups")
+            meetup_count = st.session_state.get("tailgates_attended_bb", 0) if is_basketball else st.session_state.get("tailgates_attended_fb", 0)
+            stat5.metric(f"Tailgates & Meetups ({st.session_state.sport})", f"{meetup_count} RSVP'd", delta="Consistent Fan" if meetup_count > 0 else "Rookie Fan")
+            stat6.metric(f"Community Streak ({st.session_state.sport})", f"{meetup_count} Streak", delta="NFT Accolade Progress" if meetup_count > 0 else "Join Meetups")
 
         with col_main_panel:
             # ------------------------------------------------------------------
@@ -1211,6 +1449,7 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                 st.session_state.unlocked_mentors_bb = unlock_eval["unlocked_npcs"]
             else:
                 st.session_state.unlocked_mentors_fb = unlock_eval["unlocked_npcs"]
+            _sync_and_persist_user_state()
 
             # Toast notification ONLY when unlocked through user actions
             for new_npc in unlock_eval["newly_unlocked"]:
@@ -1295,6 +1534,7 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                         else:
                             st.session_state.capstone_claimed_fb = True
                         st.session_state.synergy_score = min(100, st.session_state.synergy_score + 10)
+                        _sync_and_persist_user_state()
                         st.balloons()
                         st.success(f"🎉 Claimed! '{capstone_nft['title']}' is now permanently recorded in your Living Trophy Case! (+10% Section Synergy)")
                         st.rerun()
@@ -1393,7 +1633,7 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                 comm_nft_title = "Plaza Rally Vanguard" if is_basketball else "Lot B Tailgate Legend"
                 comm_nft_color = "#0f62fe" if is_basketball else "#fa4d56"
                 comm_nft_icon = "🏀" if is_basketball else "🔥"
-                meetup_stat_count = st.session_state.get("tailgates_attended", 0)
+                meetup_stat_count = st.session_state.get("tailgates_attended_bb", 0) if is_basketball else st.session_state.get("tailgates_attended_fb", 0)
                 comm_unlocked = (meetup_stat_count >= 3)
 
                 st.markdown(f"""
@@ -1402,7 +1642,7 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                         <span style="background-color: {comm_nft_color}33; color: {comm_nft_color}; padding: 3px 8px; border-radius: 4px; font-size: 8pt; font-weight: bold; text-transform: uppercase;">
                             {'COMMUNITY ACCREDITATION UNLOCKED' if comm_unlocked else 'FUTURE COMMUNITY NFT TROPHY (IN PROGRESS)'}
                         </span>
-                        <span style="color: #f1c21b; font-size: 9pt; font-weight: bold;">{meetup_stat_count}/3 Meetups RSVP'd</span>
+                        <span style="color: #f1c21b; font-size: 9pt; font-weight: bold;">{meetup_stat_count}/3 {st.session_state.sport} Meetups RSVP'd</span>
                     </div>
                     <h4 style="color: white; margin: 8px 0 4px 0;">{comm_nft_icon} {comm_nft_title}</h4>
                     <p style="color: #a8a8a8; font-size: 9.5pt; margin-bottom: 6px;">
@@ -1460,11 +1700,11 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                 st.write("Link your social media accounts to display verified links across your Fan Passport, Trophy Showcase, and Proof-of-Momentum cards:")
                 col_s1, col_s2 = st.columns(2)
                 with col_s1:
-                    sett_x = st.text_input("𝕏 (Twitter) Handle / Profile:", value=st.session_state.get("social_x", "@fan_rookie"), placeholder="e.g. @owltar")
-                    sett_ig = st.text_input("📸 Instagram Handle:", value=st.session_state.get("social_ig", ""), placeholder="e.g. ")
+                    sett_x = st.text_input("𝕏 (Twitter) Handle / Profile:", value=st.session_state.get("social_x", ""), placeholder="e.g. @fan_handle")
+                    sett_ig = st.text_input("📸 Instagram Handle:", value=st.session_state.get("social_ig", ""), placeholder="e.g. @fan_insta")
                     sett_yt = st.text_input("▶️ YouTube Channel / Handle:", value=st.session_state.get("social_yt", "@W3bHippo"), placeholder="e.g. @W3bHippo")
                 with col_s2:
-                    sett_tiktok = st.text_input("🎵 TikTok Handle:", value=st.session_state.get("social_tiktok", ""), placeholder="e.g. ")
+                    sett_tiktok = st.text_input("🎵 TikTok Handle:", value=st.session_state.get("social_tiktok", ""), placeholder="e.g. @fan_tiktok")
                     sett_discord = st.text_input("💬 Discord / Chat Handle:", value=st.session_state.get("social_discord", ""), placeholder="e.g. username#1234")
                     sett_seat_pref = st.text_input("📍 Primary Seat Anchor / Season Ticket:", value=st.session_state.registered_fans_db.get(st.session_state.member_email, {}).get("seat", st.session_state.get("member_seat", "Section 114, Row 3")))
 
@@ -1615,29 +1855,27 @@ elif screen == "🎪 Screen 2: 36h Virtual Tailgate":
                 * **Section Hosts:** Marcus Vance (Section Director) & Elena Rostova (Prop Captain)
                 """)
                 ev_plaza = "plaza_rally_bb"
-                rsvpd_plaza = ev_plaza in st.session_state.get("meetup_rsvps", [])
+                rsvpd_plaza = ev_plaza in st.session_state.get("meetup_rsvps_bb", [])
                 if not rsvpd_plaza:
                     if st.button("🎟️ RSVP for Plaza Rally", key="btn_rsvp_plaza", use_container_width=True):
-                        st.session_state.meetup_rsvps.append(ev_plaza)
-                        st.session_state.tailgates_attended = st.session_state.get("tailgates_attended", 0) + 1
+                        st.session_state.meetup_rsvps_bb.append(ev_plaza)
+                        st.session_state.tailgates_attended_bb = len(st.session_state.meetup_rsvps_bb)
+                        st.session_state.tailgates_attended = st.session_state.tailgates_attended_bb
+                        st.session_state.meetup_rsvps = list(st.session_state.meetup_rsvps_bb)
+                        st.session_state.chant_action_taken_bb = True
                         st.session_state.chant_action_taken = True
-                        email = st.session_state.get("member_email", "fan@gmail.com")
-                        if email in st.session_state.registered_fans_db:
-                            st.session_state.registered_fans_db[email]["tailgates_attended"] = st.session_state.tailgates_attended
-                            st.session_state.registered_fans_db[email]["meetup_rsvps"] = st.session_state.meetup_rsvps
-                            _save_fans_db(st.session_state.registered_fans_db)
+                        _sync_and_persist_user_state()
                         _ensure_member_in_persona_db()
                         st.rerun()
                 else:
-                    st.success(f"🎟️ **RSVP CONFIRMED FOR {st.session_state.member_name.upper()} ({st.session_state.member_handle})!**\n\n📍 **Pass Assigned:** `Row 1-5 Wristband Priority` | **Event:** Arena Plaza Rally\n🔑 **Passport Hash:** `0xBCN-{st.session_state.member_hash[2:8].upper()}` &bull; Consistency: **{st.session_state.tailgates_attended} Event(s) Logged**")
+                    st.success(f"🎟️ **RSVP CONFIRMED FOR {st.session_state.member_name.upper()} ({st.session_state.member_handle})!**\n\n📍 **Pass Assigned:** `Row 1-5 Wristband Priority` | **Event:** Arena Plaza Rally\n🔑 **Passport Hash:** `0xBCN-{st.session_state.member_hash[2:8].upper()}` &bull; Consistency: **{st.session_state.tailgates_attended_bb} Basketball Event(s) Logged**")
                     if st.button("Cancel Plaza Rally RSVP", key="btn_cancel_plaza", use_container_width=True):
-                        st.session_state.meetup_rsvps.remove(ev_plaza)
-                        st.session_state.tailgates_attended = max(0, st.session_state.get("tailgates_attended", 1) - 1)
-                        email = st.session_state.get("member_email", "fan@gmail.com")
-                        if email in st.session_state.registered_fans_db:
-                            st.session_state.registered_fans_db[email]["tailgates_attended"] = st.session_state.tailgates_attended
-                            st.session_state.registered_fans_db[email]["meetup_rsvps"] = st.session_state.meetup_rsvps
-                            _save_fans_db(st.session_state.registered_fans_db)
+                        if ev_plaza in st.session_state.meetup_rsvps_bb:
+                            st.session_state.meetup_rsvps_bb.remove(ev_plaza)
+                        st.session_state.tailgates_attended_bb = len(st.session_state.meetup_rsvps_bb)
+                        st.session_state.tailgates_attended = st.session_state.tailgates_attended_bb
+                        st.session_state.meetup_rsvps = list(st.session_state.meetup_rsvps_bb)
+                        _sync_and_persist_user_state()
                         _ensure_member_in_persona_db()
                         st.rerun()
 
@@ -1650,28 +1888,25 @@ elif screen == "🎪 Screen 2: 36h Virtual Tailgate":
                 * **Section Host:** Devon Miller (Vocal Tactician)
                 """)
                 ev_campus = "campus_walk_bb"
-                rsvpd_campus = ev_campus in st.session_state.get("meetup_rsvps", [])
+                rsvpd_campus = ev_campus in st.session_state.get("meetup_rsvps_bb", [])
                 if not rsvpd_campus:
                     if st.button("🎟️ RSVP for Campus Walk", key="btn_rsvp_campus", use_container_width=True):
-                        st.session_state.meetup_rsvps.append(ev_campus)
-                        st.session_state.tailgates_attended = st.session_state.get("tailgates_attended", 0) + 1
-                        email = st.session_state.get("member_email", "fan@gmail.com")
-                        if email in st.session_state.registered_fans_db:
-                            st.session_state.registered_fans_db[email]["tailgates_attended"] = st.session_state.tailgates_attended
-                            st.session_state.registered_fans_db[email]["meetup_rsvps"] = st.session_state.meetup_rsvps
-                            _save_fans_db(st.session_state.registered_fans_db)
+                        st.session_state.meetup_rsvps_bb.append(ev_campus)
+                        st.session_state.tailgates_attended_bb = len(st.session_state.meetup_rsvps_bb)
+                        st.session_state.tailgates_attended = st.session_state.tailgates_attended_bb
+                        st.session_state.meetup_rsvps = list(st.session_state.meetup_rsvps_bb)
+                        _sync_and_persist_user_state()
                         _ensure_member_in_persona_db()
                         st.rerun()
                 else:
-                    st.success(f"🎟️ **RSVP CONFIRMED FOR {st.session_state.member_name.upper()} ({st.session_state.member_handle})!**\n\n🚌 **Shuttle Pass:** `Union Commons Express #2` | **Event:** Campus Walk Crew\n🔑 **Passport Hash:** `0xBCN-{st.session_state.member_hash[2:8].upper()}` &bull; Consistency: **{st.session_state.tailgates_attended} Event(s) Logged**")
+                    st.success(f"🎟️ **RSVP CONFIRMED FOR {st.session_state.member_name.upper()} ({st.session_state.member_handle})!**\n\n🚌 **Shuttle Pass:** `Union Commons Express #2` | **Event:** Campus Walk Crew\n🔑 **Passport Hash:** `0xBCN-{st.session_state.member_hash[2:8].upper()}` &bull; Consistency: **{st.session_state.tailgates_attended_bb} Basketball Event(s) Logged**")
                     if st.button("Cancel Campus Walk RSVP", key="btn_cancel_campus", use_container_width=True):
-                        st.session_state.meetup_rsvps.remove(ev_campus)
-                        st.session_state.tailgates_attended = max(0, st.session_state.get("tailgates_attended", 1) - 1)
-                        email = st.session_state.get("member_email", "fan@gmail.com")
-                        if email in st.session_state.registered_fans_db:
-                            st.session_state.registered_fans_db[email]["tailgates_attended"] = st.session_state.tailgates_attended
-                            st.session_state.registered_fans_db[email]["meetup_rsvps"] = st.session_state.meetup_rsvps
-                            _save_fans_db(st.session_state.registered_fans_db)
+                        if ev_campus in st.session_state.meetup_rsvps_bb:
+                            st.session_state.meetup_rsvps_bb.remove(ev_campus)
+                        st.session_state.tailgates_attended_bb = len(st.session_state.meetup_rsvps_bb)
+                        st.session_state.tailgates_attended = st.session_state.tailgates_attended_bb
+                        st.session_state.meetup_rsvps = list(st.session_state.meetup_rsvps_bb)
+                        _sync_and_persist_user_state()
                         _ensure_member_in_persona_db()
                         st.rerun()
         else:
@@ -1684,29 +1919,27 @@ elif screen == "🎪 Screen 2: 36h Virtual Tailgate":
                 * **Section Hosts:** Carlos Mendez (Tailgate Host) & Sarah Jenkins (10-Yr Veteran)
                 """)
                 ev_lotb = "lotb_tailgate_fb"
-                rsvpd_lotb = ev_lotb in st.session_state.get("meetup_rsvps", [])
+                rsvpd_lotb = ev_lotb in st.session_state.get("meetup_rsvps_fb", [])
                 if not rsvpd_lotb:
                     if st.button("🎟️ RSVP for Lot B Tailgate", key="btn_rsvp_lotb", use_container_width=True):
-                        st.session_state.meetup_rsvps.append(ev_lotb)
-                        st.session_state.tailgates_attended = st.session_state.get("tailgates_attended", 0) + 1
+                        st.session_state.meetup_rsvps_fb.append(ev_lotb)
+                        st.session_state.tailgates_attended_fb = len(st.session_state.meetup_rsvps_fb)
+                        st.session_state.tailgates_attended = st.session_state.tailgates_attended_fb
+                        st.session_state.meetup_rsvps = list(st.session_state.meetup_rsvps_fb)
+                        st.session_state.chant_action_taken_fb = True
                         st.session_state.chant_action_taken = True
-                        email = st.session_state.get("member_email", "fan@gmail.com")
-                        if email in st.session_state.registered_fans_db:
-                            st.session_state.registered_fans_db[email]["tailgates_attended"] = st.session_state.tailgates_attended
-                            st.session_state.registered_fans_db[email]["meetup_rsvps"] = st.session_state.meetup_rsvps
-                            _save_fans_db(st.session_state.registered_fans_db)
+                        _sync_and_persist_user_state()
                         _ensure_member_in_persona_db()
                         st.rerun()
                 else:
-                    st.success(f"🎟️ **RSVP CONFIRMED FOR {st.session_state.member_name.upper()} ({st.session_state.member_handle})!**\n\n🥩 **Pass Assigned:** `Lot B VIP Smoked Brisket & Drink Voucher`\n🔑 **Passport Hash:** `0xBCN-{st.session_state.member_hash[2:8].upper()}` &bull; Consistency: **{st.session_state.tailgates_attended} Event(s) Logged**")
+                    st.success(f"🎟️ **RSVP CONFIRMED FOR {st.session_state.member_name.upper()} ({st.session_state.member_handle})!**\n\n🥩 **Pass Assigned:** `Lot B VIP Smoked Brisket & Drink Voucher`\n🔑 **Passport Hash:** `0xBCN-{st.session_state.member_hash[2:8].upper()}` &bull; Consistency: **{st.session_state.tailgates_attended_fb} Football Event(s) Logged**")
                     if st.button("Cancel Lot B RSVP", key="btn_cancel_lotb", use_container_width=True):
-                        st.session_state.meetup_rsvps.remove(ev_lotb)
-                        st.session_state.tailgates_attended = max(0, st.session_state.get("tailgates_attended", 1) - 1)
-                        email = st.session_state.get("member_email", "fan@gmail.com")
-                        if email in st.session_state.registered_fans_db:
-                            st.session_state.registered_fans_db[email]["tailgates_attended"] = st.session_state.tailgates_attended
-                            st.session_state.registered_fans_db[email]["meetup_rsvps"] = st.session_state.meetup_rsvps
-                            _save_fans_db(st.session_state.registered_fans_db)
+                        if ev_lotb in st.session_state.meetup_rsvps_fb:
+                            st.session_state.meetup_rsvps_fb.remove(ev_lotb)
+                        st.session_state.tailgates_attended_fb = len(st.session_state.meetup_rsvps_fb)
+                        st.session_state.tailgates_attended = st.session_state.tailgates_attended_fb
+                        st.session_state.meetup_rsvps = list(st.session_state.meetup_rsvps_fb)
+                        _sync_and_persist_user_state()
                         _ensure_member_in_persona_db()
                         st.rerun()
 
@@ -1719,28 +1952,25 @@ elif screen == "🎪 Screen 2: 36h Virtual Tailgate":
                 * **Section Host:** Maya Patel (Biometric & Tech Superfan)
                 """)
                 ev_shuttle = "north_shuttle_fb"
-                rsvpd_shuttle = ev_shuttle in st.session_state.get("meetup_rsvps", [])
+                rsvpd_shuttle = ev_shuttle in st.session_state.get("meetup_rsvps_fb", [])
                 if not rsvpd_shuttle:
                     if st.button("🎟️ RSVP for North Express Shuttle", key="btn_rsvp_shuttle", use_container_width=True):
-                        st.session_state.meetup_rsvps.append(ev_shuttle)
-                        st.session_state.tailgates_attended = st.session_state.get("tailgates_attended", 0) + 1
-                        email = st.session_state.get("member_email", "fan@gmail.com")
-                        if email in st.session_state.registered_fans_db:
-                            st.session_state.registered_fans_db[email]["tailgates_attended"] = st.session_state.tailgates_attended
-                            st.session_state.registered_fans_db[email]["meetup_rsvps"] = st.session_state.meetup_rsvps
-                            _save_fans_db(st.session_state.registered_fans_db)
+                        st.session_state.meetup_rsvps_fb.append(ev_shuttle)
+                        st.session_state.tailgates_attended_fb = len(st.session_state.meetup_rsvps_fb)
+                        st.session_state.tailgates_attended = st.session_state.tailgates_attended_fb
+                        st.session_state.meetup_rsvps = list(st.session_state.meetup_rsvps_fb)
+                        _sync_and_persist_user_state()
                         _ensure_member_in_persona_db()
                         st.rerun()
                 else:
-                    st.success(f"🎟️ **RSVP CONFIRMED FOR {st.session_state.member_name.upper()} ({st.session_state.member_handle})!**\n\n🚌 **Boarding Pass:** `North Express Bay 3 Priority Shuttle`\n🔑 **Passport Hash:** `0xBCN-{st.session_state.member_hash[2:8].upper()}` &bull; Consistency: **{st.session_state.tailgates_attended} Event(s) Logged**")
+                    st.success(f"🎟️ **RSVP CONFIRMED FOR {st.session_state.member_name.upper()} ({st.session_state.member_handle})!**\n\n🚌 **Boarding Pass:** `North Express Bay 3 Priority Shuttle`\n🔑 **Passport Hash:** `0xBCN-{st.session_state.member_hash[2:8].upper()}` &bull; Consistency: **{st.session_state.tailgates_attended_fb} Football Event(s) Logged**")
                     if st.button("Cancel Shuttle RSVP", key="btn_cancel_shuttle", use_container_width=True):
-                        st.session_state.meetup_rsvps.remove(ev_shuttle)
-                        st.session_state.tailgates_attended = max(0, st.session_state.get("tailgates_attended", 1) - 1)
-                        email = st.session_state.get("member_email", "fan@gmail.com")
-                        if email in st.session_state.registered_fans_db:
-                            st.session_state.registered_fans_db[email]["tailgates_attended"] = st.session_state.tailgates_attended
-                            st.session_state.registered_fans_db[email]["meetup_rsvps"] = st.session_state.meetup_rsvps
-                            _save_fans_db(st.session_state.registered_fans_db)
+                        if ev_shuttle in st.session_state.meetup_rsvps_fb:
+                            st.session_state.meetup_rsvps_fb.remove(ev_shuttle)
+                        st.session_state.tailgates_attended_fb = len(st.session_state.meetup_rsvps_fb)
+                        st.session_state.tailgates_attended = st.session_state.tailgates_attended_fb
+                        st.session_state.meetup_rsvps = list(st.session_state.meetup_rsvps_fb)
+                        _sync_and_persist_user_state()
                         _ensure_member_in_persona_db()
                         st.rerun()
 
