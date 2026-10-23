@@ -5,7 +5,7 @@
 
 ---
 
-## Milestone Execution Summary (151 / 151 Verification Checks Passing — 100%)
+## Milestone Execution Summary (197 / 197 Verification Checks Passing — 100%)
 
 | Milestone Window | Focus & Core Objectives | Primary Deliverables & Architecture | Status |
 | :--- | :--- | :--- | :--- |
@@ -15,7 +15,8 @@
 | **Week 4** | watsonx.ai live foundation model integration | IBM Granite 4.0 chat inference, vocal urgency scoring, tailgate chant synthesis | **COMPLETED** |
 | **Week 5** | Enterprise hardening & reliability | 50-seat BLE mesh pod clustering (98% backhaul reduction), EEOC dialect fairness (`DIR = 0.953`), COS S3 SHA-256 archives | **COMPLETED** |
 | **Week 6** | 16-Agent Production Cast & 5-Screen HUD | 16 YAML agents mapped 2-for-1 across all 8 IBM Archetypes with live Frankfurt UUIDs (`eu-de-0ec71755`), 80k stadium FinOps ($0.0137/seat), Screen 5 AI Squad hub | **COMPLETED** |
-| **Weeks 7–8** | Live venue pilot, sponsor attribution & final submission | Partner student section trial, sponsor conversion telemetry, final video demonstration | **ACTIVE / IN PROGRESS** |
+| **Week 7** | Onboarding NPC Mentor Progression & Cloud Tester URL | Interactive 8-mentor progression tree, rookie baton pass, dual onboarding, RSVP & Settings hub, Streamlit Cloud deployment | **ACTIVE / IN PROGRESS** |
+| **Weeks 8–10** | Live venue pilot, sponsor attribution & final submission | Partner student section trial, sponsor conversion telemetry, final pitch & executive handoff | **PLANNED** |
 
 ---
 
@@ -24,4 +25,10 @@
 - **FinOps Ceiling:** `$0.0137 / seat` compute cost ($\le \$0.0150$ ceiling) vs. `$4.85 / seat` sponsor ROI (**99.72% gross margin**).
 - **Network Efficiency:** **98.0%** cellular backhaul reduction via 50-to-1 BLE mesh pod leaders.
 - **AI Governance:** **100%** adversarial prompt-injection block rate; **`DIR = 0.953`** regional dialect fairness.
-- **Verification Suites:** 4 suites, **151 / 151 checks passing** (`test_full_suite_week5`, `test_16_agent_production`, `test_step4_finops_and_discovery`, `test_screen5_squad_intelligence`).
+- **Active Dropdown Isolation:** Profile selector strictly displays `[Signed-In Member + 4 Sport NPCs]` so new registered users never clutter other members' dropdown menus.
+- **Verification Suites:** 6 master suites, **197 / 197 checks passing** (`test_full_suite_week5` [51], `test_16_agent_production` [44], `test_step4_finops_and_discovery` [26], `test_screen5_squad_intelligence` [30], `test_market_competitor_benchmarks` [34], `test_week7_onboarding_npc` [12]).
+
+---
+
+## Future Feature Backlog (Saved for Post-Deployment Feature Phase)
+- **Screen 5 Section & Row Fan-to-Fan Live Chat:** Opt-in chat tab on Screen 5 allowing registered members seated in the same section and row (or 50-seat BLE pod) to message each other directly during the game when it is too loud or far to yell down the row—connecting fans organically without cluttering the active user profile dropdown.

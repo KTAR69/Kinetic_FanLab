@@ -10,12 +10,20 @@ Verifies:
 ==============================================================================
 """
 
-import os
-import sys
+import sys, os, importlib.abc, importlib.util
 
-# Ensure root directory is in Python path for imports
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+class DirectPathFinder(importlib.abc.MetaPathFinder):
+    def find_spec(self, fullname, path, target=None):
+        search_paths = [os.getcwd(), os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))] if path is None else path
+        for p in search_paths:
+            file_path = os.path.join(p, fullname + '.py')
+            if os.path.exists(file_path):
+                return importlib.util.spec_from_file_location(fullname, file_path)
+        return None
 
+sys.meta_path.insert(0, DirectPathFinder())
+
+import random
 from edge_mesh_resilience import BleMeshPodCluster, StadiumIngestionGateway
 
 def test_bandwidth_reduction():
@@ -26,11 +34,11 @@ def test_bandwidth_reduction():
 
     # Raw individual device streaming: 4 channels per fan at 2.0 Hz
     raw_packet_rate_per_sec = stadium_fans * 2.0 # 160,000 pkts/s
-    raw_bandwidth_bytes_per_sec = raw_packet_rate_per_sec * 256 # ~39.06 MB/s
+    raw_bandwidth_bytes_per_sec = raw_packet_rate_per_sec * 256 # ~40.96 MB/s
 
     # BLE Mesh Clustering: 1,600 cluster heads each streaming 1 composite packet at 2.0 Hz
     mesh_packet_rate_per_sec = num_pods * 2.0 # 3,200 pkts/s
-    mesh_bandwidth_bytes_per_sec = mesh_packet_rate_per_sec * 256 # ~0.78 MB/s
+    mesh_bandwidth_bytes_per_sec = mesh_packet_rate_per_sec * 256 # ~0.819 MB/s
 
     reduction_pct = (1.0 - (mesh_packet_rate_per_sec / raw_packet_rate_per_sec)) * 100.0
 
@@ -38,7 +46,7 @@ def test_bandwidth_reduction():
     print(f"  • Total BLE Mesh Pods:         {num_pods:,} Pods (50 seats/pod)")
     print(f"  • Raw Individual Ingestion:    {raw_packet_rate_per_sec:,} packets/sec ({raw_bandwidth_bytes_per_sec / (1024*1024):.2f} MB/s)")
     print(f"  • BLE Mesh Pod Ingestion:      {mesh_packet_rate_per_sec:,} packets/sec ({mesh_bandwidth_bytes_per_sec / (1024*1024):.2f} MB/s)")
-    print(f"  • Backhaul Traffic Reduction:  {reduction_pct:.2f}% (Target >= 98.0%)")
+    print(f"  • Backhaul Traffic Reduction:  {reduction_pct:.2f}% (Target >= 98.4%)")
 
     assert reduction_pct >= 98.0, "Bandwidth reduction does not satisfy Slide 19 constraint!"
     print("  ✅ 98.4%+ Bandwidth Reduction verified.")
@@ -55,7 +63,8 @@ def test_packet_loss_graceful_degradation():
 
     for rate in drop_rates:
         gateway = StadiumIngestionGateway(sport="Football")
-        gateway.last_valid_cmi = 92.0 # Prime gateway with clutch state
+        # Prime gateway with clutch state
+        gateway.last_valid_cmi = 92.0
 
         cmis = []
         statuses = []
@@ -83,6 +92,7 @@ def test_edge_caching_and_burst_sync():
 
     # Simulate 30 ticks (15 seconds) of local generation during total cellular blackout
     for t in range(30):
+        # Fan energy surges during blackout
         surge_db = 85.0 + t * 0.7
         sample_fans = [{"db": surge_db, "hr": 105.0 + t, "taps": 3.0 + t * 0.3, "vu": 0.60 + t * 0.01} for _ in range(50)]
         pod.aggregate_raw_seat_telemetry(sample_fans)

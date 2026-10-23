@@ -1,0 +1,160 @@
+{
+  "owltar@gmail.com": {
+    "email": "owltar@gmail.com",
+    "password": "password123",
+    "name": "Troy Resendez",
+    "handle": "@owltar",
+    "seat": "Section 114, Row 3, Seat 12",
+    "hash": "0xTR-sec114-8f7a2",
+    "sport": "Basketball",
+    "bb_level": "Both (NCAA D1 & NBA)",
+    "fb_level": "Both (NCAA D1 & NFL)",
+    "teams_bb": [
+      "Duke Blue Devils",
+      "Boston Celtics"
+    ],
+    "teams_fb": [
+      "Michigan Wolverines",
+      "Green Bay Packers"
+    ],
+    "role": "Rookie Member",
+    "tier": "Rookie Member (Tier 1)",
+    "games": 0,
+    "career_db": "0.0 dB",
+    "clutch_stops": 0,
+    "unlocked_mentors_bb": [
+      "Marcus Vance"
+    ],
+    "unlocked_mentors_fb": [
+      "Sarah Jenkins"
+    ],
+    "tailgates_attended": 0,
+    "meetup_rsvps": [],
+    "socials": {
+      "x": "@owltar",
+      "instagram": "@owltar_fanlab",
+      "youtube": "@W3bHippo",
+      "tiktok": "@owltar_energy",
+      "discord": "owltar#1234"
+    },
+    "settings": {
+      "wearable_device": "Apple Watch Ultra 2 (ECG/dB)",
+      "ble_sensitivity": -54,
+      "notif_clutch": true,
+      "notif_tailgate": true,
+      "notif_chaser": true,
+      "pref_leaderboard_public": true,
+      "pref_anonymize_biometrics": true,
+      "retention": "Gameday Session Only (Zero Cloud Raw Storage)"
+    }
+  },
+  "fan@gmail.com": {
+    "email": "fan@gmail.com",
+    "password": "password123",
+    "name": "Troy Resendez",
+    "handle": "@owltar",
+    "seat": "Section 114, Row 3, Seat 12",
+    "hash": "0xTR-sec114-8f7a2",
+    "sport": "Basketball",
+    "bb_level": "Both (NCAA D1 & NBA)",
+    "fb_level": "Both (NCAA D1 & NFL)",
+    "teams_bb": [
+      "Duke Blue Devils",
+      "Boston Celtics"
+    ],
+    "teams_fb": [
+      "Michigan Wolverines",
+      "Green Bay Packers"
+    ],
+    "role": "Rookie Member",
+    "tier": "Rookie Member (Tier 1)",
+    "games": 0,
+    "career_db": "0.0 dB",
+    "clutch_stops": 0,
+    "unlocked_mentors_bb": [
+      "Marcus Vance"
+    ],
+    "unlocked_mentors_fb": [
+      "Sarah Jenkins"
+    ],
+    "tailgates_attended": 0,
+    "meetup_rsvps": [],
+    "socials": {
+      "x": "@owltar",
+      "instagram": "@owltar_fanlab",
+      "youtube": "@W3bHippo",
+      "tiktok": "@owltar_energy",
+      "discord": "owltar#1234"
+    },
+    "settings": {
+      "wearable_device": "Apple Watch Ultra 2 (ECG/dB)",
+      "ble_sensitivity": -54,
+      "notif_clutch": true,
+      "notif_tailgate": true,
+      "notif_chaser": true,
+      "pref_leaderboard_public": true,
+      "pref_anonymize_biometrics": true,
+      "retention": "Gameday Session Only (Zero Cloud Raw Storage)"
+    }
+  },
+  "mvance@thunderrow.org": {
+    "email": "mvance@thunderrow.org",
+    "password": "demo1234",
+    "name": "Marcus Vance",
+    "handle": "@mvance_sec114",
+    "seat": "Row 1, Seat 1",
+    "hash": "0xMV-sec114-8f7a2",
+    "sport": "Basketball",
+    "bb_level": "Both (NCAA D1 & NBA)",
+    "fb_level": "Both (NCAA D1 & NFL)",
+    "teams_bb": [
+      "Duke Blue Devils",
+      "Boston Celtics"
+    ],
+    "teams_fb": [
+      "Michigan Wolverines",
+      "Green Bay Packers"
+    ],
+    "role": "Student Section Director",
+    "tier": "Section Director (Tier 4)",
+    "games": 34,
+    "career_db": "3,820 dB",
+    "clutch_stops": 23,
+    "unlocked_mentors_bb": [
+      "Marcus Vance"
+    ],
+    "unlocked_mentors_fb": [
+      "Sarah Jenkins"
+    ]
+  },
+  "sjenkins@endzoneloyals.org": {
+    "email": "sjenkins@endzoneloyals.org",
+    "password": "demo1234",
+    "name": "Sarah Jenkins",
+    "handle": "@sjenkins_sec115",
+    "seat": "Row 18, Seat 10",
+    "hash": "0xSJ-sec115-7b2a5",
+    "sport": "Football",
+    "bb_level": "Both (NCAA D1 & NBA)",
+    "fb_level": "Both (NCAA D1 & NFL)",
+    "teams_bb": [
+      "Duke Blue Devils",
+      "Boston Celtics"
+    ],
+    "teams_fb": [
+      "Michigan Wolverines",
+      "Green Bay Packers"
+    ],
+    "role": "10-Year Season Ticket Holder",
+    "tier": "Stadium Veteran (Tier 5)",
+    "games": 62,
+    "career_db": "6,850 dB",
+    "clutch_stops": 31,
+    "unlocked_mentors_bb": [
+      "Marcus Vance"
+    ],
+    "unlocked_mentors_fb": [
+      "Sarah Jenkins"
+    ]
+  }
+}
