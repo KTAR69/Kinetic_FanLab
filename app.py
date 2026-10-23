@@ -244,7 +244,7 @@ if "last_fixture" not in st.session_state or st.session_state.last_fixture != ac
 if "sport" not in st.session_state: st.session_state.sport = "Basketball"
 if "onboarding_mode" not in st.session_state: st.session_state.onboarding_mode = "Rookie Walkthrough"
 if "is_logged_in" not in st.session_state: st.session_state.is_logged_in = False
-if "member_email" not in st.session_state: st.session_state.member_email = "owltar@gmail.com"
+if "member_email" not in st.session_state: st.session_state.member_email = "fan@gmail.com"
 if "member_name" not in st.session_state: st.session_state.member_name = "Troy Resendez"
 if "member_handle" not in st.session_state: st.session_state.member_handle = "@owltar"
 if "member_hash" not in st.session_state: st.session_state.member_hash = "0xTR-sec114-8f7a2"
@@ -377,8 +377,8 @@ USERS_DB_FILE = os.path.join(current_dir, "data", "registered_fans.json")
 
 def _load_fans_db():
     defaults = {
-        "owltar@gmail.com": {
-            "email": "owltar@gmail.com",
+        "fan@gmail.com": {
+            "email": "fan@gmail.com",
             "password": "password123",
             "name": "Troy Resendez",
             "handle": "@owltar",
@@ -639,7 +639,7 @@ def _ensure_member_in_persona_db():
     if not st.session_state.get("is_logged_in"):
         return
     name = st.session_state.get("member_name", "Troy Resendez")
-    email = st.session_state.get("member_email", "owltar@gmail.com")
+    email = st.session_state.get("member_email", "fan@gmail.com")
     user_entry = st.session_state.registered_fans_db.get(email, {})
     m_sport = st.session_state.get("sport", "Basketball")
     is_bball = (m_sport == "Basketball")
@@ -722,7 +722,7 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
 
             with st.form(key="member_signup_form"):
                 col_acc1, col_acc2 = st.columns(2)
-                signup_email = col_acc1.text_input("Email Address", placeholder="e.g., owltar@gmail.com or fan@university.edu")
+                signup_email = col_acc1.text_input("Email Address", placeholder="e.g., fan@gmail.com or fan@university.edu")
                 signup_pwd = col_acc2.text_input("Password", type="password", placeholder="Enter secure password")
 
                 col_prof1, col_prof2, col_prof3 = st.columns(3)
@@ -894,7 +894,7 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
             st.caption("Sign in to your registered account with your verified email and password.")
 
             with st.form(key="member_login_form"):
-                login_email = st.text_input("Registered Email Address", value="owltar@gmail.com")
+                login_email = st.text_input("Registered Email Address", value="fan@gmail.com")
                 login_pwd = st.text_input("Password", type="password", value="password123")
                 submit_login = st.form_submit_button("🔑 Log In with Email & Password", use_container_width=True)
 
@@ -1520,7 +1520,7 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                     st.session_state.pref_anonymize_biometrics = sett_anonymize
                     st.session_state.member_seat = sett_seat_pref.strip()
 
-                    email = st.session_state.get("member_email", "owltar@gmail.com")
+                    email = st.session_state.get("member_email", "fan@gmail.com")
                     if email in st.session_state.registered_fans_db:
                         st.session_state.registered_fans_db[email]["socials"] = {
                             "x": sett_x.strip(),
@@ -1621,7 +1621,7 @@ elif screen == "🎪 Screen 2: 36h Virtual Tailgate":
                         st.session_state.meetup_rsvps.append(ev_plaza)
                         st.session_state.tailgates_attended = st.session_state.get("tailgates_attended", 0) + 1
                         st.session_state.chant_action_taken = True
-                        email = st.session_state.get("member_email", "owltar@gmail.com")
+                        email = st.session_state.get("member_email", "fan@gmail.com")
                         if email in st.session_state.registered_fans_db:
                             st.session_state.registered_fans_db[email]["tailgates_attended"] = st.session_state.tailgates_attended
                             st.session_state.registered_fans_db[email]["meetup_rsvps"] = st.session_state.meetup_rsvps
@@ -1633,7 +1633,7 @@ elif screen == "🎪 Screen 2: 36h Virtual Tailgate":
                     if st.button("Cancel Plaza Rally RSVP", key="btn_cancel_plaza", use_container_width=True):
                         st.session_state.meetup_rsvps.remove(ev_plaza)
                         st.session_state.tailgates_attended = max(0, st.session_state.get("tailgates_attended", 1) - 1)
-                        email = st.session_state.get("member_email", "owltar@gmail.com")
+                        email = st.session_state.get("member_email", "fan@gmail.com")
                         if email in st.session_state.registered_fans_db:
                             st.session_state.registered_fans_db[email]["tailgates_attended"] = st.session_state.tailgates_attended
                             st.session_state.registered_fans_db[email]["meetup_rsvps"] = st.session_state.meetup_rsvps
@@ -1655,7 +1655,7 @@ elif screen == "🎪 Screen 2: 36h Virtual Tailgate":
                     if st.button("🎟️ RSVP for Campus Walk", key="btn_rsvp_campus", use_container_width=True):
                         st.session_state.meetup_rsvps.append(ev_campus)
                         st.session_state.tailgates_attended = st.session_state.get("tailgates_attended", 0) + 1
-                        email = st.session_state.get("member_email", "owltar@gmail.com")
+                        email = st.session_state.get("member_email", "fan@gmail.com")
                         if email in st.session_state.registered_fans_db:
                             st.session_state.registered_fans_db[email]["tailgates_attended"] = st.session_state.tailgates_attended
                             st.session_state.registered_fans_db[email]["meetup_rsvps"] = st.session_state.meetup_rsvps
@@ -1667,7 +1667,7 @@ elif screen == "🎪 Screen 2: 36h Virtual Tailgate":
                     if st.button("Cancel Campus Walk RSVP", key="btn_cancel_campus", use_container_width=True):
                         st.session_state.meetup_rsvps.remove(ev_campus)
                         st.session_state.tailgates_attended = max(0, st.session_state.get("tailgates_attended", 1) - 1)
-                        email = st.session_state.get("member_email", "owltar@gmail.com")
+                        email = st.session_state.get("member_email", "fan@gmail.com")
                         if email in st.session_state.registered_fans_db:
                             st.session_state.registered_fans_db[email]["tailgates_attended"] = st.session_state.tailgates_attended
                             st.session_state.registered_fans_db[email]["meetup_rsvps"] = st.session_state.meetup_rsvps
@@ -1690,7 +1690,7 @@ elif screen == "🎪 Screen 2: 36h Virtual Tailgate":
                         st.session_state.meetup_rsvps.append(ev_lotb)
                         st.session_state.tailgates_attended = st.session_state.get("tailgates_attended", 0) + 1
                         st.session_state.chant_action_taken = True
-                        email = st.session_state.get("member_email", "owltar@gmail.com")
+                        email = st.session_state.get("member_email", "fan@gmail.com")
                         if email in st.session_state.registered_fans_db:
                             st.session_state.registered_fans_db[email]["tailgates_attended"] = st.session_state.tailgates_attended
                             st.session_state.registered_fans_db[email]["meetup_rsvps"] = st.session_state.meetup_rsvps
@@ -1702,7 +1702,7 @@ elif screen == "🎪 Screen 2: 36h Virtual Tailgate":
                     if st.button("Cancel Lot B RSVP", key="btn_cancel_lotb", use_container_width=True):
                         st.session_state.meetup_rsvps.remove(ev_lotb)
                         st.session_state.tailgates_attended = max(0, st.session_state.get("tailgates_attended", 1) - 1)
-                        email = st.session_state.get("member_email", "owltar@gmail.com")
+                        email = st.session_state.get("member_email", "fan@gmail.com")
                         if email in st.session_state.registered_fans_db:
                             st.session_state.registered_fans_db[email]["tailgates_attended"] = st.session_state.tailgates_attended
                             st.session_state.registered_fans_db[email]["meetup_rsvps"] = st.session_state.meetup_rsvps
@@ -1724,7 +1724,7 @@ elif screen == "🎪 Screen 2: 36h Virtual Tailgate":
                     if st.button("🎟️ RSVP for North Express Shuttle", key="btn_rsvp_shuttle", use_container_width=True):
                         st.session_state.meetup_rsvps.append(ev_shuttle)
                         st.session_state.tailgates_attended = st.session_state.get("tailgates_attended", 0) + 1
-                        email = st.session_state.get("member_email", "owltar@gmail.com")
+                        email = st.session_state.get("member_email", "fan@gmail.com")
                         if email in st.session_state.registered_fans_db:
                             st.session_state.registered_fans_db[email]["tailgates_attended"] = st.session_state.tailgates_attended
                             st.session_state.registered_fans_db[email]["meetup_rsvps"] = st.session_state.meetup_rsvps
@@ -1736,7 +1736,7 @@ elif screen == "🎪 Screen 2: 36h Virtual Tailgate":
                     if st.button("Cancel Shuttle RSVP", key="btn_cancel_shuttle", use_container_width=True):
                         st.session_state.meetup_rsvps.remove(ev_shuttle)
                         st.session_state.tailgates_attended = max(0, st.session_state.get("tailgates_attended", 1) - 1)
-                        email = st.session_state.get("member_email", "owltar@gmail.com")
+                        email = st.session_state.get("member_email", "fan@gmail.com")
                         if email in st.session_state.registered_fans_db:
                             st.session_state.registered_fans_db[email]["tailgates_attended"] = st.session_state.tailgates_attended
                             st.session_state.registered_fans_db[email]["meetup_rsvps"] = st.session_state.meetup_rsvps
