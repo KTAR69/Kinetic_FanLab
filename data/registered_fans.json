@@ -2,10 +2,10 @@
   "owltar@gmail.com": {
     "email": "owltar@gmail.com",
     "password": "password123",
-    "name": "Troy Resendez",
-    "handle": "@owltar",
+    "name": "Rookie Fan",
+    "handle": "@fan_rookie",
     "seat": "Section 114, Row 3, Seat 12",
-    "hash": "0xTR-sec114-8f7a2",
+    "hash": "0xROOKIE-sec114-8f7a2",
     "sport": "Basketball",
     "bb_level": "Both (NCAA D1 & NBA)",
     "fb_level": "Both (NCAA D1 & NFL)",
@@ -31,11 +31,11 @@
     "tailgates_attended": 0,
     "meetup_rsvps": [],
     "socials": {
-      "x": "@owltar",
-      "instagram": "@owltar_fanlab",
+      "x": "@fan_rookie",
+      "instagram": "",
       "youtube": "@W3bHippo",
-      "tiktok": "@owltar_energy",
-      "discord": "owltar#1234"
+      "tiktok": "",
+      "discord": ""
     },
     "settings": {
       "wearable_device": "Apple Watch Ultra 2 (ECG/dB)",
@@ -51,10 +51,10 @@
   "fan@gmail.com": {
     "email": "fan@gmail.com",
     "password": "password123",
-    "name": "Troy Resendez",
-    "handle": "@owltar",
+    "name": "Rookie Fan",
+    "handle": "@fan_rookie",
     "seat": "Section 114, Row 3, Seat 12",
-    "hash": "0xTR-sec114-8f7a2",
+    "hash": "0xROOKIE-sec114-8f7a2",
     "sport": "Basketball",
     "bb_level": "Both (NCAA D1 & NBA)",
     "fb_level": "Both (NCAA D1 & NFL)",
@@ -80,11 +80,11 @@
     "tailgates_attended": 0,
     "meetup_rsvps": [],
     "socials": {
-      "x": "@owltar",
-      "instagram": "@owltar_fanlab",
+      "x": "@fan_rookie",
+      "instagram": "",
       "youtube": "@W3bHippo",
-      "tiktok": "@owltar_energy",
-      "discord": "owltar#1234"
+      "tiktok": "",
+      "discord": ""
     },
     "settings": {
       "wearable_device": "Apple Watch Ultra 2 (ECG/dB)",

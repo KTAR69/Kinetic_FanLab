@@ -245,9 +245,9 @@ if "sport" not in st.session_state: st.session_state.sport = "Basketball"
 if "onboarding_mode" not in st.session_state: st.session_state.onboarding_mode = "Rookie Walkthrough"
 if "is_logged_in" not in st.session_state: st.session_state.is_logged_in = False
 if "member_email" not in st.session_state: st.session_state.member_email = "fan@gmail.com"
-if "member_name" not in st.session_state: st.session_state.member_name = "Troy Resendez"
-if "member_handle" not in st.session_state: st.session_state.member_handle = "@owltar"
-if "member_hash" not in st.session_state: st.session_state.member_hash = "0xTR-sec114-8f7a2"
+if "member_name" not in st.session_state: st.session_state.member_name = "Rookie Fan"
+if "member_handle" not in st.session_state: st.session_state.member_handle = "@fan_rookie"
+if "member_hash" not in st.session_state: st.session_state.member_hash = "0xROOKIE-sec114-8f7a2"
 if "member_role" not in st.session_state: st.session_state.member_role = "Rookie Fan"
 if "member_tier" not in st.session_state: st.session_state.member_tier = "Rookie Member (Tier 1)"
 if "member_seat" not in st.session_state: st.session_state.member_seat = "Section 114, Row 3, Seat 12"
@@ -256,11 +256,11 @@ if "member_career_db" not in st.session_state: st.session_state.member_career_db
 if "member_clutch_stops" not in st.session_state: st.session_state.member_clutch_stops = 0
 if "tailgates_attended" not in st.session_state: st.session_state.tailgates_attended = 0
 if "meetup_rsvps" not in st.session_state: st.session_state.meetup_rsvps = []
-if "social_x" not in st.session_state: st.session_state.social_x = "@owltar"
-if "social_ig" not in st.session_state: st.session_state.social_ig = "@owltar_fanlab"
+if "social_x" not in st.session_state: st.session_state.social_x = "@fan_rookie"
+if "social_ig" not in st.session_state: st.session_state.social_ig = ""
 if "social_yt" not in st.session_state: st.session_state.social_yt = "@W3bHippo"
-if "social_tiktok" not in st.session_state: st.session_state.social_tiktok = "@owltar_energy"
-if "social_discord" not in st.session_state: st.session_state.social_discord = "owltar#1234"
+if "social_tiktok" not in st.session_state: st.session_state.social_tiktok = ""
+if "social_discord" not in st.session_state: st.session_state.social_discord = ""
 if "wearable_device" not in st.session_state: st.session_state.wearable_device = "Apple Watch Ultra 2 (ECG/dB)"
 if "ble_sensitivity" not in st.session_state: st.session_state.ble_sensitivity = -54
 if "notif_clutch" not in st.session_state: st.session_state.notif_clutch = True
@@ -380,10 +380,10 @@ def _load_fans_db():
         "fan@gmail.com": {
             "email": "fan@gmail.com",
             "password": "password123",
-            "name": "Troy Resendez",
-            "handle": "@owltar",
+            "name": "Rookie Fan",
+            "handle": "@fan_rookie",
             "seat": "Section 114, Row 3, Seat 12",
-            "hash": "0xTR-sec114-8f7a2",
+            "hash": "0xROOKIE-sec114-8f7a2",
             "sport": "Basketball",
             "bb_level": "Both (NCAA D1 & NBA)",
             "fb_level": "Both (NCAA D1 & NFL)",
@@ -400,10 +400,10 @@ def _load_fans_db():
         "fan@gmail.com": {
             "email": "fan@gmail.com",
             "password": "password123",
-            "name": "Troy Resendez",
-            "handle": "@owltar",
+            "name": "Rookie Fan",
+            "handle": "@fan_rookie",
             "seat": "Section 114, Row 3, Seat 12",
-            "hash": "0xTR-sec114-8f7a2",
+            "hash": "0xROOKIE-sec114-8f7a2",
             "sport": "Basketball",
             "bb_level": "Both (NCAA D1 & NBA)",
             "fb_level": "Both (NCAA D1 & NFL)",
@@ -638,7 +638,7 @@ PERSONA_DB = {
 def _ensure_member_in_persona_db():
     if not st.session_state.get("is_logged_in"):
         return
-    name = st.session_state.get("member_name", "Troy Resendez")
+    name = st.session_state.get("member_name", "Rookie Fan")
     email = st.session_state.get("member_email", "fan@gmail.com")
     user_entry = st.session_state.registered_fans_db.get(email, {})
     m_sport = st.session_state.get("sport", "Basketball")
@@ -663,7 +663,7 @@ def _ensure_member_in_persona_db():
 
     tier_title = st.session_state.get("member_tier", user_entry.get("tier", "Rookie Member (Tier 1)"))
     role_title = st.session_state.get("member_role", user_entry.get("role", "Rookie Member"))
-    hash_val = st.session_state.get("member_hash", user_entry.get("hash", "0xTR-sec114-8f7a2" if is_bball else "0xTR-sec115-8f7a2"))
+    hash_val = st.session_state.get("member_hash", user_entry.get("hash", "0xROOKIE-sec114-8f7a2" if is_bball else "0xTR-sec115-8f7a2"))
 
     PERSONA_DB[name] = {
         "hash": hash_val,
@@ -726,8 +726,8 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                 signup_pwd = col_acc2.text_input("Password", type="password", placeholder="Enter secure password")
 
                 col_prof1, col_prof2, col_prof3 = st.columns(3)
-                signup_name = col_prof1.text_input("Fan Display Name", value="Troy Resendez")
-                signup_handle = col_prof2.text_input("Section Handle", value="@owltar")
+                signup_name = col_prof1.text_input("Fan Display Name", placeholder="e.g., Alex Johnson")
+                signup_handle = col_prof2.text_input("Section Handle", placeholder="e.g., @fan_alex")
                 signup_seat = col_prof3.text_input("Seat Anchor / Row", value="Section 114, Row 3, Seat 12")
 
                 st.markdown("---")
@@ -799,8 +799,8 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                     st.session_state.is_logged_in = True
                     st.session_state.just_signed_up = True
                     st.session_state.member_email = clean_email
-                    st.session_state.member_name = signup_name.strip() if signup_name.strip() else "Troy Resendez"
-                    st.session_state.member_handle = signup_handle.strip() if signup_handle.strip() else "@owltar"
+                    st.session_state.member_name = signup_name.strip() if signup_name.strip() else "Rookie Fan"
+                    st.session_state.member_handle = signup_handle.strip() if signup_handle.strip() else "@fan_rookie"
                     clean_hash_seed = f"{clean_email}-{signup_name}-{chosen_sport_clean}"
                     st.session_state.member_hash = f"0x{hashlib.sha256(clean_hash_seed.encode()).hexdigest()[:16]}"
                     st.session_state.member_role = "Rookie Member"
@@ -928,11 +928,11 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                     st.session_state.tailgates_attended = user_data.get("tailgates_attended", 0)
                     st.session_state.meetup_rsvps = list(user_data.get("meetup_rsvps", []))
                     soc = user_data.get("socials", {})
-                    st.session_state.social_x = soc.get("x", "@owltar")
-                    st.session_state.social_ig = soc.get("instagram", "@owltar_fanlab")
+                    st.session_state.social_x = soc.get("x", "@fan_rookie")
+                    st.session_state.social_ig = soc.get("instagram", "")
                     st.session_state.social_yt = soc.get("youtube", "@W3bHippo")
-                    st.session_state.social_tiktok = soc.get("tiktok", "@owltar_energy")
-                    st.session_state.social_discord = soc.get("discord", "owltar#1234")
+                    st.session_state.social_tiktok = soc.get("tiktok", "")
+                    st.session_state.social_discord = soc.get("discord", "")
                     sett = user_data.get("settings", {})
                     st.session_state.wearable_device = sett.get("wearable_device", "Apple Watch Ultra 2 (ECG/dB)")
                     st.session_state.ble_sensitivity = sett.get("ble_sensitivity", -54)
@@ -1460,12 +1460,12 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                 st.write("Link your social media accounts to display verified links across your Fan Passport, Trophy Showcase, and Proof-of-Momentum cards:")
                 col_s1, col_s2 = st.columns(2)
                 with col_s1:
-                    sett_x = st.text_input("𝕏 (Twitter) Handle / Profile:", value=st.session_state.get("social_x", "@owltar"), placeholder="e.g. @owltar")
-                    sett_ig = st.text_input("📸 Instagram Handle:", value=st.session_state.get("social_ig", "@owltar_fanlab"), placeholder="e.g. @owltar_fanlab")
+                    sett_x = st.text_input("𝕏 (Twitter) Handle / Profile:", value=st.session_state.get("social_x", "@fan_rookie"), placeholder="e.g. @owltar")
+                    sett_ig = st.text_input("📸 Instagram Handle:", value=st.session_state.get("social_ig", ""), placeholder="e.g. ")
                     sett_yt = st.text_input("▶️ YouTube Channel / Handle:", value=st.session_state.get("social_yt", "@W3bHippo"), placeholder="e.g. @W3bHippo")
                 with col_s2:
-                    sett_tiktok = st.text_input("🎵 TikTok Handle:", value=st.session_state.get("social_tiktok", "@owltar_energy"), placeholder="e.g. @owltar_energy")
-                    sett_discord = st.text_input("💬 Discord / Chat Handle:", value=st.session_state.get("social_discord", "owltar#1234"), placeholder="e.g. username#1234")
+                    sett_tiktok = st.text_input("🎵 TikTok Handle:", value=st.session_state.get("social_tiktok", ""), placeholder="e.g. ")
+                    sett_discord = st.text_input("💬 Discord / Chat Handle:", value=st.session_state.get("social_discord", ""), placeholder="e.g. username#1234")
                     sett_seat_pref = st.text_input("📍 Primary Seat Anchor / Season Ticket:", value=st.session_state.registered_fans_db.get(st.session_state.member_email, {}).get("seat", st.session_state.get("member_seat", "Section 114, Row 3")))
 
                 st.markdown("---")
