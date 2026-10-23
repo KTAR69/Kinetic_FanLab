@@ -96,9 +96,10 @@ except Exception:
     import importlib.util
     import os
     spec = importlib.util.spec_from_file_location('npc_mentors', os.path.join(current_dir, 'npc_mentors.py'))
-    npc_mentors = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(npc_mentors)
-    NPC_ENGINE_LIVE = True
+    if spec is not None and spec.loader is not None:
+        npc_mentors = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(npc_mentors)
+        NPC_ENGINE_LIVE = True
 
 # Silent backend 16-agent runner hook (executes in background without UI clutter)
 def _trigger_silent_backend_pipeline(
@@ -132,6 +133,147 @@ def _trigger_silent_backend_pipeline(
     except Exception as _e:
         # Dev-mode logging writes to stdout only; does not affect clean fan UI
         print(f"[backend_pipeline] suppressed: {_e}")
+
+
+def _generate_npc_chat_reply(user_msg: str, author_handle: str, sport: str) -> dict:
+    """Generates an intelligent, in-character NPC mentor response in Section Chat."""
+    is_bb = ("basket" in sport.lower())
+    msg_low = user_msg.lower()
+    
+    # Check for direct mentions first
+    tagged_npc = None
+    if "@elena" in msg_low or "elena" in msg_low:
+        tagged_npc = "Elena Rostova"
+    elif "@marcus" in msg_low or "marcus" in msg_low:
+        tagged_npc = "Marcus Vance"
+    elif "@devon" in msg_low or "devon" in msg_low:
+        tagged_npc = "Devon Miller"
+    elif "@jordan" in msg_low or "jordan" in msg_low:
+        tagged_npc = "Jordan Lee"
+    elif "@sarah" in msg_low or "sarah" in msg_low:
+        tagged_npc = "Sarah Jenkins"
+    elif "@carlos" in msg_low or "carlos" in msg_low:
+        tagged_npc = "Carlos Mendez"
+    elif "@maya" in msg_low or "maya" in msg_low:
+        tagged_npc = "Maya Patel"
+    elif "@alex" in msg_low or "alex" in msg_low:
+        tagged_npc = "Alex Taylor"
+        
+    # If no mentor tagged, pick contextually
+    if not tagged_npc:
+        if is_bb:
+            if any(k in msg_low for k in ["prop", "wave", "thunderstick", "distract", "🌊", "🙌", "swish"]):
+                tagged_npc = "Elena Rostova"
+            elif any(k in msg_low for k in ["chant", "noise", "shout", "vocal", "loud", "📣", "🔊", "👏"]):
+                tagged_npc = "Devon Miller"
+            elif any(k in msg_low for k in ["rookie", "tap", "first", "seat", "energy", "⚡"]):
+                tagged_npc = "Jordan Lee"
+            else:
+                tagged_npc = "Marcus Vance"
+        else:
+            if any(k in msg_low for k in ["tailgate", "lot b", "brisket", "grill", "food", "eat", "🔥", "🥩"]):
+                tagged_npc = "Carlos Mendez"
+            elif any(k in msg_low for k in ["telemetry", "bpm", "sensor", "ble", "tech", "db", "⌚", "⚡"]):
+                tagged_npc = "Maya Patel"
+            elif any(k in msg_low for k in ["rookie", "stomp", "fresh", "first", "👏", "💥"]):
+                tagged_npc = "Alex Taylor"
+            else:
+                tagged_npc = "Sarah Jenkins"
+
+    handle_map = {
+        "Marcus Vance": "@mvance_sec114",
+        "Elena Rostova": "@elena_props",
+        "Devon Miller": "@devon_chants",
+        "Jordan Lee": "@jordan_rookie",
+        "Sarah Jenkins": "@sjenkins_sec115",
+        "Carlos Mendez": "@carlos_lotb",
+        "Maya Patel": "@maya_pulse",
+        "Alex Taylor": "@alex_rookie"
+    }
+    npc_handle = handle_map.get(tagged_npc, "@mentor")
+    
+    if tagged_npc == "Elena Rostova":
+        replies = [
+            f"{author_handle} Props are UP! Thundersticks waving left-to-right on his knee-bend! Let's shake his sightline! 🌊🔥",
+            f"{author_handle} I'm with you! Section 114 visual disruption wall is locked in! 🌊👏",
+            f"{author_handle} Keep that waving rhythm moving across Row 1-5! We're cutting his free throw percentage right here! ⚡🏀"
+        ]
+    elif tagged_npc == "Marcus Vance":
+        replies = [
+            f"{author_handle} Loud and clear! Thunder Row, anchor your seats and bring that acoustic wall on release! 📣⚡",
+            f"{author_handle} That's the leadership we need in Section 114! Keep the row pods in sync! 🏀🛡️",
+            f"{author_handle} We're defending our per-capita lead! Stay loud until the rebound is pulled down! 🏆⚡"
+        ]
+    elif tagged_npc == "Devon Miller":
+        replies = [
+            f"{author_handle} Count of three: DEFENSE! DEFENSE! Let's rattle the backboard! 🎙️📣",
+            f"{author_handle} Synthesizing that vocal energy right now! BRING THE NOISE on three! 🔊👏",
+            f"{author_handle} Peak vocal urgency logged! The acoustics in Section 114 are deafening! 🎙️⚡"
+        ]
+    elif tagged_npc == "Jordan Lee":
+        replies = [
+            f"{author_handle} Tapping right alongside you in Row 4! Let's get these thundersticks banging! ⚡🙌",
+            f"{author_handle} Section 114 energy is unreal right now! Glad we're defending together! 🏀👏",
+            f"{author_handle} Pulse taps locked in! Let's show the upper decks how Thunder Row handles clutch stops! ⚡🔥"
+        ]
+    elif tagged_npc == "Sarah Jenkins":
+        replies = [
+            f"{author_handle} That's 12th Man defense! Stomp those bleachers and make the uprights shake! 🛡️🏈",
+            f"{author_handle} A decade in Section 115 and this crowd roar is championship tier! ICE THE KICKER! ❄️📣",
+            f"{author_handle} 111 dB acoustic wall is holding strong! Don't let up until the ball hits the turf! 🛡️⚡"
+        ]
+    elif tagged_npc == "Carlos Mendez":
+        replies = [
+            f"{author_handle} Lot B is bringing the heat right into Section 115! Rattle that kicker! 🔥🥩",
+            f"{author_handle} That's the tailgate spirit! Energy is smoked to perfection today! 🏈🔥",
+            f"{author_handle} Full Section 115 support! When we get this stop, brisket is on me! 🥩👏"
+        ]
+    elif tagged_npc == "Maya Patel":
+        replies = [
+            f"{author_handle} Sensor nodes spiking past 111.8 dB! BLE pod cadence is perfectly synchronized! ⌚⚡",
+            f"{author_handle} Verified telemetry surge detected! Your row's CMI is leading the entire stadium! 📊🔥",
+            f"{author_handle} Heart rates elevated and acoustics locked! Opponent kick conversion odds just plummeted! ⌚🏈"
+        ]
+    else:  # Alex Taylor
+        replies = [
+            f"{author_handle} Bleacher stomps synchronized! Let's force this false start! 🏈👏",
+            f"{author_handle} Right with you in Section 115! Let's make this stadium roar on 4th down! ⚡💥",
+            f"{author_handle} Rookie 12th Man energy peaking! Keep the pressure on the snap! 🏈🛡️"
+        ]
+    import random
+    return {
+        "sender": tagged_npc,
+        "handle": npc_handle,
+        "msg": random.choice(replies),
+        "time": "Just now"
+    }
+
+def _set_active_sport(new_sport: str):
+    """Central synchronized sport switcher: ensures all session states, fixtures, and databases match."""
+    st.session_state.sport = new_sport
+    is_bb = (new_sport == "Basketball")
+    
+    st.session_state.tailgates_attended = st.session_state.get(f"tailgates_attended_{'bb' if is_bb else 'fb'}", 0)
+    st.session_state.meetup_rsvps = list(st.session_state.get(f"meetup_rsvps_{'bb' if is_bb else 'fb'}", []))
+    st.session_state.early_checkin = st.session_state.get(f"early_checkin_{'bb' if is_bb else 'fb'}", False)
+    st.session_state.chant_action_taken = st.session_state.get(f"chant_action_taken_{'bb' if is_bb else 'fb'}", False)
+    st.session_state.storycard_exported_flag = st.session_state.get(f"storycard_exported_{'bb' if is_bb else 'fb'}", False)
+    st.session_state.user_respect_taps_sent = st.session_state.get(f"user_respect_taps_sent_{'bb' if is_bb else 'fb'}", 0)
+    st.session_state.synergy_score = st.session_state.get(f"synergy_score_{'bb' if is_bb else 'fb'}", 0)
+    st.session_state.synergy_claimed = st.session_state.get(f"synergy_claimed_{'bb' if is_bb else 'fb'}", False)
+    st.session_state.squad_chat_history = []
+    
+    unlocked = st.session_state.get(f"unlocked_mentors_{'bb' if is_bb else 'fb'}", ["Marcus Vance" if is_bb else "Sarah Jenkins"])
+    lead_guide = "Marcus Vance" if is_bb else "Sarah Jenkins"
+    st.session_state.active_npc_guide = lead_guide if lead_guide in unlocked else unlocked[0]
+    
+    if st.session_state.get("is_logged_in") and st.session_state.get("member_name"):
+        st.session_state.active_member = st.session_state.member_name
+    else:
+        st.session_state.active_member = "Marcus Vance" if is_bb else "Sarah Jenkins"
+        
+    _ensure_member_in_persona_db()
+
 
 st.set_page_config(page_title="Kinetic FanLab", page_icon="⚡", layout="wide")
 
@@ -181,16 +323,37 @@ screen = st.sidebar.radio("Navigate:", [
 ])
 
 st.sidebar.markdown("---")
-active_preset = st.sidebar.selectbox("Live Game Situation:", [
+
+fixture_options = [
     "BB-01: Basketball Baseline (Free Throw 1)",
     "BB-02: Basketball Clutch (Free Throw 2)",
     "FB-01: Football Pre-Kick Timeout",
     "FB-02: Football 48-Yard FG Snap (Clutch)"
-], key="fixture_picker")
+]
 
-# Reactively update fixture parameters if changed
+# Ensure initial sport
+if "sport" not in st.session_state:
+    st.session_state.sport = "Basketball"
+
+# Align fixture_picker in session state to sport
+if "fixture_picker" not in st.session_state:
+    st.session_state.fixture_picker = "BB-01: Basketball Baseline (Free Throw 1)" if st.session_state.sport == "Basketball" else "FB-02: Football 48-Yard FG Snap (Clutch)"
+
+if st.session_state.sport == "Basketball" and not st.session_state.fixture_picker.startswith("BB-"):
+    st.session_state.fixture_picker = "BB-01: Basketball Baseline (Free Throw 1)"
+elif st.session_state.sport == "Football" and not st.session_state.fixture_picker.startswith("FB-"):
+    st.session_state.fixture_picker = "FB-02: Football 48-Yard FG Snap (Clutch)"
+
+cur_fix_idx = fixture_options.index(st.session_state.fixture_picker) if st.session_state.fixture_picker in fixture_options else 0
+active_preset = st.sidebar.selectbox("Live Game Situation:", fixture_options, index=cur_fix_idx, key="fixture_picker")
+
+# Enforce sport from fixture selection
+target_sport = "Football" if active_preset.startswith("FB-") else "Basketball"
+if st.session_state.sport != target_sport:
+    _set_active_sport(target_sport)
+
+# Update telemetry parameters according to active_preset
 if "last_fixture" not in st.session_state or st.session_state.last_fixture != active_preset:
-    prev_sport = st.session_state.get("sport", None)
     st.session_state.last_fixture = active_preset
     if "BB-01" in active_preset:
         st.session_state.sport = "Basketball"
@@ -229,20 +392,9 @@ if "last_fixture" not in st.session_state or st.session_state.last_fixture != ac
     st.session_state.tap_times = []
     st.session_state.synergy_claimed = False
 
-    if prev_sport is not None and prev_sport != st.session_state.sport:
-        st.session_state.early_checkin = False
-        st.session_state.synergy_score = 92
-        st.session_state.squad_chat_history = []  # Clear squad chat history on sport switch so sports never blend!
-        if st.session_state.get("is_logged_in") and st.session_state.get("member_name"):
-            st.session_state.active_member = st.session_state.member_name
-        elif st.session_state.sport == "Basketball" and st.session_state.get("active_member") not in bb_members:
-            st.session_state.active_member = "Marcus Vance"
-        elif st.session_state.sport == "Football" and st.session_state.get("active_member") not in fb_members:
-            st.session_state.active_member = "Sarah Jenkins"
-
-# --- Sidebar: Live Section Fan Chat with Sports Emojis ---
+# --- Sidebar: Live Section Fan Chat with Sports Emojis & Interactive NPCs ---
 st.sidebar.markdown("---")
-is_bball_sidebar = ("BB-" in active_preset) or (st.session_state.get("sport") == "Basketball")
+is_bball_sidebar = (st.session_state.sport == "Basketball")
 sidebar_sec_name = "Section 114 (Thunder Row)" if is_bball_sidebar else "Section 115 (End Zone Loyals)"
 sidebar_sport_icon = "🏀" if is_bball_sidebar else "🏈"
 
@@ -257,30 +409,32 @@ if "sidebar_chat_bb" not in st.session_state:
     ]
 if "sidebar_chat_fb" not in st.session_state:
     st.session_state.sidebar_chat_fb = [
-        {"sender": "Sarah Jenkins", "handle": "@sarah_115", "msg": "Section 115 shaking the bleachers! Ice him! 🏈❄️", "time": "Just now"},
+        {"sender": "Sarah Jenkins", "handle": "@sjenkins_sec115", "msg": "Section 115 shaking the bleachers! Ice him! 🏈❄️", "time": "Just now"},
         {"sender": "Carlos Mendez", "handle": "@carlos_lotb", "msg": "Lot B crew is loud and ready for the snap! 🔥🥩", "time": "1m ago"},
         {"sender": "Maya Patel", "handle": "@maya_pulse", "msg": "BLE pod telemetry reading 111 dB peak! ⌚⚡", "time": "2m ago"},
     ]
 
 # Render chat feed in a neat scrollable container
 active_chat_list = st.session_state.sidebar_chat_bb if is_bball_sidebar else st.session_state.sidebar_chat_fb
+chat_author_name = st.session_state.get("member_name", "Rookie Fan") if st.session_state.get("is_logged_in") else "Guest Fan"
+chat_author_handle = st.session_state.get("member_handle", "@fan_rookie") if st.session_state.get("is_logged_in") else "@guest"
+
 chat_html = ""
-for cm in active_chat_list[-4:]:
-    chat_html += f"""<div style="margin-bottom: 5px; padding-bottom: 4px; border-bottom: 1px solid #222;">
-<span style="color:#0f62fe; font-weight:bold; font-size:8pt;">{cm['sender']}</span> <span style="color:#777; font-size:7pt;">{cm.get('handle', '')} &bull; {cm.get('time', '')}</span><br/>
-<span style="color:#f4f4f4; font-size:8pt;">{cm['msg']}</span></div>"""
+for cm in active_chat_list[-6:]:
+    is_user_msg = (cm.get("sender") == chat_author_name)
+    sender_color = "#42be65" if is_user_msg else "#0f62fe"
+    chat_html += f"""<div style="margin-bottom: 6px; padding-bottom: 5px; border-bottom: 1px solid #222;">
+<span style="color:{sender_color}; font-weight:bold; font-size:8pt;">{cm.get('sender', '')}</span> <span style="color:#777; font-size:7pt;">{cm.get('handle', '')} &bull; {cm.get('time', '')}</span><br/>
+<span style="color:#f4f4f4; font-size:8pt;">{cm.get('msg', '')}</span></div>"""
 
 st.sidebar.markdown(f"""
-<div style="background-color: #11141c; border: 1px solid #2a3345; border-radius: 8px; padding: 8px 10px; max-height: 150px; overflow-y: auto; margin-bottom: 8px;">
+<div style="background-color: #11141c; border: 1px solid #2a3345; border-radius: 8px; padding: 8px 10px; max-height: 180px; overflow-y: auto; margin-bottom: 8px;">
     {chat_html}
 </div>
 """, unsafe_allow_html=True)
 
 # Quick Sports Emoji Reaction Buttons (4 columns x 2 rows)
 st.sidebar.caption("⚡ Quick Sports Reactions:")
-chat_author_name = st.session_state.get("member_name", "Rookie Fan") if st.session_state.get("is_logged_in") else "Guest Fan"
-chat_author_handle = st.session_state.get("member_handle", "@fan_rookie") if st.session_state.get("is_logged_in") else "@guest"
-
 if is_bball_sidebar:
     emoji_reactions = [
         ("🏀", "🏀 Swish! Need this stop!"),
@@ -309,7 +463,9 @@ for i in range(4):
     em_icon, em_text = emoji_reactions[i]
     if ec_row1[i].button(em_icon, key=f"btn_em_{'bb' if is_bball_sidebar else 'fb'}_{i}", use_container_width=True):
         active_chat_list.append({"sender": chat_author_name, "handle": chat_author_handle, "msg": em_text, "time": "Just now"})
-        if len(active_chat_list) > 20: active_chat_list.pop(0)
+        npc_reply = _generate_npc_chat_reply(em_text, chat_author_handle, st.session_state.sport)
+        active_chat_list.append(npc_reply)
+        while len(active_chat_list) > 25: active_chat_list.pop(0)
         _append_fan_note(f"{em_text}")
         st.rerun()
 
@@ -318,7 +474,9 @@ for i in range(4, 8):
     em_icon, em_text = emoji_reactions[i]
     if ec_row2[i-4].button(em_icon, key=f"btn_em_{'bb' if is_bball_sidebar else 'fb'}_{i}", use_container_width=True):
         active_chat_list.append({"sender": chat_author_name, "handle": chat_author_handle, "msg": em_text, "time": "Just now"})
-        if len(active_chat_list) > 20: active_chat_list.pop(0)
+        npc_reply = _generate_npc_chat_reply(em_text, chat_author_handle, st.session_state.sport)
+        active_chat_list.append(npc_reply)
+        while len(active_chat_list) > 25: active_chat_list.pop(0)
         _append_fan_note(f"{em_text}")
         st.rerun()
 
@@ -333,7 +491,9 @@ if sidebar_submit and sidebar_in.strip():
         st.sidebar.error("🚨 Filtered: please keep chat respectful.")
     else:
         active_chat_list.append({"sender": chat_author_name, "handle": chat_author_handle, "msg": sidebar_in.strip(), "time": "Just now"})
-        if len(active_chat_list) > 20: active_chat_list.pop(0)
+        npc_reply = _generate_npc_chat_reply(sidebar_in.strip(), chat_author_handle, st.session_state.sport)
+        active_chat_list.append(npc_reply)
+        while len(active_chat_list) > 25: active_chat_list.pop(0)
         _append_fan_note(f"{sidebar_in.strip()}")
         st.rerun()
 
@@ -589,6 +749,16 @@ def _sync_and_persist_user_state():
     user_rec["role"] = st.session_state.get("member_role", user_rec.get("role", "Rookie Member"))
     user_rec["seat"] = st.session_state.get("member_seat", user_rec.get("seat", "Section 114, Row 3, Seat 12"))
     user_rec["games"] = st.session_state.get("member_games", user_rec.get("games", 0))
+    user_rec["games_bb"] = st.session_state.get("games_bb", user_rec.get("games_bb", 1 if st.session_state.get("early_checkin_bb") else 0))
+    user_rec["games_fb"] = st.session_state.get("games_fb", user_rec.get("games_fb", 1 if st.session_state.get("early_checkin_fb") else 0))
+    user_rec["seat_bb"] = st.session_state.get("seat_bb", user_rec.get("seat_bb", "Section 114, Row 3, Seat 12"))
+    user_rec["seat_fb"] = st.session_state.get("seat_fb", user_rec.get("seat_fb", "Section 115, Row 18, Seat 10"))
+    user_rec["hash_bb"] = st.session_state.get("hash_bb", user_rec.get("hash_bb", "0xROOKIE-sec114-8f7a2"))
+    user_rec["hash_fb"] = st.session_state.get("hash_fb", user_rec.get("hash_fb", "0xROOKIE-sec115-8f7a2"))
+    user_rec["synergy_score_bb"] = st.session_state.get("synergy_score_bb", 0)
+    user_rec["synergy_score_fb"] = st.session_state.get("synergy_score_fb", 0)
+    user_rec["synergy_claimed_bb"] = st.session_state.get("synergy_claimed_bb", False)
+    user_rec["synergy_claimed_fb"] = st.session_state.get("synergy_claimed_fb", False)
     user_rec["career_db"] = st.session_state.get("member_career_db", user_rec.get("career_db", "0.0 dB"))
     user_rec["clutch_stops"] = st.session_state.get("member_clutch_stops", user_rec.get("clutch_stops", 0))
 
@@ -644,6 +814,7 @@ def _sync_and_persist_user_state():
     _save_fans_db(st.session_state.registered_fans_db)
 
 def _load_user_into_session(user_data, email):
+    is_bb = (user_data.get("sport", "Basketball") == "Basketball")
     st.session_state.is_logged_in = True
     st.session_state.just_signed_up = False
     st.session_state.member_email = email
@@ -654,7 +825,15 @@ def _load_user_into_session(user_data, email):
     st.session_state.member_role = user_data.get("role", "Rookie Member")
     st.session_state.member_tier = user_data.get("tier", "Rookie Member (Tier 1)")
     st.session_state.member_seat = user_data.get("seat", "Section 114, Row 3, Seat 12")
-    st.session_state.member_games = user_data.get("games", 0)
+    st.session_state.games_bb = user_data.get("games_bb", 1)
+    st.session_state.games_fb = user_data.get("games_fb", 0)
+    st.session_state.member_games = user_data.get("games_bb" if is_bb else "games_fb", 1 if is_bb else 0)
+    st.session_state.seat_bb = user_data.get("seat_bb", "Section 114, Row 3, Seat 12")
+    st.session_state.seat_fb = user_data.get("seat_fb", "Section 115, Row 18, Seat 10")
+    st.session_state.synergy_score_bb = user_data.get("synergy_score_bb", 0)
+    st.session_state.synergy_score_fb = user_data.get("synergy_score_fb", 0)
+    st.session_state.synergy_claimed_bb = user_data.get("synergy_claimed_bb", False)
+    st.session_state.synergy_claimed_fb = user_data.get("synergy_claimed_fb", False)
     st.session_state.member_career_db = user_data.get("career_db", "0.0 dB")
     st.session_state.member_clutch_stops = user_data.get("clutch_stops", 0)
 
@@ -892,8 +1071,10 @@ def _ensure_member_in_persona_db():
     is_bball = (m_sport == "Basketball")
     m_sec = "Section 114 (Thunder Row)" if is_bball else "Section 115 (End Zone Loyals)"
 
-    games_count = user_entry.get("games", 1 if st.session_state.get("early_checkin") else 0)
-    if st.session_state.get("early_checkin") and games_count == 0:
+    is_checked_in = st.session_state.get(f"early_checkin_{'bb' if is_bball else 'fb'}", False)
+    default_games = 1 if is_checked_in else 0
+    games_count = user_entry.get("games_bb" if is_bball else "games_fb", default_games)
+    if is_checked_in and games_count == 0:
         games_count = 1
     st.session_state.member_games = games_count
 
@@ -905,12 +1086,12 @@ def _ensure_member_in_persona_db():
 
     clutch_stops_val = user_entry.get("clutch_stops", 0)
     st.session_state.member_clutch_stops = clutch_stops_val
-    tailgates_val = user_entry.get("tailgates_attended", st.session_state.get("tailgates_attended", 0))
+    tailgates_val = user_entry.get("tailgates_attended_bb" if is_bball else "tailgates_attended_fb", st.session_state.get("tailgates_attended", 0))
     st.session_state.tailgates_attended = tailgates_val
 
     tier_title = st.session_state.get("member_tier", user_entry.get("tier", "Rookie Member (Tier 1)"))
     role_title = st.session_state.get("member_role", user_entry.get("role", "Rookie Member"))
-    hash_val = st.session_state.get("member_hash", user_entry.get("hash", "0xTR-sec114-8f7a2" if is_bball else "0xTR-sec115-8f7a2"))
+    hash_val = user_entry.get("hash_bb" if is_bball else "hash_fb", st.session_state.get("member_hash", "0xROOKIE-sec114-8f7a2" if is_bball else "0xROOKIE-sec115-8f7a2"))
 
     PERSONA_DB[name] = {
         "hash": hash_val,
@@ -934,7 +1115,7 @@ def _ensure_member_in_persona_db():
         ],
         "accolades": [
             {"title": "First Roll Call Stamp", "rarity": "Common", "color": "#0f62fe", "desc": "Initiated 365-day Fan Passport.", "perk": "1.25x 1st-quarter points boost"},
-            {"title": "Rookie Section Member", "rarity": "Common", "color": "#0f62fe", "desc": "Connected to in-stadium BLE mesh.", "perk": "Active Section Roster entry"}
+            {"title": "Rookie Section Member" if is_bball else "Rookie 12th Man", "rarity": "Common", "color": "#0f62fe", "desc": "Connected to in-stadium BLE mesh.", "perk": "Active Section Roster entry"}
         ]
     }
 
@@ -1297,19 +1478,9 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
             )
             new_sport_clean = "Basketball" if "Basketball" in picked_sport_radio else "Football"
             if new_sport_clean != st.session_state.sport:
-                st.session_state.sport = new_sport_clean
-                is_now_bb = (new_sport_clean == "Basketball")
-                st.session_state.tailgates_attended = st.session_state.get("tailgates_attended_bb", 0) if is_now_bb else st.session_state.get("tailgates_attended_fb", 0)
-                st.session_state.meetup_rsvps = list(st.session_state.get("meetup_rsvps_bb", []) if is_now_bb else st.session_state.get("meetup_rsvps_fb", []))
-                st.session_state.early_checkin = st.session_state.get("early_checkin_bb", False) if is_now_bb else st.session_state.get("early_checkin_fb", False)
-                st.session_state.chant_action_taken = st.session_state.get("chant_action_taken_bb", False) if is_now_bb else st.session_state.get("chant_action_taken_fb", False)
-                st.session_state.storycard_exported_flag = st.session_state.get("storycard_exported_bb", False) if is_now_bb else st.session_state.get("storycard_exported_fb", False)
-                st.session_state.user_respect_taps_sent = st.session_state.get("user_respect_taps_sent_bb", 0) if is_now_bb else st.session_state.get("user_respect_taps_sent_fb", 0)
-                if st.session_state.get("is_logged_in") and st.session_state.get("member_name"):
-                    st.session_state.active_member = st.session_state.member_name
-                else:
-                    st.session_state.active_member = "Marcus Vance" if new_sport_clean == "Basketball" else "Sarah Jenkins"
-                _ensure_member_in_persona_db()
+                _set_active_sport(new_sport_clean)
+                st.session_state.fixture_picker = "BB-01: Basketball Baseline (Free Throw 1)" if new_sport_clean == "Basketball" else "FB-02: Football 48-Yard FG Snap (Clutch)"
+                st.session_state.last_fixture = st.session_state.fixture_picker
                 st.rerun()
 
             # Render SPORT-ISOLATED team list
@@ -1596,12 +1767,13 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                         st.success(f"✅ Respect Tap sent to **{target_sec}, {target_row}, {target_seat}**! (+1 Respect Tap — Total: {new_total})")
 
             with tab_trophy:
+                u_p = PERSONA_DB.get(st.session_state.member_name, p_info)
                 st.subheader(f"🏆 Living Trophy Case: {st.session_state.member_name}")
                 st.caption("Dynamic NFT Accolades that evolve based on your real-time verified stadium telemetry.")
 
-                st.markdown(f"### 📈 {p_info['next_tier_title']} Progress")
-                st.progress(p_info['tier_progress_pct'])
-                st.caption(p_info['tier_progress_desc'])
+                st.markdown(f"### 📈 {u_p['next_tier_title']} Progress")
+                st.progress(u_p['tier_progress_pct'])
+                st.caption(u_p['tier_progress_desc'])
 
                 st.markdown("---")
                 st.subheader("🏅 Unlocked Dynamic Accolades (NFT Badges)")
@@ -1746,11 +1918,18 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                     retention_choice = st.selectbox("Biometric Data Retention Policy:", ["Gameday Session Only (Zero Cloud Raw Storage)", "30-Day Encrypted Aggregate (IBM Cloudant)", "Seasonal Passport Only (COS S3 Tamper-Evident)"], index=0)
 
                 if st.button("💾 Save Account Settings & Connected Accounts", key="btn_save_all_settings", use_container_width=True):
-                    st.session_state.social_x = sett_x.strip()
-                    st.session_state.social_ig = sett_ig.strip()
-                    st.session_state.social_yt = sett_yt.strip()
-                    st.session_state.social_tiktok = sett_tiktok.strip()
-                    st.session_state.social_discord = sett_discord.strip()
+                    clean_x = (sett_x or "").strip()
+                    clean_ig = (sett_ig or "").strip()
+                    clean_yt = (sett_yt or "").strip()
+                    clean_tiktok = (sett_tiktok or "").strip()
+                    clean_discord = (sett_discord or "").strip()
+                    clean_seat = (sett_seat_pref or "").strip()
+
+                    st.session_state.social_x = clean_x
+                    st.session_state.social_ig = clean_ig
+                    st.session_state.social_yt = clean_yt
+                    st.session_state.social_tiktok = clean_tiktok
+                    st.session_state.social_discord = clean_discord
                     st.session_state.wearable_device = sett_wearable
                     st.session_state.ble_sensitivity = sett_ble
                     st.session_state.notif_clutch = sett_clutch
@@ -1758,18 +1937,18 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                     st.session_state.notif_chaser = sett_chaser
                     st.session_state.pref_leaderboard_public = sett_public_leaderboard
                     st.session_state.pref_anonymize_biometrics = sett_anonymize
-                    st.session_state.member_seat = sett_seat_pref.strip()
+                    st.session_state.member_seat = clean_seat
 
                     email = st.session_state.get("member_email", "fan@gmail.com")
                     if email in st.session_state.registered_fans_db:
                         st.session_state.registered_fans_db[email]["socials"] = {
-                            "x": sett_x.strip(),
-                            "instagram": sett_ig.strip(),
-                            "youtube": sett_yt.strip(),
-                            "tiktok": sett_tiktok.strip(),
-                            "discord": sett_discord.strip()
+                            "x": clean_x,
+                            "instagram": clean_ig,
+                            "youtube": clean_yt,
+                            "tiktok": clean_tiktok,
+                            "discord": clean_discord
                         }
-                        st.session_state.registered_fans_db[email]["seat"] = sett_seat_pref.strip()
+                        st.session_state.registered_fans_db[email]["seat"] = clean_seat
                         st.session_state.registered_fans_db[email]["settings"] = {
                             "wearable_device": sett_wearable,
                             "ble_sensitivity": sett_ble,
@@ -2006,9 +2185,10 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
 
     if pulse_clicked or surge_clicked:
         try:
-            from stream_simulator import TelemetryStreamSimulator
+            import stream_simulator
+            sim_factory = stream_simulator.TelemetryStreamSimulator
         except Exception:
-            class TelemetryStreamSimulator:
+            class _FallbackSimulator:
                 def __init__(self, sport="Basketball"): self.sport = sport
                 def generate_live_tick(self, is_clutch=False, noise_variance=0.05) -> dict:
                     return self.get_next_tick(is_clutch=is_clutch)
@@ -2033,9 +2213,10 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
                     cmi = calc_momentum_index(db, hr, taps, vu)
                     tier = get_tier(cmi)
                     return {"sport": self.sport, "is_clutch": is_clutch, "db": db, "hr": hr, "taps": taps, "vu": vu, "cmi": cmi, "tier": tier}
+            sim_factory = _FallbackSimulator
 
         if "sim_instance" not in st.session_state:
-            st.session_state.sim_instance = TelemetryStreamSimulator(st.session_state.sport)
+            st.session_state.sim_instance = sim_factory(st.session_state.sport)
         tick = st.session_state.sim_instance.generate_live_tick(
             is_clutch=st.session_state.is_clutch or surge_clicked, noise_variance=0.08 if surge_clicked else 0.05
         )
@@ -2060,24 +2241,54 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
     # Early Check-in with Immediate State Update
     with st.expander(f"🎟️ Pre-Game Roll Call: Early Seat Check-In ({st.session_state.sport})", expanded=True):
         st.write(f"Fans who reach their seats 30 minutes before **{start_term}** unlock a **1.25x 1st-Quarter Multiplier**.")
-        if not st.session_state.early_checkin:
-            sec_btn_label = "Section 114" if is_basketball else "Section 115"
-            if st.button(f"📍 Check In at Seat ({sec_btn_label})", key="btn_checkin_seat"):
-                st.session_state.early_checkin = True
-                if st.session_state.member_email in st.session_state.registered_fans_db:
-                    st.session_state.registered_fans_db[st.session_state.member_email]["games"] = max(1, st.session_state.registered_fans_db[st.session_state.member_email].get("games", 0) + 1)
-                    _save_fans_db(st.session_state.registered_fans_db)
+        is_checked_in = st.session_state.early_checkin_bb if is_basketball else st.session_state.early_checkin_fb
+        st.session_state.early_checkin = is_checked_in
+        
+        if not is_checked_in:
+            sec_btn_label = "Section 114 (Thunder Row)" if is_basketball else "Section 115 (End Zone Loyals)"
+            if st.button(f"📍 Check In at Seat ({sec_btn_label})", key=f"btn_checkin_seat_{'bb' if is_basketball else 'fb'}"):
+                if is_basketball:
+                    st.session_state.early_checkin_bb = True
+                    st.session_state.early_checkin = True
+                    st.session_state.games_bb = 1
+                    if st.session_state.member_email in st.session_state.registered_fans_db:
+                        st.session_state.registered_fans_db[st.session_state.member_email]["games_bb"] = 1
+                        st.session_state.registered_fans_db[st.session_state.member_email]["early_checkin_bb"] = True
+                else:
+                    st.session_state.early_checkin_fb = True
+                    st.session_state.early_checkin = True
+                    st.session_state.games_fb = 1
+                    if st.session_state.member_email in st.session_state.registered_fans_db:
+                        st.session_state.registered_fans_db[st.session_state.member_email]["games_fb"] = 1
+                        st.session_state.registered_fans_db[st.session_state.member_email]["early_checkin_fb"] = True
+                _sync_and_persist_user_state()
                 _ensure_member_in_persona_db()
                 st.rerun()
         else:
-            user_seat_disp = st.session_state.registered_fans_db.get(st.session_state.member_email, {}).get("seat", "Section 114, Row 3, Seat 12" if is_basketball else "Section 115, Row 18, Seat 10")
+            user_entry = st.session_state.registered_fans_db.get(st.session_state.member_email, {})
+            user_seat_disp = user_entry.get("seat_bb" if is_basketball else "seat_fb", "Section 114, Row 3, Seat 12" if is_basketball else "Section 115, Row 18, Seat 10")
+            bcn_hash = f"0xBCN-{'BB' if is_basketball else 'FB'}-{st.session_state.member_hash[2:8].upper()}"
             st.success(f"""
             🎟️ **CHECK-IN CONFIRMED FOR {st.session_state.member_name.upper()} ({st.session_state.member_handle})!**\n\n
-            📍 **Seat Anchor:** `{user_seat_disp}` | 🔑 **Beacon Hash:** `0xBCN-{st.session_state.member_hash[2:10].upper()}` | **Status:** Verified In-Seat\n\n
+            📍 **Seat Anchor:** `{user_seat_disp}` | 🔑 **Beacon Hash:** `{bcn_hash}` | **Status:** Verified In-Seat\n\n
             ⚡ **Early Arrival Multiplier (1.25x)** is active for your **365-Day Fan Passport**! Your attendance has been credited to your season record.
             """)
-            if st.button("Cancel Seat Check-In", key="btn_cancel_checkin"):
-                st.session_state.early_checkin = False
+            if st.button(f"Cancel Seat Check-In ({st.session_state.sport})", key=f"btn_cancel_checkin_{'bb' if is_basketball else 'fb'}"):
+                if is_basketball:
+                    st.session_state.early_checkin_bb = False
+                    st.session_state.early_checkin = False
+                    st.session_state.games_bb = 0
+                    if st.session_state.member_email in st.session_state.registered_fans_db:
+                        st.session_state.registered_fans_db[st.session_state.member_email]["games_bb"] = 0
+                        st.session_state.registered_fans_db[st.session_state.member_email]["early_checkin_bb"] = False
+                else:
+                    st.session_state.early_checkin_fb = False
+                    st.session_state.early_checkin = False
+                    st.session_state.games_fb = 0
+                    if st.session_state.member_email in st.session_state.registered_fans_db:
+                        st.session_state.registered_fans_db[st.session_state.member_email]["games_fb"] = 0
+                        st.session_state.registered_fans_db[st.session_state.member_email]["early_checkin_fb"] = False
+                _sync_and_persist_user_state()
                 _ensure_member_in_persona_db()
                 st.rerun()
 
@@ -2227,27 +2438,62 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
     # ------------------------------------------------------------------
     st.markdown("---")
     has_contributed_telemetry = (st.session_state.tap_count >= 1 or len(st.session_state.fan_notes) > 1)
+    is_synced = st.session_state.synergy_claimed_bb if is_basketball else st.session_state.synergy_claimed_fb
+    st.session_state.synergy_claimed = is_synced
+    curr_synergy = st.session_state.synergy_score_bb if is_basketball else st.session_state.synergy_score_fb
+    st.session_state.synergy_score = curr_synergy
+    
     syn_col1, syn_col2 = st.columns([2, 1])
     with syn_col1:
-        if not has_contributed_telemetry:
-            st.info(f"⏳ **SECTION CO-OP ({coord_state['trigger_event']}):** Log at least 1 Pulse Tap or post a Fan Callout above to sync your energy with your section.")
-        else:
-            st.success(f"✅ **IN-ARENA ENERGY READY:** {st.session_state.tap_count} pulse tap(s) & section callout active!")
-
-        if st.button("🤝 Sync My Energy With Section Co-Op", key="btn_synergy"):
+        if not is_synced:
             if not has_contributed_telemetry:
-                st.warning("⚠️ Log at least 1 Pulse Tap or post a Fan Callout above first!")
-            elif st.session_state.synergy_claimed:
-                st.info(f"✅ Already synced for this play! Section Co-Op Synergy: {st.session_state.synergy_score}%.")
+                st.info(f"⏳ **SECTION CO-OP ({coord_state['trigger_event']}):** Log at least 1 Pulse Tap or post a Fan Callout above to sync your energy with your section.")
             else:
-                synergy_gain = round(5 * coord_state["multiplier"])
-                st.session_state.synergy_score = min(100, st.session_state.synergy_score + synergy_gain)
-                st.session_state.synergy_claimed = True
-                st.success(f"🎉 +{synergy_gain}% Section Synergy added (x{coord_state['multiplier']} multiplier)! Section Co-Op is now at {st.session_state.synergy_score}%!")
+                st.success(f"✅ **IN-ARENA ENERGY READY:** {st.session_state.tap_count} pulse tap(s) & section callout active! Ready to sync with your section.")
+
+            if st.button("🤝 Sync My Energy With Section Co-Op", key=f"btn_synergy_{'bb' if is_basketball else 'fb'}"):
+                if not has_contributed_telemetry:
+                    st.warning("⚠️ Log at least 1 Pulse Tap or post a Fan Callout above first!")
+                else:
+                    base_sync = 65
+                    tap_bonus = min(20, st.session_state.tap_count * 2)
+                    checkin_bonus = 10 if st.session_state.early_checkin else 0
+                    capstone_bonus = 5 if (st.session_state.capstone_claimed_bb if is_basketball else st.session_state.capstone_claimed_fb) else 0
+                    calc_syn = min(100, base_sync + tap_bonus + checkin_bonus + capstone_bonus)
+                    
+                    st.session_state.synergy_score = calc_syn
+                    st.session_state.synergy_claimed = True
+                    if is_basketball:
+                        st.session_state.synergy_score_bb = calc_syn
+                        st.session_state.synergy_claimed_bb = True
+                    else:
+                        st.session_state.synergy_score_fb = calc_syn
+                        st.session_state.synergy_claimed_fb = True
+                    _sync_and_persist_user_state()
+                    st.success(f"🎉 Energy Synchronized! Section Co-Op Synergy is now at **{calc_syn}%** (Synchronized)!")
+                    st.rerun()
+        else:
+            sec_target_name = "Section 114 (Thunder Row)" if is_basketball else "Section 115 (End Zone Loyals)"
+            st.success(f"✅ **ENERGY SYNCHRONIZED:** Your energy is synced with {sec_target_name}! (+{curr_synergy}% Co-Op active)")
+            if st.button("Reset Energy Sync for Next Play", key=f"btn_reset_synergy_{'bb' if is_basketball else 'fb'}"):
+                if is_basketball:
+                    st.session_state.synergy_claimed_bb = False
+                    st.session_state.synergy_score_bb = 0
+                else:
+                    st.session_state.synergy_claimed_fb = False
+                    st.session_state.synergy_score_fb = 0
+                st.session_state.synergy_claimed = False
+                st.session_state.synergy_score = 0
+                _sync_and_persist_user_state()
                 st.rerun()
+
     with syn_col2:
-        st.write(f"**Section Co-Op Synergy:** `{st.session_state.synergy_score}% Synchronized`")
-        st.progress(st.session_state.synergy_score / 100.0)
+        if is_synced:
+            st.write(f"**Section Co-Op Synergy:** `{curr_synergy}% Synchronized`")
+            st.progress(curr_synergy / 100.0)
+        else:
+            st.write(f"**Section Co-Op Synergy:** `0% (Awaiting Fan Sync)`")
+            st.progress(0.0)
 
     st.markdown("---")
     st.subheader(f"🏆 Live In-Arena Section Leaderboard ({st.session_state.sport})")
