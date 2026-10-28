@@ -38,6 +38,19 @@
       "device_anchor": "Wearable BLE Anchor",
       "early_multiplier": 1.25,
       "updated_at": 1792614214.3203845
+    },
+    "0xROOKIE-sec114-8f7a2": {
+      "_id": "passport:0xROOKIE-sec114-8f7a2",
+      "type": "fan_passport",
+      "member_name": "Troy Resendez",
+      "member_hash": "0xROOKIE-sec114-8f7a2",
+      "section_id": "Section114",
+      "sport": "Basketball",
+      "role": "Team Lead & Admin",
+      "tier": 4,
+      "device_anchor": "Wearable Sensor Anchor",
+      "early_multiplier": 1.25,
+      "updated_at": 1793210689.6735146
     }
   },
   "cmi_telemetry": [
@@ -184,6 +197,22 @@
       },
       "fan_count": 50,
       "timestamp": 1792614222.1065643
+    },
+    {
+      "_id": "cmi:basketball:section114(thunderrow):1793206360785",
+      "type": "cmi_telemetry",
+      "section_id": "Section 114 (Thunder Row)",
+      "sport": "Basketball",
+      "cmi": 78.9,
+      "tier": "High",
+      "components": {
+        "acoustic_db": 101.9,
+        "heart_rate_bpm": 137.7,
+        "taps_per_sec": 12.3,
+        "vocal_urgency": 0.82
+      },
+      "fan_count": 50,
+      "timestamp": 1793206360.785766
     }
   ],
   "storycards": [
@@ -326,6 +355,282 @@
       "op": "save_passport",
       "id": "passport:0xER-sec114-3c9b1",
       "timestamp": 1792614222.105288
+    },
+    {
+      "op": "save_feedback",
+      "id": "feedback:owltar:1793205866",
+      "timestamp": 1793205866.7517688
+    },
+    {
+      "op": "save_passport",
+      "id": "passport:0xROOKIE-sec114-8f7a2",
+      "timestamp": 1793206360.784763
+    },
+    {
+      "op": "save_passport",
+      "id": "passport:0xROOKIE-sec114-8f7a2",
+      "timestamp": 1793210689.674727
+    },
+    {
+      "op": "save_feedback",
+      "id": "feedback:fan_rookie:1793211097",
+      "timestamp": 1793211097.6165743
+    },
+    {
+      "op": "save_feedback",
+      "id": "feedback:fan_rookie:1793211099",
+      "timestamp": 1793211099.384182
+    },
+    {
+      "op": "save_feedback",
+      "id": "feedback:fan_rookie:1793211100",
+      "timestamp": 1793211100.08118
+    },
+    {
+      "op": "save_feedback",
+      "id": "feedback:fan_rookie:1793211100",
+      "timestamp": 1793211100.4820507
+    },
+    {
+      "op": "save_feedback",
+      "id": "feedback:fan_rookie:1793211100",
+      "timestamp": 1793211100.7789705
+    },
+    {
+      "op": "save_feedback",
+      "id": "feedback:fan_rookie:1793211102",
+      "timestamp": 1793211102.2428916
+    },
+    {
+      "op": "save_feedback",
+      "id": "feedback:fan_rookie:1793211103",
+      "timestamp": 1793211103.2680838
+    },
+    {
+      "op": "save_feedback",
+      "id": "feedback:fan_rookie:1793211105",
+      "timestamp": 1793211105.171444
+    },
+    {
+      "op": "save_feedback",
+      "id": "feedback:fan_rookie:1793211106",
+      "timestamp": 1793211106.7306304
+    },
+    {
+      "op": "save_feedback",
+      "id": "feedback:fan_rookie:1793211138",
+      "timestamp": 1793211138.4698713
+    },
+    {
+      "op": "save_feedback",
+      "id": "feedback:fan_rookie:1793211162",
+      "timestamp": 1793211162.659901
+    }
+  ],
+  "tester_feedback": [
+    {
+      "_id": "feedback:owltar:1793205866",
+      "type": "tester_feedback",
+      "tester_name": "Troy Resendez",
+      "tester_handle": "@owltar",
+      "tester_role": "Student / Rookie Fan (Jordan Lee / Alex Taylor)",
+      "cmi_rating": 4,
+      "features_tested": [
+        "\u26a1 Crowd Pulse Tapper & Burst Tap (+5)",
+        "\ud83d\udcca Post-Play Narrative Delta & Shareable StoryCard Export"
+      ],
+      "favorite_feature": "seeing my taps",
+      "improvement_feedback": "all good",
+      "sport": "Basketball",
+      "timestamp": 1793205866.7507694,
+      "formatted_time": "2026-10-28 11:44:26"
+    },
+    {
+      "_id": "feedback:fan_rookie:1793211097",
+      "type": "tester_feedback",
+      "tester_name": "Rookie Fan",
+      "tester_handle": "@fan_rookie",
+      "tester_role": "General Fan / Dedicated Supporter",
+      "cmi_rating": 4,
+      "features_tested": [
+        "\ud83c\udfaa 36h Virtual Tailgate & IBM Granite Chant Synthesizer",
+        "\ud83c\udf9f\ufe0f Pre-Game Seat Check-In & 1.25x Multiplier"
+      ],
+      "favorite_feature": "The arm chair call out is cool but would like better interaction and clarity.",
+      "improvement_feedback": "how do i know what game is being tracked at log in? How do we know it is real-time and accurate to the correct game and sport?",
+      "sport": "Basketball",
+      "timestamp": 1793211097.6152284,
+      "formatted_time": "2026-10-28 13:11:37"
+    },
+    {
+      "_id": "feedback:fan_rookie:1793211099",
+      "type": "tester_feedback",
+      "tester_name": "Rookie Fan",
+      "tester_handle": "@fan_rookie",
+      "tester_role": "General Fan / Dedicated Supporter",
+      "cmi_rating": 4,
+      "features_tested": [
+        "\ud83c\udfaa 36h Virtual Tailgate & IBM Granite Chant Synthesizer",
+        "\ud83c\udf9f\ufe0f Pre-Game Seat Check-In & 1.25x Multiplier"
+      ],
+      "favorite_feature": "The arm chair call out is cool but would like better interaction and clarity.",
+      "improvement_feedback": "how do i know what game is being tracked at log in? How do we know it is real-time and accurate to the correct game and sport?",
+      "sport": "Basketball",
+      "timestamp": 1793211099.384182,
+      "formatted_time": "2026-10-28 13:11:39"
+    },
+    {
+      "_id": "feedback:fan_rookie:1793211100",
+      "type": "tester_feedback",
+      "tester_name": "Rookie Fan",
+      "tester_handle": "@fan_rookie",
+      "tester_role": "General Fan / Dedicated Supporter",
+      "cmi_rating": 4,
+      "features_tested": [
+        "\ud83c\udfaa 36h Virtual Tailgate & IBM Granite Chant Synthesizer",
+        "\ud83c\udf9f\ufe0f Pre-Game Seat Check-In & 1.25x Multiplier"
+      ],
+      "favorite_feature": "The arm chair call out is cool but would like better interaction and clarity.",
+      "improvement_feedback": "how do i know what game is being tracked at log in? How do we know it is real-time and accurate to the correct game and sport?",
+      "sport": "Basketball",
+      "timestamp": 1793211100.08118,
+      "formatted_time": "2026-10-28 13:11:40"
+    },
+    {
+      "_id": "feedback:fan_rookie:1793211100",
+      "type": "tester_feedback",
+      "tester_name": "Rookie Fan",
+      "tester_handle": "@fan_rookie",
+      "tester_role": "General Fan / Dedicated Supporter",
+      "cmi_rating": 4,
+      "features_tested": [
+        "\ud83c\udfaa 36h Virtual Tailgate & IBM Granite Chant Synthesizer",
+        "\ud83c\udf9f\ufe0f Pre-Game Seat Check-In & 1.25x Multiplier"
+      ],
+      "favorite_feature": "The arm chair call out is cool but would like better interaction and clarity.",
+      "improvement_feedback": "how do i know what game is being tracked at log in? How do we know it is real-time and accurate to the correct game and sport?",
+      "sport": "Basketball",
+      "timestamp": 1793211100.4810472,
+      "formatted_time": "2026-10-28 13:11:40"
+    },
+    {
+      "_id": "feedback:fan_rookie:1793211100",
+      "type": "tester_feedback",
+      "tester_name": "Rookie Fan",
+      "tester_handle": "@fan_rookie",
+      "tester_role": "General Fan / Dedicated Supporter",
+      "cmi_rating": 4,
+      "features_tested": [
+        "\ud83c\udfaa 36h Virtual Tailgate & IBM Granite Chant Synthesizer",
+        "\ud83c\udf9f\ufe0f Pre-Game Seat Check-In & 1.25x Multiplier"
+      ],
+      "favorite_feature": "The arm chair call out is cool but would like better interaction and clarity.",
+      "improvement_feedback": "how do i know what game is being tracked at log in? How do we know it is real-time and accurate to the correct game and sport?",
+      "sport": "Basketball",
+      "timestamp": 1793211100.7779675,
+      "formatted_time": "2026-10-28 13:11:40"
+    },
+    {
+      "_id": "feedback:fan_rookie:1793211102",
+      "type": "tester_feedback",
+      "tester_name": "Rookie Fan",
+      "tester_handle": "@fan_rookie",
+      "tester_role": "General Fan / Dedicated Supporter",
+      "cmi_rating": 4,
+      "features_tested": [
+        "\ud83c\udfaa 36h Virtual Tailgate & IBM Granite Chant Synthesizer",
+        "\ud83c\udf9f\ufe0f Pre-Game Seat Check-In & 1.25x Multiplier"
+      ],
+      "favorite_feature": "The arm chair call out is cool but would like better interaction and clarity.",
+      "improvement_feedback": "how do i know what game is being tracked at log in? How do we know it is real-time and accurate to the correct game and sport?",
+      "sport": "Basketball",
+      "timestamp": 1793211102.2413862,
+      "formatted_time": "2026-10-28 13:11:42"
+    },
+    {
+      "_id": "feedback:fan_rookie:1793211103",
+      "type": "tester_feedback",
+      "tester_name": "Rookie Fan",
+      "tester_handle": "@fan_rookie",
+      "tester_role": "General Fan / Dedicated Supporter",
+      "cmi_rating": 4,
+      "features_tested": [
+        "\ud83c\udfaa 36h Virtual Tailgate & IBM Granite Chant Synthesizer",
+        "\ud83c\udf9f\ufe0f Pre-Game Seat Check-In & 1.25x Multiplier"
+      ],
+      "favorite_feature": "The arm chair call out is cool but would like better interaction and clarity.",
+      "improvement_feedback": "how do i know what game is being tracked at log in? How do we know it is real-time and accurate to the correct game and sport?",
+      "sport": "Basketball",
+      "timestamp": 1793211103.2680838,
+      "formatted_time": "2026-10-28 13:11:43"
+    },
+    {
+      "_id": "feedback:fan_rookie:1793211105",
+      "type": "tester_feedback",
+      "tester_name": "Rookie Fan",
+      "tester_handle": "@fan_rookie",
+      "tester_role": "General Fan / Dedicated Supporter",
+      "cmi_rating": 4,
+      "features_tested": [
+        "\ud83c\udfaa 36h Virtual Tailgate & IBM Granite Chant Synthesizer",
+        "\ud83c\udf9f\ufe0f Pre-Game Seat Check-In & 1.25x Multiplier"
+      ],
+      "favorite_feature": "The arm chair call out is cool but would like better interaction and clarity.",
+      "improvement_feedback": "how do i know what game is being tracked at log in? How do we know it is real-time and accurate to the correct game and sport?",
+      "sport": "Basketball",
+      "timestamp": 1793211105.1700895,
+      "formatted_time": "2026-10-28 13:11:45"
+    },
+    {
+      "_id": "feedback:fan_rookie:1793211106",
+      "type": "tester_feedback",
+      "tester_name": "Rookie Fan",
+      "tester_handle": "@fan_rookie",
+      "tester_role": "General Fan / Dedicated Supporter",
+      "cmi_rating": 4,
+      "features_tested": [
+        "\ud83c\udfaa 36h Virtual Tailgate & IBM Granite Chant Synthesizer",
+        "\ud83c\udf9f\ufe0f Pre-Game Seat Check-In & 1.25x Multiplier"
+      ],
+      "favorite_feature": "The arm chair call out is cool but would like better interaction and clarity.",
+      "improvement_feedback": "how do i know what game is being tracked at log in? How do we know it is real-time and accurate to the correct game and sport?",
+      "sport": "Basketball",
+      "timestamp": 1793211106.7296238,
+      "formatted_time": "2026-10-28 13:11:46"
+    },
+    {
+      "_id": "feedback:fan_rookie:1793211138",
+      "type": "tester_feedback",
+      "tester_name": "Rookie Fan",
+      "tester_handle": "@fan_rookie",
+      "tester_role": "General Fan / Dedicated Supporter",
+      "cmi_rating": 2,
+      "features_tested": [
+        "\ud83c\udfaa 36h Virtual Tailgate & IBM Granite Chant Synthesizer",
+        "\ud83c\udf9f\ufe0f Pre-Game Seat Check-In & 1.25x Multiplier"
+      ],
+      "favorite_feature": "The arm chair call out is cool but would like better interaction and clarity.",
+      "improvement_feedback": "how do i know what game is being tracked at log in? How do we know it is real-time and accurate to the correct game and sport?",
+      "sport": "Basketball",
+      "timestamp": 1793211138.4688685,
+      "formatted_time": "2026-10-28 13:12:18"
+    },
+    {
+      "_id": "feedback:fan_rookie:1793211162",
+      "type": "tester_feedback",
+      "tester_name": "Rookie Fan",
+      "tester_handle": "@fan_rookie",
+      "tester_role": "General Fan / Dedicated Supporter",
+      "cmi_rating": 2,
+      "features_tested": [
+        "\ud83c\udfaa 36h Virtual Tailgate & IBM Granite Chant Synthesizer",
+        "\ud83c\udf9f\ufe0f Pre-Game Seat Check-In & 1.25x Multiplier"
+      ],
+      "favorite_feature": "The arm chair call out is cool but would like better interaction and clarity.",
+      "improvement_feedback": "how do i know what game is being tracked at log in? How do we know it is real-time and accurate to the correct game and sport?",
+      "sport": "Basketball",
+      "timestamp": 1793211162.6587474,
+      "formatted_time": "2026-10-28 13:12:42"
     }
   ]
 }

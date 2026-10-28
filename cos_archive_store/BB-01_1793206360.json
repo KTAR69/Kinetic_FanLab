@@ -1,0 +1,22 @@
+{
+  "metadata": {
+    "version": "v5.0-watsonx",
+    "fixture_id": "BB-01",
+    "sport": "Basketball",
+    "season": "2026-season",
+    "timestamp": 1793206360.911795
+  },
+  "momentum_box_score": {
+    "final_cmi": 78.9,
+    "clutch_surge": 39.9,
+    "winning_section": "Section 114 (Thunder Row)",
+    "play_outcome": "MISSED FIELD GOAL (Wide Left - Ice Successful)",
+    "defense_belt_awarded": true
+  },
+  "granite_insights": {
+    "verified_narrative": "Section 114 (Thunder Row) surged to 78.9 CMI, rattling the kicker Wide Left.",
+    "sampled_fan_reactions": [
+      "@strategist, where does Section 114 (Thunder Row) stand against Section 115 on the live per-capita leaderboard right now?"
+    ]
+  }
+}

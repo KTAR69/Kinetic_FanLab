@@ -1,0 +1,24 @@
+{
+  "metadata": {
+    "version": "v5.0-watsonx",
+    "fixture_id": "BB-01",
+    "sport": "Basketball",
+    "season": "2026-season",
+    "timestamp": 1793206321.15929
+  },
+  "momentum_box_score": {
+    "final_cmi": 80.1,
+    "clutch_surge": 42.3,
+    "winning_section": "Section 114 (Thunder Row)",
+    "play_outcome": "PENDING PLAY EXECUTION (Free Throw 1)",
+    "defense_belt_awarded": true
+  },
+  "granite_insights": {
+    "verified_narrative": "The kinetic energy from Section 114's thunderous roars at 0.85 VU created a disruptive acoustic pressure, momentarily breaking the opponent's concentration and causing a ripple effect that altered their shooting mechanics, leading to a critical free throw miss. This surge in crowd momentum, peaking at 80.1/100 CMI, capitalized on the psychological edge, transforming the game's dynamics and shifting the advantage decisively in favor of the home team.",
+    "sampled_fan_reactions": [
+      "Watch the shooter, need this stop",
+      "MISS IT! OFF THE RIM! (0.85 VU)",
+      "DEFENSE ON THREE! (0.82 VU)"
+    ]
+  }
+}

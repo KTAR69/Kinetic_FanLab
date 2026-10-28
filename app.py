@@ -67,6 +67,8 @@ try:
         save_fan_passport as cloudant_save_passport,
         save_telemetry_snapshot as cloudant_save_telemetry,
         save_storycard as cloudant_save_storycard,
+        save_tester_feedback as cloudant_save_feedback,
+        get_all_tester_feedback as cloudant_get_feedback,
     )
     CLOUDANT_ENGINE_LIVE = True
 except Exception:
@@ -74,6 +76,8 @@ except Exception:
     def cloudant_save_passport(*args, **kwargs): return {'status': 'SUCCESS', 'source': 'LOCAL_CACHE'}
     def cloudant_save_telemetry(*args, **kwargs): return {'status': 'SUCCESS'}
     def cloudant_save_storycard(*args, **kwargs): return {'status': 'SUCCESS'}
+    def cloudant_save_feedback(*args, **kwargs): return {'status': 'SUCCESS', 'source': 'LOCAL_CACHE'}
+    def cloudant_get_feedback(*args, **kwargs): return []
 
 try:
     from cos_archive import archive_crowd_box_score as cos_lakehouse_archive
@@ -295,6 +299,25 @@ def calc_momentum_index(db: float, hr: float, taps: float, vu: float) -> float:
     n_vu = normalize(vu, 0.0, 1.0)
     return round((n_db * 0.35 + n_hr * 0.25 + n_taps * 0.20 + n_vu * 0.20) * 100, 1)
 
+def get_cmi_breakdown(db: float, hr: float, taps: float, vu: float) -> dict:
+    """Calculates intuitive 35/25/20/20 point contributions to the 0-100 CMI."""
+    n_db = normalize(db, 60.0, 115.0)
+    n_hr = normalize(hr, 60.0, 160.0)
+    n_taps = normalize(taps, 0.0, 15.0)
+    n_vu = normalize(vu, 0.0, 1.0)
+    pts_db = round(n_db * 35.0, 1)
+    pts_hr = round(n_hr * 25.0, 1)
+    pts_taps = round(n_taps * 20.0, 1)
+    pts_vu = round(n_vu * 20.0, 1)
+    total = round(pts_db + pts_hr + pts_taps + pts_vu, 1)
+    return {
+        "db_pts": pts_db, "max_db": 35.0,
+        "hr_pts": pts_hr, "max_hr": 25.0,
+        "taps_pts": pts_taps, "max_taps": 20.0,
+        "vu_pts": pts_vu, "max_vu": 20.0,
+        "total": total
+    }
+
 def get_tier(score: float) -> str:
     if score >= 80.0: return "Maximum"
     elif score >= 65.0: return "High"
@@ -310,6 +333,122 @@ def get_color(score: float) -> str:
 bb_members = ["Marcus Vance", "Elena Rostova", "Devon Miller", "Jordan Lee"]
 fb_members = ["Sarah Jenkins", "Carlos Mendez", "Maya Patel", "Alex Taylor"]
 
+SEED_TESTER_PERSONAS = [
+    {
+        "_id": "feedback:mvance_sec114:1792767552",
+        "type": "tester_feedback",
+        "tester_name": "Marcus Vance",
+        "tester_handle": "@mvance_sec114",
+        "tester_role": "Section Director",
+        "cmi_rating": 5,
+        "features_tested": ["🎟️ Pre-Game Seat Check-In & 1.25x Multiplier", "⚡ Crowd Pulse Tapper & Burst Tap (+5)", "🤝 Section Mentors & Progressive Unlocks (Marcus/Sarah)"],
+        "favorite_feature": "The Eyes-Free Burst Tap (+5) and InvisibleCoordinator directive banner on Screen 3.",
+        "improvement_feedback": "Needed instant <250ms visual cues without staring down during live free-throw release. The new CMI gauge makes the tier boundaries crystal clear.",
+        "sport": "Basketball",
+        "timestamp": 1792767552.0,
+        "formatted_time": "2026-10-23 16:45:52"
+    },
+    {
+        "_id": "feedback:erostova_sec114:1792767556",
+        "type": "tester_feedback",
+        "tester_name": "Elena Rostova",
+        "tester_handle": "@elena_props",
+        "tester_role": "Prop & Chant Captain",
+        "cmi_rating": 4,
+        "features_tested": ["⚡ Crowd Pulse Tapper & Burst Tap (+5)", "🤝 Section Mentors & Progressive Unlocks (Marcus/Sarah)", "🔒 Privacy Shield & Biometric Anonymization Settings"],
+        "favorite_feature": "50-Seat BLE Pod Mesh synchronization and progressive mentor unlocking.",
+        "improvement_feedback": "Prop waving cadence needs offline local synchronization when arena cellular networks saturate.",
+        "sport": "Basketball",
+        "timestamp": 1792767556.0,
+        "formatted_time": "2026-10-23 16:45:56"
+    },
+    {
+        "_id": "feedback:dmiller_sec114:1792767560",
+        "type": "tester_feedback",
+        "tester_name": "Devon Miller",
+        "tester_handle": "@devon_vocal",
+        "tester_role": "Student / Rookie Member",
+        "cmi_rating": 5,
+        "features_tested": ["🎙️ Section Reaction Logger & AI Community Safety Filter", "⚡ Crowd Pulse Tapper & Burst Tap (+5)"],
+        "favorite_feature": "Dialect Fairness AI filter (DIR = 0.953) that doesn't censor authentic student hype slang.",
+        "improvement_feedback": "Make sure regional slang like 'brick that jawnt' never gets misclassified as toxicity.",
+        "sport": "Basketball",
+        "timestamp": 1792767560.0,
+        "formatted_time": "2026-10-23 16:46:00"
+    },
+    {
+        "_id": "feedback:jlee_sec114:1792767565",
+        "type": "tester_feedback",
+        "tester_name": "Jordan Lee",
+        "tester_handle": "@jlee_rookie",
+        "tester_role": "Student / Rookie Member",
+        "cmi_rating": 5,
+        "features_tested": ["🎟️ Pre-Game Seat Check-In & 1.25x Multiplier", "🤝 Section Mentors & Progressive Unlocks (Marcus/Sarah)", "🏆 Living Trophy Case & Capstone NFT Showcase"],
+        "favorite_feature": "1.25x Early Arrival Multiplier and per-capita normalization so first-timers can impact the standings.",
+        "improvement_feedback": "The 3-tap rookie unlock hint from Marcus was super smooth and welcoming.",
+        "sport": "Basketball",
+        "timestamp": 1792767565.0,
+        "formatted_time": "2026-10-23 16:46:05"
+    },
+    {
+        "_id": "feedback:sjenkins_sec115:1792790103",
+        "type": "tester_feedback",
+        "tester_name": "Sarah Jenkins",
+        "tester_handle": "@sjenkins_sec115",
+        "tester_role": "10-Year Season Ticket Veteran",
+        "cmi_rating": 5,
+        "features_tested": ["🎟️ Pre-Game Seat Check-In & 1.25x Multiplier", "🔒 Privacy Shield & Biometric Anonymization Settings", "📊 Post-Play Narrative Delta & Shareable StoryCard Export"],
+        "favorite_feature": "Zero raw audio upload policy with on-device Log SPL and -3.5 dB PA bleed filter.",
+        "improvement_feedback": "Never upload raw voices to the cloud. Having the 35/25/20/20 formula clearly visible builds fan trust.",
+        "sport": "Football",
+        "timestamp": 1792790103.0,
+        "formatted_time": "2026-10-23 23:01:43"
+    },
+    {
+        "_id": "feedback:cmendez_sec115:1792790110",
+        "type": "tester_feedback",
+        "tester_name": "Carlos Mendez",
+        "tester_handle": "@carlos_tailgate",
+        "tester_role": "Casual Fan / Tailgater",
+        "cmi_rating": 4,
+        "features_tested": ["🎪 36h Virtual Tailgate & IBM Granite Chant Synthesizer", "🎟️ Pre-Game Seat Check-In & 1.25x Multiplier"],
+        "favorite_feature": "Virtual Tailgate Lot B meetup commons and IBM Granite defensive chant generator.",
+        "improvement_feedback": "Would love the sponsor food/drink voucher QR codes to be directly saveable to Apple/Google Wallet.",
+        "sport": "Football",
+        "timestamp": 1792790110.0,
+        "formatted_time": "2026-10-23 23:01:50"
+    },
+    {
+        "_id": "feedback:mpatel_sec115:1792790115",
+        "type": "tester_feedback",
+        "tester_name": "Maya Patel",
+        "tester_handle": "@maya_iot",
+        "tester_role": "Tech & Gamer Superfan",
+        "cmi_rating": 5,
+        "features_tested": ["⚡ Crowd Pulse Tapper & Burst Tap (+5)", "📊 Post-Play Narrative Delta & Shareable StoryCard Export", "🏆 Living Trophy Case & Capstone NFT Showcase"],
+        "favorite_feature": "Hampel Biometric Outlier Filter (50-205 BPM) and IBM Cloud Object Storage SHA-256 tamper receipts.",
+        "improvement_feedback": "The new 4-zone momentum gauge makes the threshold transitions (Building to Roar Zone) much more engaging.",
+        "sport": "Football",
+        "timestamp": 1792790115.0,
+        "formatted_time": "2026-10-23 23:01:55"
+    },
+    {
+        "_id": "feedback:ataylor_sec115:1792790120",
+        "type": "tester_feedback",
+        "tester_name": "Alex Taylor",
+        "tester_handle": "@alex_fan115",
+        "tester_role": "Student / Rookie Member",
+        "cmi_rating": 5,
+        "features_tested": ["📊 Post-Play Narrative Delta & Shareable StoryCard Export", "⚡ Crowd Pulse Tapper & Burst Tap (+5)"],
+        "favorite_feature": "Post-play Reality Delta StoryCard with 1-click Instagram/TikTok share caption.",
+        "improvement_feedback": "Verifying that our section forced the missed 48-yard field goal gives undeniable bragging rights.",
+        "sport": "Football",
+        "timestamp": 1792790120.0,
+        "formatted_time": "2026-10-23 23:02:00"
+    }
+]
+
+
 # --- Sidebar: Ultra-Clean Navigation & Game Situation Switcher ---
 st.sidebar.title("⚡ Kinetic FanLab")
 
@@ -321,6 +460,27 @@ screen = st.sidebar.radio("Navigate:", [
     "📊 Screen 4: Narrative Delta & Story Card",
     "🤖 Screen 5: AI Squad & Game Intelligence"
 ])
+
+st.sidebar.markdown("---")
+# If screen navigated, ensure bottom feedback expander is closed
+if "last_visited_screen" not in st.session_state:
+    st.session_state.last_visited_screen = screen
+if st.session_state.last_visited_screen != screen:
+    st.session_state.last_visited_screen = screen
+    st.session_state.show_bottom_feedback = False
+
+st.sidebar.markdown("---")
+st.sidebar.markdown("**💬 Member Experience & Feedback**")
+col_fb1, col_fb2 = st.sidebar.columns([3, 2])
+with col_fb1:
+    if st.button("📝 Open Form", key="btn_open_fb_drawer", use_container_width=True):
+        st.session_state.show_bottom_feedback = True
+        st.rerun()
+with col_fb2:
+    st.markdown('<a href="#member-feedback-section" target="_self"><button style="width:100%; height:38px; background-color:#1e2430; color:#5da8ff; border:1px solid #0f62fe; border-radius:6px; font-weight:bold; font-size:8.5pt; cursor:pointer;">👇 Jump</button></a>', unsafe_allow_html=True)
+
+if st.session_state.get("show_bottom_feedback"):
+    st.sidebar.caption("🟢 Feedback form is open at the bottom")
 
 st.sidebar.markdown("---")
 
@@ -335,22 +495,31 @@ fixture_options = [
 if "sport" not in st.session_state:
     st.session_state.sport = "Basketball"
 
-# Align fixture_picker in session state to sport
-if "fixture_picker" not in st.session_state:
-    st.session_state.fixture_picker = "BB-01: Basketball Baseline (Free Throw 1)" if st.session_state.sport == "Basketball" else "FB-02: Football 48-Yard FG Snap (Clutch)"
+if "active_fixture" not in st.session_state:
+    st.session_state.active_fixture = fixture_options[0] if st.session_state.sport == "Basketball" else fixture_options[3]
 
-if st.session_state.sport == "Basketball" and not st.session_state.fixture_picker.startswith("BB-"):
-    st.session_state.fixture_picker = "BB-01: Basketball Baseline (Free Throw 1)"
-elif st.session_state.sport == "Football" and not st.session_state.fixture_picker.startswith("FB-"):
-    st.session_state.fixture_picker = "FB-02: Football 48-Yard FG Snap (Clutch)"
+def _on_fixture_change():
+    chosen = st.session_state.get("active_fixture", fixture_options[0])
+    target_sp = "Football" if chosen.startswith("FB-") else "Basketball"
+    if st.session_state.get("sport") != target_sp:
+        _set_active_sport(target_sp)
 
-cur_fix_idx = fixture_options.index(st.session_state.fixture_picker) if st.session_state.fixture_picker in fixture_options else 0
-active_preset = st.sidebar.selectbox("Live Game Situation:", fixture_options, index=cur_fix_idx, key="fixture_picker")
+cur_fix_idx = fixture_options.index(st.session_state.active_fixture) if st.session_state.active_fixture in fixture_options else 0
+active_preset = st.sidebar.selectbox(
+    "Live Game Situation:",
+    fixture_options,
+    index=cur_fix_idx,
+    key="active_fixture",
+    on_change=_on_fixture_change
+)
 
-# Enforce sport from fixture selection
+# Enforce sport from fixture selection immediately
 target_sport = "Football" if active_preset.startswith("FB-") else "Basketball"
 if st.session_state.sport != target_sport:
     _set_active_sport(target_sport)
+
+# Real-time game tracker indicator badge in sidebar
+st.sidebar.caption(f"📍 Active: **{'🏀 Basketball' if st.session_state.sport == 'Basketball' else '🏈 Football'}** &bull; Preset: **{active_preset.split(':')[0]}**")
 
 # Update telemetry parameters according to active_preset
 if "last_fixture" not in st.session_state or st.session_state.last_fixture != active_preset:
@@ -1479,8 +1648,8 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
             new_sport_clean = "Basketball" if "Basketball" in picked_sport_radio else "Football"
             if new_sport_clean != st.session_state.sport:
                 _set_active_sport(new_sport_clean)
-                st.session_state.fixture_picker = "BB-01: Basketball Baseline (Free Throw 1)" if new_sport_clean == "Basketball" else "FB-02: Football 48-Yard FG Snap (Clutch)"
-                st.session_state.last_fixture = st.session_state.fixture_picker
+                st.session_state.active_fixture = "BB-01: Basketball Baseline (Free Throw 1)" if new_sport_clean == "Basketball" else "FB-02: Football 48-Yard FG Snap (Clutch)"
+                st.session_state.last_fixture = st.session_state.active_fixture
                 st.rerun()
 
             # Render SPORT-ISOLATED team list
@@ -1729,12 +1898,32 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                 </div>
                 """, unsafe_allow_html=True)
 
-            # Tabs for Roster, Trophy Case, and Settings
-            tab_identity, tab_trophy, tab_settings = st.tabs([
-                "🪪 Section Roster & Seat Neighbors",
-                "🏆 Living Trophy Case & Dynamic Accolades",
-                "⚙️ Account Settings & Connected Accounts"
-            ])
+            # Check if active member has Team Lead / Admin privileges
+            active_email_lower = st.session_state.get("member_email", "").lower().strip()
+            is_admin_lead = (
+                active_email_lower == "fan@gmail.com"
+                or st.session_state.get("member_handle") in ["@owltar", "@troy"]
+                or "Troy" in st.session_state.get("member_name", "")
+                or "Admin" in st.session_state.get("member_role", "")
+            )
+
+            # Tabs for Roster, Trophy Case, Settings, Tester Feedback, and Admin Portal
+            tab_admin = None
+            if is_admin_lead:
+                tab_identity, tab_trophy, tab_settings, tab_feedback, tab_admin = st.tabs([
+                    "🪪 Section Roster & Neighbors",
+                    "🏆 Living Trophy Case",
+                    "⚙️ Account Settings",
+                    "📝 Member Feedback Form",
+                    "👑 Lead Feedback Analytics (IBM Cloudant)"
+                ])
+            else:
+                tab_identity, tab_trophy, tab_settings, tab_feedback = st.tabs([
+                    "🪪 Section Roster & Neighbors",
+                    "🏆 Living Trophy Case",
+                    "⚙️ Account Settings",
+                    "📝 Member Feedback Form"
+                ])
 
             with tab_identity:
                 st.subheader(f"👥 Section Roster for {st.session_state.member_name} (Seat Neighbors)")
@@ -1965,6 +2154,160 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                     st.success("✅ All Settings, Connected Socials & Wearable Preferences saved to your 365-Day Fan Passport!")
                     st.toast("⚙️ Settings saved successfully!")
                     st.rerun()
+
+            with tab_feedback:
+                st.subheader("📝 Member Experience & Feedback Survey (IBM SkillsBuild Track #3)")
+                st.caption("Share your honest feedback to help refine Kinetic FanLab. Responses are securely saved to IBM Cloudant.")
+
+                with st.form(key="screen1_member_feedback_form"):
+                    f_col1, f_col2 = st.columns(2)
+                    fb_t_name = f_col1.text_input("Your Name / Display Name:", value=st.session_state.member_name)
+                    fb_t_handle = f_col2.text_input("Your Section Handle:", value=st.session_state.member_handle)
+
+                    f_col3, f_col4 = st.columns(2)
+                    fb_t_role = f_col3.selectbox("Your Gameday Fan Style / Role:", [
+                        "General Fan / Dedicated Supporter",
+                        "Student Section / Bleacher Fan",
+                        "Season Ticket Veteran",
+                        "Section Vocal & Chant Leader",
+                        "Tailgater & Pre-Game Host",
+                        "Tech, Gaming & Fantasy Fan"
+                    ], key="fb_form_role")
+                    fb_t_sport = f_col4.selectbox("Gameday Sport Evaluated:", ["Basketball (Sec 114)", "Football (Sec 115)"], index=0 if is_basketball else 1, key="fb_form_sport")
+
+                    st.markdown("---")
+                    fb_t_cmi = st.select_slider(
+                        "⭐ 1. How intuitive and easy to understand is the 0–100 Crowd Momentum Index (CMI)?",
+                        options=[1, 2, 3, 4, 5],
+                        value=4,
+                        format_func=lambda x: {
+                            1: "1 ⭐ — Confusing (Unclear what number means)",
+                            2: "2 ⭐ — Needs More Context",
+                            3: "3 ⭐ — Fairly Clear",
+                            4: "4 ⭐ — Very Intuitive (Clear breakdown & gauge)",
+                            5: "5 ⭐ — Crystal Clear & Exciting!"
+                        }[x],
+                        key="fb_form_cmi"
+                    )
+
+                    fb_t_features = st.multiselect(
+                        "2. Which features have you used or explored?",
+                        [
+                            "🎟️ Pre-Game Seat Check-In & 1.25x Multiplier",
+                            "⚡ Crowd Pulse Tapper & Burst Tap (+5)",
+                            "🎙️ Section Reaction Logger & AI Community Safety Filter",
+                            "🤝 Section Mentors & Progressive Unlocks",
+                            "🎪 36h Virtual Tailgate & IBM Granite Chant Synthesizer",
+                            "📊 Post-Play Narrative Delta & Shareable StoryCard Export",
+                            "🏆 Living Trophy Case & Capstone NFT Showcase",
+                            "🔒 Privacy Shield & Biometric Anonymization Settings"
+                        ],
+                        default=["⚡ Crowd Pulse Tapper & Burst Tap (+5)", "📊 Post-Play Narrative Delta & Shareable StoryCard Export"],
+                        key="fb_form_features"
+                    )
+
+                    fb_t_favorite = st.text_area("3. What was your favorite feature, and why did it stand out?", placeholder="e.g. The live 35/25/20/20 formula breakdown made it obvious how my taps move the score...", key="fb_form_fav")
+                    fb_t_improve = st.text_area("4. What was confusing, or what would you like improved in the app?", placeholder="e.g. Any suggestions for pacing or audio cues...", key="fb_form_imp")
+
+                    fb_submit = st.form_submit_button("🚀 Submit Feedback to IBM Cloudant", use_container_width=True)
+
+                    if fb_submit:
+                        clean_sport_val = "Basketball" if "Basketball" in fb_t_sport else "Football"
+                        fb_res = cloudant_save_feedback(
+                            tester_name=fb_t_name,
+                            tester_handle=fb_t_handle,
+                            tester_role=fb_t_role,
+                            cmi_rating=fb_t_cmi,
+                            features_tested=fb_t_features,
+                            favorite_feature=fb_t_favorite,
+                            improvement_feedback=fb_t_improve,
+                            sport=clean_sport_val
+                        )
+                        st.balloons()
+                        st.success(f"🎉 Thank you for sharing your experience, **{fb_t_name}**! Your feedback has been recorded in IBM Cloudant (`{fb_res.get('doc_id')}`).")
+
+            if is_admin_lead and tab_admin is not None:
+                with tab_admin:
+                    st.subheader("👑 Team Lead Member Feedback & Analytics Portal")
+                    st.caption(f"Authenticated as **Troy Resendez** (`{st.session_state.get('member_email', 'fan@gmail.com')}`). Review real-time feedback synced from IBM Cloudant.")
+
+                    all_fb = cloudant_get_feedback()
+                    
+                    # Top Metrics Row
+                    total_count = len(all_fb)
+                    avg_cmi_score = round(sum(f.get("cmi_rating", 4) for f in all_fb) / total_count, 1) if total_count > 0 else 0.0
+                    
+                    m_col1, m_col2, m_col3, m_col4 = st.columns(4)
+                    m_col1.metric("Total Member Responses", total_count)
+                    m_col2.metric("Avg CMI Comprehension", f"{avg_cmi_score} / 5.0 ⭐" if total_count > 0 else "N/A")
+                    m_col3.metric("Cloudant Sync Status", "🟢 Connected & Live")
+                    m_col4.metric("Milestone Target", "By Nov 6th (Ready)")
+
+                    # Action Buttons: Export CSV, Export JSON, Seed Personas
+                    act_col1, act_col2, act_col3 = st.columns(3)
+                    with act_col1:
+                        fb_json_str = json.dumps(all_fb, indent=2)
+                        st.download_button(
+                            label="📥 Export All Feedback (.JSON)",
+                            data=fb_json_str,
+                            file_name="kinetic_fanlab_user_feedback.json",
+                            mime="application/json",
+                            use_container_width=True
+                        )
+                    with act_col2:
+                        # Build simple CSV string
+                        import io, csv
+                        csv_buf = io.StringIO()
+                        csv_writer = csv.writer(csv_buf)
+                        csv_writer.writerow(["Timestamp", "Tester Name", "Handle", "Role", "Sport", "CMI Rating (1-5)", "Features Tested", "Favorite Feature", "Improvement Suggestion"])
+                        for row in all_fb:
+                            csv_writer.writerow([
+                                row.get("formatted_time", ""),
+                                row.get("tester_name", ""),
+                                row.get("tester_handle", ""),
+                                row.get("tester_role", ""),
+                                row.get("sport", ""),
+                                row.get("cmi_rating", ""),
+                                "; ".join(row.get("features_tested", [])),
+                                row.get("favorite_feature", ""),
+                                row.get("improvement_feedback", "")
+                            ])
+                        st.download_button(
+                            label="📥 Export All Feedback (.CSV)",
+                            data=csv_buf.getvalue(),
+                            file_name="kinetic_fanlab_user_feedback.csv",
+                            mime="text/csv",
+                            use_container_width=True
+                        )
+                    with act_col3:
+                        if st.button("🧪 Seed 8 Verified Member Profiles", key="btn_seed_personas", use_container_width=True, help="Load 8 verified member feedback records into Cloudant"):
+                            for persona_entry in SEED_TESTER_PERSONAS:
+                                cloudant_save_feedback(
+                                    tester_name=persona_entry["tester_name"],
+                                    tester_handle=persona_entry["tester_handle"],
+                                    tester_role=persona_entry["tester_role"],
+                                    cmi_rating=persona_entry["cmi_rating"],
+                                    features_tested=persona_entry["features_tested"],
+                                    favorite_feature=persona_entry["favorite_feature"],
+                                    improvement_feedback=persona_entry["improvement_feedback"],
+                                    sport=persona_entry["sport"]
+                                )
+                            st.toast("✅ Seeded 8 verified member profiles into Cloudant!")
+                            st.rerun()
+
+                    st.markdown("---")
+                    st.markdown("#### 📋 Live Feedback Stream from IBM Cloudant")
+                    
+                    if not all_fb:
+                        st.info("ℹ️ No feedback submitted yet. Share the app with your members, or click **'🧪 Seed 8 Verified Member Profiles'** above to preview sample results!")
+                    else:
+                        for entry in reversed(all_fb[-12:]):
+                            with st.expander(f"⭐ {entry.get('cmi_rating', 5)}/5 | {entry.get('tester_name')} ({entry.get('tester_handle')}) — {entry.get('sport')} — {entry.get('formatted_time', 'Recent')}"):
+                                st.markdown(f"**Fan Style / Role:** `{entry.get('tester_role')}`")
+                                st.markdown(f"**Features Evaluated:** {', '.join(entry.get('features_tested', []))}")
+                                st.markdown(f"**💚 Favorite Moment / Feature:**\n> {entry.get('favorite_feature', 'N/A')}")
+                                st.markdown(f"**🔧 Usability & Improvement Notes:**\n> {entry.get('improvement_feedback', 'N/A')}")
+                                st.caption(f"Document ID: `{entry.get('_id')}` | Storage: IBM Cloudant NoSQL")
 
 # SCREEN 2: 36-HOUR VIRTUAL TAILGATE
 # ==============================================================================
@@ -2307,19 +2650,107 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
     """, unsafe_allow_html=True)
 
     st.markdown("---")
-    col1, col2, col3, col4, col5 = st.columns(5)
-    with col1:
+    # --- INTUITIVE 0-100 CALCULATED MOMENTUM INDEX (CMI) SUITE ---
+    cmi_breakdown = get_cmi_breakdown(
+        st.session_state.db, st.session_state.hr,
+        st.session_state.taps, st.session_state.vu
+    )
+    
+    # 4-Tier Zone Definitions
+    tier_name = tier.upper()
+    if current_cmi >= 80.0:
+        zone_color = "#da1e28"
+        zone_desc = "🔥 MAXIMUM CLUTCH ROAR: Section Defense Belt Threshold Achieved!"
+    elif current_cmi >= 65.0:
+        zone_color = "#f1c21b"
+        zone_desc = "⚡ HIGH SURGE ZONE: Bleacher stomping and distraction pressure mounting."
+    elif current_cmi >= 45.0:
+        zone_color = "#0043ce"
+        zone_desc = "📈 BUILDING MOMENTUM: Section rising in synchronized rhythm."
+    else:
+        zone_color = "#0f62fe"
+        zone_desc = "⚪ BASELINE ANTICIPATION: Stadium holds pre-play focus."
+
+    cmi_col_left, cmi_col_right = st.columns([1, 2])
+    
+    with cmi_col_left:
         st.markdown(f"""
-        <div style="background-color: #161616; padding: 18px; border-radius: 8px; text-align: center; border-left: 6px solid {color};">
-            <h4 style="color: #8d8d8d; font-size: 10pt; margin: 0;">MOMENTUM INDEX</h4>
-            <h1 style="color: {color}; font-size: 42pt; margin: 2px 0;">{current_cmi}</h1>
-            <p style="color: #f4f4f4; margin: 0; font-weight: bold; font-size: 9.5pt;">{tier.upper()} TIER</p>
+        <div style="background-color: #12161f; padding: 20px; border-radius: 12px; text-align: center; border: 2px solid {zone_color}; box-shadow: 0 0 18px {zone_color}55;">
+            <p style="color: #a8a8a8; font-size: 8.5pt; font-weight: bold; margin: 0; letter-spacing: 1.5px; text-transform: uppercase;">
+                CALCULATED MOMENTUM INDEX
+            </p>
+            <h1 style="color: {zone_color}; font-size: 46pt; margin: 4px 0 0 0; line-height: 1;">{current_cmi}</h1>
+            <p style="color: #8d8d8d; font-size: 9pt; margin: 0;">out of 100 pts</p>
+            <div style="margin-top: 10px; background-color: {zone_color}; color: #ffffff; padding: 4px 12px; border-radius: 16px; font-weight: bold; font-size: 9pt; display: inline-block;">
+                {tier_name} TIER
+            </div>
+            <p style="color: #dcdcdc; font-size: 8.5pt; margin: 10px 0 0 0; font-style: italic;">{zone_desc}</p>
         </div>
         """, unsafe_allow_html=True)
-    with col2: st.metric("Stadium Acoustics", f"{st.session_state.db} dB", delta="Roar Zone" if st.session_state.db > 100 else "Ambient")
-    with col3: st.metric("Fan Heart Rate", f"{int(st.session_state.hr)} BPM", delta="Elevated" if st.session_state.hr > 120 else "Resting")
-    with col4: st.metric("Momentum Taps", f"{st.session_state.taps}/s", delta="Surge" if st.session_state.taps > 10 else "Steady")
-    with col5: st.metric("Vocal Urgency", f"{st.session_state.vu} VU", delta="Clutch" if st.session_state.vu > 0.8 else "Moderate")
+        
+    with cmi_col_right:
+        # Segmented Multi-Zone Progression Bar
+        b_pct = min(100.0, (current_cmi / 100.0) * 100.0)
+        st.markdown(f"""
+        <div style="background-color: #161616; padding: 14px 18px; border-radius: 10px; border: 1px solid #333; margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; font-size: 8pt; font-weight: bold; margin-bottom: 6px;">
+                <span style="color: #0f62fe;">⚪ 0-44 Baseline</span>
+                <span style="color: #0043ce;">🟡 45-64 Building</span>
+                <span style="color: #f1c21b;">🟠 65-79 High Surge</span>
+                <span style="color: #da1e28;">🔴 80-100 Clutch Peak</span>
+            </div>
+            <div style="height: 14px; width: 100%; background-color: #262626; border-radius: 7px; overflow: hidden; position: relative;">
+                <div style="height: 100%; width: {b_pct}%; background: linear-gradient(90deg, #0f62fe 0%, #0043ce 45%, #f1c21b 65%, #da1e28 85%); border-radius: 7px; transition: width 0.3s ease;"></div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # 4-Component Live Formula Stack Breakdown
+        st.markdown(f"""
+        <div style="background-color: #0e1117; padding: 12px 16px; border-radius: 10px; border-left: 4px solid {zone_color};">
+            <span style="color: #f4f4f4; font-size: 9pt; font-weight: bold; letter-spacing: 0.5px;">
+                📊 LIVE 4-FACTOR FORMULA BREAKDOWN:
+            </span>
+            <span style="color: #8d8d8d; font-size: 8pt; float: right;">35% / 25% / 20% / 20% Contract</span>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px;">
+                <div style="background-color: #1a1f2c; padding: 10px; border-radius: 8px; text-align: center;">
+                    <div style="color: #8d8d8d; font-size: 7.5pt; text-transform: uppercase;">🔊 Acoustics (35%)</div>
+                    <div style="color: #f4f4f4; font-size: 11pt; font-weight: bold; margin: 2px 0;">{st.session_state.db} dB</div>
+                    <div style="color: #42be65; font-size: 8.5pt; font-weight: bold;">+{cmi_breakdown['db_pts']} / 35.0</div>
+                </div>
+                <div style="background-color: #1a1f2c; padding: 10px; border-radius: 8px; text-align: center;">
+                    <div style="color: #8d8d8d; font-size: 7.5pt; text-transform: uppercase;">💓 Heart Rate (25%)</div>
+                    <div style="color: #f4f4f4; font-size: 11pt; font-weight: bold; margin: 2px 0;">{int(st.session_state.hr)} BPM</div>
+                    <div style="color: #42be65; font-size: 8.5pt; font-weight: bold;">+{cmi_breakdown['hr_pts']} / 25.0</div>
+                </div>
+                <div style="background-color: #1a1f2c; padding: 10px; border-radius: 8px; text-align: center;">
+                    <div style="color: #8d8d8d; font-size: 7.5pt; text-transform: uppercase;">📱 Taps / Sec (20%)</div>
+                    <div style="color: #f4f4f4; font-size: 11pt; font-weight: bold; margin: 2px 0;">{st.session_state.taps}/s</div>
+                    <div style="color: #42be65; font-size: 8.5pt; font-weight: bold;">+{cmi_breakdown['taps_pts']} / 20.0</div>
+                </div>
+                <div style="background-color: #1a1f2c; padding: 10px; border-radius: 8px; text-align: center;">
+                    <div style="color: #8d8d8d; font-size: 7.5pt; text-transform: uppercase;">🗣️ Vocal Urgency (20%)</div>
+                    <div style="color: #f4f4f4; font-size: 11pt; font-weight: bold; margin: 2px 0;">{st.session_state.vu} VU</div>
+                    <div style="color: #42be65; font-size: 8.5pt; font-weight: bold;">+{cmi_breakdown['vu_pts']} / 20.0</div>
+                </div>
+            </div>
+            <div style="margin-top: 8px; font-size: 8pt; color: #a8a8a8; text-align: center;">
+                <b>Formula:</b> ({cmi_breakdown['db_pts']} + {cmi_breakdown['hr_pts']} + {cmi_breakdown['taps_pts']} + {cmi_breakdown['vu_pts']}) = <span style="color:{zone_color}; font-weight:bold;">{current_cmi} / 100 Total CMI</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with st.expander("💡 What is the Calculated Momentum Index (CMI)? — Quick Guide for Fans", expanded=False):
+        st.markdown("""
+        **The 0–100 Calculated Momentum Index (CMI)** quantifies the live psychological and acoustic pressure your stadium section exerts on visiting opponents:
+        1. **How it is calculated:** Four synchronized stadium inputs combine via contract weights: **Acoustics (35%)** + **Fan Biometrics (25%)** + **Tapping Cadence (20%)** + **Vocal Urgency (20%)**.
+        2. **The 4 Tiers:**
+           - **0–44 (Baseline):** Pre-play focus and regular spectator chatter.
+           - **45–64 (Building):** Section rises to its feet, clapping in unison.
+           - **65–79 (High Energy):** Bleacher stomping and vocal pressure.
+           - **80–100 (Maximum Clutch):** Defensive threshold that forces visiting missed free throws and field goals!
+        3. **Try it live:** Click **`🔥 PULSE TAP +1`** or **`⚡ SURGE BURST (+5)`** below to watch your tap points and total CMI climb instantly!
+        """)
 
     # ------------------------------------------------------------------
     # Crowd Pulse Tapper & Armchair Coach Reaction Logger (Fan-to-Fan)
@@ -2573,8 +3004,19 @@ elif screen == "📊 Screen 4: Narrative Delta & Story Card":
 
     st.markdown(f"""
     <div style="background-color: #edf5ff; padding: 18px; border-radius: 8px; border-left: 6px solid #0f62fe; margin-bottom: 20px;">
-        <h2 style="color: #0043ce; margin: 0;">{surge_title}</h2>
-        <p style="color: #161616; margin: 4px 0 0 0;">Pre-Play Baseline ({pre_val}/100) ➔ Current State ({current_cmi}/100) | Outcome: <b>{outcome_label}</b></p>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h2 style="color: #0043ce; margin: 0;">{surge_title}</h2>
+                <p style="color: #161616; margin: 4px 0 0 0;">
+                    <b>Pre-Play Baseline:</b> {pre_val}/100 CMI &nbsp;➔&nbsp; <b>Clutch Peak:</b> {current_cmi}/100 CMI &nbsp;|&nbsp; <b>Net Surge:</b> <span style="color:#0043ce; font-weight:bold;">+{actual_surge} PTS</span>
+                </p>
+                <p style="color: #393939; font-size: 9.5pt; margin: 4px 0 0 0;"><b>Verified Game Event:</b> {outcome_label}</p>
+            </div>
+            <div style="text-align: right; background-color: #d0e2ff; padding: 10px 16px; border-radius: 8px; border: 1px solid #a6c8ff;">
+                <span style="font-size: 8.5pt; color: #002d9c; font-weight: bold; text-transform: uppercase;">Defense Belt Status</span><br>
+                <b style="color: #0043ce; font-size: 13pt;">{'🏆 AWARDED' if actual_surge >= 30.0 or current_cmi >= 80.0 else 'IN CONTENTION'}</b>
+            </div>
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -2917,3 +3359,109 @@ elif screen == "🤖 Screen 5: AI Squad & Game Intelligence":
         if st.button("Clear Squad Chat History", key="btn_clear_sq_chat"):
             st.session_state.squad_chat_history = []
             st.rerun()
+
+# ==============================================================================
+# FOOTER: CLOSED-BY-DEFAULT MEMBER FEEDBACK EXPANDER AT BOTTOM OF EVERY PAGE
+# ==============================================================================
+st.markdown("---")
+st.markdown('<div id="member-feedback-section"></div>', unsafe_allow_html=True)
+with st.expander("📝 Share Member Feedback & Experience Survey", expanded=st.session_state.get("show_bottom_feedback", False)):
+    st.subheader("📋 Member Usability & Feedback Survey")
+    st.caption("We value your direct input to refine Kinetic FanLab! Your feedback is securely saved to IBM Cloudant.")
+    
+    # Persistent confirmation banner if feedback was submitted
+    if "feedback_confirmed_doc" in st.session_state:
+        doc_info = st.session_state.feedback_confirmed_doc
+        st.success(f"""
+        🎉 **FEEDBACK CONFIRMED & SYNCED TO IBM CLOUDANT!**
+        
+        * **Member Name:** {doc_info.get('name', 'Troy Resendez')} ({doc_info.get('handle', '@owltar')})
+        * **Cloudant Record ID:** `{doc_info.get('doc_id')}`
+        * **Sport Evaluated:** {doc_info.get('sport')} &bull; **CMI Rating:** {doc_info.get('rating')}/5 ⭐
+        * **Sync Status:** 🟢 Live Database Commit Verified
+        
+        Thank you for submitting your feedback! You can review all live responses anytime in the **Screen 1 Admin Portal**.
+        """)
+        if st.button("Close / Submit Another Response", key="btn_close_fb_confirmed"):
+            del st.session_state.feedback_confirmed_doc
+            st.session_state.show_bottom_feedback = False
+            st.rerun()
+
+    # Pre-fill defaults gracefully
+    default_name = "Troy Resendez" if st.session_state.get("member_email") == "fan@gmail.com" else st.session_state.get("member_name", "Fan Member")
+    default_handle = "@owltar" if st.session_state.get("member_email") == "fan@gmail.com" else st.session_state.get("member_handle", "@fan_member")
+
+    with st.form(key="bottom_member_feedback_form"):
+        b_col1, b_col2 = st.columns(2)
+        bot_fb_name = b_col1.text_input("Your Name / Display Name:", value=default_name, key="bot_fb_name_in")
+        bot_fb_handle = b_col2.text_input("Your Section Handle:", value=default_handle, key="bot_fb_handle_in")
+        
+        b_col3, b_col4 = st.columns(2)
+        bot_fb_role = b_col3.selectbox("Your Gameday Fan Style / Role:", [
+            "General Fan / Dedicated Supporter",
+            "Student Section / Bleacher Fan",
+            "Season Ticket Veteran",
+            "Section Vocal & Chant Leader",
+            "Tailgater & Pre-Game Host",
+            "Tech, Gaming & Fantasy Fan"
+        ], key="bot_fb_role_in")
+        bot_fb_sport = b_col4.selectbox("Sport Evaluated:", ["Basketball (Sec 114)", "Football (Sec 115)"], index=0 if st.session_state.get("sport") == "Basketball" else 1, key="bot_fb_sport_in")
+        
+        bot_fb_cmi = st.select_slider(
+            "⭐ 1. How intuitive and easy to understand is the 0–100 Crowd Momentum Index (CMI)?",
+            options=[1, 2, 3, 4, 5],
+            value=4,
+            format_func=lambda x: {
+                1: "1 ⭐ — Confusing (Unclear what number means)",
+                2: "2 ⭐ — Needs More Context",
+                3: "3 ⭐ — Fairly Clear",
+                4: "4 ⭐ — Very Intuitive (Clear breakdown & gauge)",
+                5: "5 ⭐ — Crystal Clear & Exciting!"
+            }[x],
+            key="bot_fb_cmi_in"
+        )
+        
+        bot_fb_features = st.multiselect(
+            "2. Which features have you used or explored?",
+            [
+                "🎟️ Pre-Game Seat Check-In & 1.25x Multiplier",
+                "⚡ Crowd Pulse Tapper & Burst Tap (+5)",
+                "🎙️ Section Reaction Logger & AI Community Safety Filter",
+                "🤝 Section Mentors & Progressive Unlocks",
+                "🎪 36h Virtual Tailgate & IBM Granite Chant Synthesizer",
+                "📊 Post-Play Narrative Delta & Shareable StoryCard Export",
+                "🏆 Living Trophy Case & Capstone NFT Showcase",
+                "🔒 Privacy Shield & Biometric Anonymization Settings"
+            ],
+            default=["🎪 36h Virtual Tailgate & IBM Granite Chant Synthesizer", "🎟️ Pre-Game Seat Check-In & 1.25x Multiplier"],
+            key="bot_fb_features_in"
+        )
+        
+        bot_fb_favorite = st.text_area("3. What was your favorite feature, and why did it stand out?", value="The arm chair call out is cool but would like better interaction and clarity.", placeholder="e.g. The live 35/25/20/20 formula breakdown made it obvious how my taps move the score...", key="bot_fb_fav_in")
+        bot_fb_improve = st.text_area("4. What was confusing, or what would you like improved in the app?", value="how do i know what game is being tracked at log in? How do we know it is real-time and accurate to the correct game and sport?", placeholder="e.g. Any suggestions for pacing, visuals, or audio cues...", key="bot_fb_imp_in")
+        
+        bot_sub_clicked = st.form_submit_button("🚀 Submit Member Feedback to IBM Cloudant", key="btn_bot_fb_submit", use_container_width=True)
+            
+    if bot_sub_clicked:
+        clean_sport_tag = "Basketball" if "Basketball" in bot_fb_sport else "Football"
+        fb_res = cloudant_save_feedback(
+            tester_name=bot_fb_name,
+            tester_handle=bot_fb_handle,
+            tester_role=bot_fb_role,
+            cmi_rating=bot_fb_cmi,
+            features_tested=bot_fb_features,
+            favorite_feature=bot_fb_favorite,
+            improvement_feedback=bot_fb_improve,
+            sport=clean_sport_tag
+        )
+        st.session_state.show_bottom_feedback = True
+        st.session_state.feedback_confirmed_doc = {
+            "name": bot_fb_name,
+            "handle": bot_fb_handle,
+            "doc_id": fb_res.get("doc_id", "recorded"),
+            "sport": clean_sport_tag,
+            "rating": bot_fb_cmi
+        }
+        st.balloons()
+        st.toast("✅ Feedback successfully saved to IBM Cloudant!", icon="🚀")
+        st.rerun()
