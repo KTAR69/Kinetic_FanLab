@@ -252,33 +252,6 @@ def _generate_npc_chat_reply(user_msg: str, author_handle: str, sport: str) -> d
         "time": "Just now"
     }
 
-def _set_active_sport(new_sport: str):
-    """Central synchronized sport switcher: ensures all session states, fixtures, and databases match."""
-    st.session_state.sport = new_sport
-    is_bb = (new_sport == "Basketball")
-    
-    st.session_state.tailgates_attended = st.session_state.get(f"tailgates_attended_{'bb' if is_bb else 'fb'}", 0)
-    st.session_state.meetup_rsvps = list(st.session_state.get(f"meetup_rsvps_{'bb' if is_bb else 'fb'}", []))
-    st.session_state.early_checkin = st.session_state.get(f"early_checkin_{'bb' if is_bb else 'fb'}", False)
-    st.session_state.chant_action_taken = st.session_state.get(f"chant_action_taken_{'bb' if is_bb else 'fb'}", False)
-    st.session_state.storycard_exported_flag = st.session_state.get(f"storycard_exported_{'bb' if is_bb else 'fb'}", False)
-    st.session_state.user_respect_taps_sent = st.session_state.get(f"user_respect_taps_sent_{'bb' if is_bb else 'fb'}", 0)
-    st.session_state.synergy_score = st.session_state.get(f"synergy_score_{'bb' if is_bb else 'fb'}", 0)
-    st.session_state.synergy_claimed = st.session_state.get(f"synergy_claimed_{'bb' if is_bb else 'fb'}", False)
-    st.session_state.squad_chat_history = []
-    
-    unlocked = st.session_state.get(f"unlocked_mentors_{'bb' if is_bb else 'fb'}", ["Marcus Vance" if is_bb else "Sarah Jenkins"])
-    lead_guide = "Marcus Vance" if is_bb else "Sarah Jenkins"
-    st.session_state.active_npc_guide = lead_guide if lead_guide in unlocked else unlocked[0]
-    
-    if st.session_state.get("is_logged_in") and st.session_state.get("member_name"):
-        st.session_state.active_member = st.session_state.member_name
-    else:
-        st.session_state.active_member = "Marcus Vance" if is_bb else "Sarah Jenkins"
-        
-    _ensure_member_in_persona_db()
-
-
 st.set_page_config(page_title="Kinetic FanLab", page_icon="⚡", layout="wide")
 
 # --- Mathematical Normalization & Ground Truth Formula ---
@@ -448,325 +421,6 @@ SEED_TESTER_PERSONAS = [
     }
 ]
 
-
-# --- Sidebar: Ultra-Clean Navigation & Game Situation Switcher ---
-st.sidebar.title("⚡ Kinetic FanLab")
-
-
-screen = st.sidebar.radio("Navigate:", [
-    "👤 Screen 1: Fan Passport & Roster",
-    "🎪 Screen 2: 36h Virtual Tailgate",
-    "🏟️ Screen 3: In-Arena Game Hub & Trigger",
-    "📊 Screen 4: Narrative Delta & Story Card",
-    "🤖 Screen 5: AI Squad & Game Intelligence"
-])
-
-st.sidebar.markdown("---")
-# If screen navigated, ensure bottom feedback expander is closed
-if "last_visited_screen" not in st.session_state:
-    st.session_state.last_visited_screen = screen
-if st.session_state.last_visited_screen != screen:
-    st.session_state.last_visited_screen = screen
-    st.session_state.show_bottom_feedback = False
-
-st.sidebar.markdown("---")
-st.sidebar.markdown("**💬 Member Experience & Feedback**")
-col_fb1, col_fb2 = st.sidebar.columns([3, 2])
-with col_fb1:
-    if st.button("📝 Open Form", key="btn_open_fb_drawer", use_container_width=True):
-        st.session_state.show_bottom_feedback = True
-        st.rerun()
-with col_fb2:
-    st.markdown('<a href="#member-feedback-section" target="_self"><button style="width:100%; height:38px; background-color:#1e2430; color:#5da8ff; border:1px solid #0f62fe; border-radius:6px; font-weight:bold; font-size:8.5pt; cursor:pointer;">👇 Jump</button></a>', unsafe_allow_html=True)
-
-if st.session_state.get("show_bottom_feedback"):
-    st.sidebar.caption("🟢 Feedback form is open at the bottom")
-
-st.sidebar.markdown("---")
-
-fixture_options = [
-    "BB-01: Basketball Baseline (Free Throw 1)",
-    "BB-02: Basketball Clutch (Free Throw 2)",
-    "FB-01: Football Pre-Kick Timeout",
-    "FB-02: Football 48-Yard FG Snap (Clutch)"
-]
-
-# Ensure initial sport
-if "sport" not in st.session_state:
-    st.session_state.sport = "Basketball"
-
-if "active_fixture" not in st.session_state:
-    st.session_state.active_fixture = fixture_options[0] if st.session_state.sport == "Basketball" else fixture_options[3]
-
-def _on_fixture_change():
-    chosen = st.session_state.get("active_fixture", fixture_options[0])
-    target_sp = "Football" if chosen.startswith("FB-") else "Basketball"
-    if st.session_state.get("sport") != target_sp:
-        _set_active_sport(target_sp)
-
-cur_fix_idx = fixture_options.index(st.session_state.active_fixture) if st.session_state.active_fixture in fixture_options else 0
-active_preset = st.sidebar.selectbox(
-    "Live Game Situation:",
-    fixture_options,
-    index=cur_fix_idx,
-    key="active_fixture",
-    on_change=_on_fixture_change
-)
-
-# Enforce sport from fixture selection immediately
-target_sport = "Football" if active_preset.startswith("FB-") else "Basketball"
-if st.session_state.sport != target_sport:
-    _set_active_sport(target_sport)
-
-# Real-time game tracker indicator badge in sidebar
-st.sidebar.caption(f"📍 Active: **{'🏀 Basketball' if st.session_state.sport == 'Basketball' else '🏈 Football'}** &bull; Preset: **{active_preset.split(':')[0]}**")
-
-# Update telemetry parameters according to active_preset
-if "last_fixture" not in st.session_state or st.session_state.last_fixture != active_preset:
-    st.session_state.last_fixture = active_preset
-    if "BB-01" in active_preset:
-        st.session_state.sport = "Basketball"
-        st.session_state.db = 82.0
-        st.session_state.hr = 98.0
-        st.session_state.taps = 2.5
-        st.session_state.vu = 0.55
-        st.session_state.is_clutch = False
-        st.session_state.fan_notes = ["Watch the shooter, need this stop"]
-    elif "BB-02" in active_preset:
-        st.session_state.sport = "Basketball"
-        st.session_state.db = 106.5
-        st.session_state.hr = 136.0
-        st.session_state.taps = 12.2
-        st.session_state.vu = 0.85
-        st.session_state.is_clutch = True
-        st.session_state.fan_notes = ["MISS IT! OFF THE RIM! BRING THE NOISE!"]
-    elif "FB-01" in active_preset:
-        st.session_state.sport = "Football"
-        st.session_state.db = 78.5
-        st.session_state.hr = 105.0
-        st.session_state.taps = 3.0
-        st.session_state.vu = 0.60
-        st.session_state.is_clutch = False
-        st.session_state.fan_notes = ["Timeout called, make him wait in the cold!"]
-    elif "FB-02" in active_preset:
-        st.session_state.sport = "Football"
-        st.session_state.db = 111.8
-        st.session_state.hr = 148.0
-        st.session_state.taps = 14.0
-        st.session_state.vu = 0.92
-        st.session_state.is_clutch = True
-        st.session_state.fan_notes = ["BLOCK THAT KICK! RATTLE THE KICKER! GET LOUD!"]
-
-    st.session_state.tap_count = 0
-    st.session_state.tap_times = []
-    st.session_state.synergy_claimed = False
-
-# --- Sidebar: Live Section Fan Chat with Sports Emojis & Interactive NPCs ---
-st.sidebar.markdown("---")
-is_bball_sidebar = (st.session_state.sport == "Basketball")
-sidebar_sec_name = "Section 114 (Thunder Row)" if is_bball_sidebar else "Section 115 (End Zone Loyals)"
-sidebar_sport_icon = "🏀" if is_bball_sidebar else "🏈"
-
-st.sidebar.markdown(f"**💬 Live Section Chat**  \n<span style='color:#0f62fe; font-size:8.5pt; font-weight:bold;'>{sidebar_sport_icon} {sidebar_sec_name}</span>", unsafe_allow_html=True)
-
-# Initialize sport-isolated sidebar chat channels
-if "sidebar_chat_bb" not in st.session_state:
-    st.session_state.sidebar_chat_bb = [
-        {"sender": "Marcus Vance", "handle": "@mvance_sec114", "msg": "Thunder Row pod locked in! Keep the noise steady. 🏀⚡", "time": "Just now"},
-        {"sender": "Elena Rostova", "handle": "@elena_props", "msg": "Waving thundersticks on 2nd dribble! 🌊🔥", "time": "1m ago"},
-        {"sender": "Devon Miller", "handle": "@devon_chants", "msg": "BRING THE NOISE on three! 📣🔊", "time": "2m ago"},
-    ]
-if "sidebar_chat_fb" not in st.session_state:
-    st.session_state.sidebar_chat_fb = [
-        {"sender": "Sarah Jenkins", "handle": "@sjenkins_sec115", "msg": "Section 115 shaking the bleachers! Ice him! 🏈❄️", "time": "Just now"},
-        {"sender": "Carlos Mendez", "handle": "@carlos_lotb", "msg": "Lot B crew is loud and ready for the snap! 🔥🥩", "time": "1m ago"},
-        {"sender": "Maya Patel", "handle": "@maya_pulse", "msg": "BLE pod telemetry reading 111 dB peak! ⌚⚡", "time": "2m ago"},
-    ]
-
-# Render chat feed in a neat scrollable container
-active_chat_list = st.session_state.sidebar_chat_bb if is_bball_sidebar else st.session_state.sidebar_chat_fb
-chat_author_name = st.session_state.get("member_name", "Rookie Fan") if st.session_state.get("is_logged_in") else "Guest Fan"
-chat_author_handle = st.session_state.get("member_handle", "@fan_rookie") if st.session_state.get("is_logged_in") else "@guest"
-
-chat_html = ""
-for cm in active_chat_list[-6:]:
-    is_user_msg = (cm.get("sender") == chat_author_name)
-    sender_color = "#42be65" if is_user_msg else "#0f62fe"
-    chat_html += f"""<div style="margin-bottom: 6px; padding-bottom: 5px; border-bottom: 1px solid #222;">
-<span style="color:{sender_color}; font-weight:bold; font-size:8pt;">{cm.get('sender', '')}</span> <span style="color:#777; font-size:7pt;">{cm.get('handle', '')} &bull; {cm.get('time', '')}</span><br/>
-<span style="color:#f4f4f4; font-size:8pt;">{cm.get('msg', '')}</span></div>"""
-
-st.sidebar.markdown(f"""
-<div style="background-color: #11141c; border: 1px solid #2a3345; border-radius: 8px; padding: 8px 10px; max-height: 180px; overflow-y: auto; margin-bottom: 8px;">
-    {chat_html}
-</div>
-""", unsafe_allow_html=True)
-
-# Quick Sports Emoji Reaction Buttons (4 columns x 2 rows)
-st.sidebar.caption("⚡ Quick Sports Reactions:")
-if is_bball_sidebar:
-    emoji_reactions = [
-        ("🏀", "🏀 Swish! Need this stop!"),
-        ("🔥", "🔥 LET'S GET LOUD!"),
-        ("⚡", "⚡ SURGE ENERGY!"),
-        ("🛡️", "🛡️ DEFENSE ON THREE!"),
-        ("📣", "📣 BRING THE NOISE!"),
-        ("👏", "👏 Let's hear it Thunder Row!"),
-        ("🏆", "🏆 Defense Belt Winner!"),
-        ("🙌", "🙌 Distraction Wave!")
-    ]
-else:
-    emoji_reactions = [
-        ("🏈", "🏈 Block that kick! Rattle him!"),
-        ("🔥", "🔥 LET'S GET LOUD!"),
-        ("⚡", "⚡ 111 dB SURGE!"),
-        ("🛡️", "🛡️ DEFENSE WALL!"),
-        ("📣", "📣 FALSE START! MAKE NOISE!"),
-        ("👏", "👏 Stomp the bleachers!"),
-        ("🏆", "🏆 Defense Belt Winner!"),
-        ("💥", "💥 CRUNCH TIME STOP!")
-    ]
-
-ec_row1 = st.sidebar.columns(4)
-for i in range(4):
-    em_icon, em_text = emoji_reactions[i]
-    if ec_row1[i].button(em_icon, key=f"btn_em_{'bb' if is_bball_sidebar else 'fb'}_{i}", use_container_width=True):
-        active_chat_list.append({"sender": chat_author_name, "handle": chat_author_handle, "msg": em_text, "time": "Just now"})
-        npc_reply = _generate_npc_chat_reply(em_text, chat_author_handle, st.session_state.sport)
-        active_chat_list.append(npc_reply)
-        while len(active_chat_list) > 25: active_chat_list.pop(0)
-        _append_fan_note(f"{em_text}")
-        st.rerun()
-
-ec_row2 = st.sidebar.columns(4)
-for i in range(4, 8):
-    em_icon, em_text = emoji_reactions[i]
-    if ec_row2[i-4].button(em_icon, key=f"btn_em_{'bb' if is_bball_sidebar else 'fb'}_{i}", use_container_width=True):
-        active_chat_list.append({"sender": chat_author_name, "handle": chat_author_handle, "msg": em_text, "time": "Just now"})
-        npc_reply = _generate_npc_chat_reply(em_text, chat_author_handle, st.session_state.sport)
-        active_chat_list.append(npc_reply)
-        while len(active_chat_list) > 25: active_chat_list.pop(0)
-        _append_fan_note(f"{em_text}")
-        st.rerun()
-
-# Text chat input form
-with st.sidebar.form(key=f"sidebar_chat_form_{'bb' if is_bball_sidebar else 'fb'}", clear_on_submit=True):
-    sidebar_in = st.text_input("Send message:", placeholder=f"Chat in {sidebar_sec_name.split(' (')[0]}...", label_visibility="collapsed")
-    sidebar_submit = st.form_submit_button("Send 💬", use_container_width=True)
-
-if sidebar_submit and sidebar_in.strip():
-    gov_res = evaluate_fan_content_safety(sidebar_in)
-    if gov_res.get("guardrail_status") == "REJECTED":
-        st.sidebar.error("🚨 Filtered: please keep chat respectful.")
-    else:
-        active_chat_list.append({"sender": chat_author_name, "handle": chat_author_handle, "msg": sidebar_in.strip(), "time": "Just now"})
-        npc_reply = _generate_npc_chat_reply(sidebar_in.strip(), chat_author_handle, st.session_state.sport)
-        active_chat_list.append(npc_reply)
-        while len(active_chat_list) > 25: active_chat_list.pop(0)
-        _append_fan_note(f"{sidebar_in.strip()}")
-        st.rerun()
-
-
-# Global session states
-if "sport" not in st.session_state: st.session_state.sport = "Basketball"
-if "onboarding_mode" not in st.session_state: st.session_state.onboarding_mode = "Rookie Walkthrough"
-if "is_logged_in" not in st.session_state: st.session_state.is_logged_in = False
-if "member_email" not in st.session_state: st.session_state.member_email = "fan@gmail.com"
-if "member_name" not in st.session_state: st.session_state.member_name = "Rookie Fan"
-if "member_handle" not in st.session_state: st.session_state.member_handle = "@fan_rookie"
-if "member_hash" not in st.session_state: st.session_state.member_hash = "0xROOKIE-sec114-8f7a2"
-if "member_role" not in st.session_state: st.session_state.member_role = "Rookie Fan"
-if "member_tier" not in st.session_state: st.session_state.member_tier = "Rookie Member (Tier 1)"
-if "member_seat" not in st.session_state: st.session_state.member_seat = "Section 114, Row 3, Seat 12"
-if "member_games" not in st.session_state: st.session_state.member_games = 0
-if "member_career_db" not in st.session_state: st.session_state.member_career_db = "0.0 dB"
-if "member_clutch_stops" not in st.session_state: st.session_state.member_clutch_stops = 0
-
-# Sport-isolated Tailgates & Meetups
-if "tailgates_attended_bb" not in st.session_state: st.session_state.tailgates_attended_bb = 0
-if "tailgates_attended_fb" not in st.session_state: st.session_state.tailgates_attended_fb = 0
-if "meetup_rsvps_bb" not in st.session_state: st.session_state.meetup_rsvps_bb = []
-if "meetup_rsvps_fb" not in st.session_state: st.session_state.meetup_rsvps_fb = []
-if "tailgates_attended" not in st.session_state: st.session_state.tailgates_attended = 0
-if "meetup_rsvps" not in st.session_state: st.session_state.meetup_rsvps = []
-
-# Sport-isolated in-game action flags
-if "early_checkin_bb" not in st.session_state: st.session_state.early_checkin_bb = False
-if "early_checkin_fb" not in st.session_state: st.session_state.early_checkin_fb = False
-if "chant_action_taken_bb" not in st.session_state: st.session_state.chant_action_taken_bb = False
-if "chant_action_taken_fb" not in st.session_state: st.session_state.chant_action_taken_fb = False
-if "storycard_exported_bb" not in st.session_state: st.session_state.storycard_exported_bb = False
-if "storycard_exported_fb" not in st.session_state: st.session_state.storycard_exported_fb = False
-if "user_respect_taps_sent_bb" not in st.session_state: st.session_state.user_respect_taps_sent_bb = 0
-if "user_respect_taps_sent_fb" not in st.session_state: st.session_state.user_respect_taps_sent_fb = 0
-if "social_x" not in st.session_state: st.session_state.social_x = ""
-if "social_ig" not in st.session_state: st.session_state.social_ig = ""
-if "social_yt" not in st.session_state: st.session_state.social_yt = "@W3bHippo"
-if "social_tiktok" not in st.session_state: st.session_state.social_tiktok = ""
-if "social_discord" not in st.session_state: st.session_state.social_discord = ""
-if "wearable_device" not in st.session_state: st.session_state.wearable_device = "Apple Watch Ultra 2 (ECG/dB)"
-if "ble_sensitivity" not in st.session_state: st.session_state.ble_sensitivity = -54
-if "notif_clutch" not in st.session_state: st.session_state.notif_clutch = True
-if "notif_tailgate" not in st.session_state: st.session_state.notif_tailgate = True
-if "notif_chaser" not in st.session_state: st.session_state.notif_chaser = True
-if "pref_leaderboard_public" not in st.session_state: st.session_state.pref_leaderboard_public = True
-if "pref_anonymize_biometrics" not in st.session_state: st.session_state.pref_anonymize_biometrics = True
-if "share_trophy_clicked" not in st.session_state: st.session_state.share_trophy_clicked = False
-
-# Distinct sport levels and sport-isolated team registries
-if "bb_level" not in st.session_state: st.session_state.bb_level = "Both (NCAA D1 & NBA)"
-if "fb_level" not in st.session_state: st.session_state.fb_level = "Both (NCAA D1 & NFL)"
-if "teams_bb" not in st.session_state: st.session_state.teams_bb = ["Duke Blue Devils", "Boston Celtics"]
-if "teams_fb" not in st.session_state: st.session_state.teams_fb = ["Michigan Wolverines", "Green Bay Packers"]
-
-if "unlocked_mentors_bb" not in st.session_state: st.session_state.unlocked_mentors_bb = ["Marcus Vance"]
-if "unlocked_mentors_fb" not in st.session_state: st.session_state.unlocked_mentors_fb = ["Sarah Jenkins"]
-if "active_npc_guide" not in st.session_state: st.session_state.active_npc_guide = "Marcus Vance"
-if "capstone_claimed_bb" not in st.session_state: st.session_state.capstone_claimed_bb = False
-if "capstone_claimed_fb" not in st.session_state: st.session_state.capstone_claimed_fb = False
-if "chant_action_taken" not in st.session_state: st.session_state.chant_action_taken = False
-if "storycard_exported_flag" not in st.session_state: st.session_state.storycard_exported_flag = False
-if "user_respect_taps_sent" not in st.session_state: st.session_state.user_respect_taps_sent = 0
-if "just_signed_up" not in st.session_state: st.session_state.just_signed_up = False
-
-if "active_member" not in st.session_state:
-    st.session_state.active_member = "Marcus Vance" if st.session_state.sport == "Basketball" else "Sarah Jenkins"
-if "tap_count" not in st.session_state: st.session_state.tap_count = 0
-if "tap_times" not in st.session_state: st.session_state.tap_times = []
-if "early_checkin" not in st.session_state: st.session_state.early_checkin = False
-if "synergy_score" not in st.session_state: st.session_state.synergy_score = 92
-if "synergy_claimed" not in st.session_state: st.session_state.synergy_claimed = False
-if "selected_squad_agent" not in st.session_state: st.session_state.selected_squad_agent = "@strategist"
-if "squad_chat_history" not in st.session_state: st.session_state.squad_chat_history = []
-if "respect_dict" not in st.session_state:
-    st.session_state.respect_dict = {
-        "Marcus Vance": 313, "Elena Rostova": 168, "Devon Miller": 245, "Jordan Lee": 28,
-        "Sarah Jenkins": 480, "Carlos Mendez": 395, "Maya Patel": 185, "Alex Taylor": 45
-    }
-
-# Fallback defaults for live telemetry states
-if "db" not in st.session_state: st.session_state.db = 82.0
-if "hr" not in st.session_state: st.session_state.hr = 98.0
-if "taps" not in st.session_state: st.session_state.taps = 2.5
-if "vu" not in st.session_state: st.session_state.vu = 0.55
-if "is_clutch" not in st.session_state: st.session_state.is_clutch = False
-if "fan_notes" not in st.session_state: st.session_state.fan_notes = ["Watch the shooter, need this stop"]
-
-# Ensure active member matches current sport unless logged in
-if st.session_state.get("is_logged_in") and st.session_state.get("member_name"):
-    st.session_state.active_member = st.session_state.member_name
-elif st.session_state.sport == "Basketball" and st.session_state.active_member not in bb_members:
-    st.session_state.active_member = "Marcus Vance"
-elif st.session_state.sport == "Football" and st.session_state.active_member not in fb_members:
-    st.session_state.active_member = "Sarah Jenkins"
-
-current_cmi = calc_momentum_index(st.session_state.db, st.session_state.hr, st.session_state.taps, st.session_state.vu)
-tier = get_tier(current_cmi)
-color = get_color(current_cmi)
-
-is_basketball = (st.session_state.sport == "Basketball")
-start_term = "tip-off" if is_basketball else "kickoff"
-role_tag = "6th Man" if is_basketball else "12th Man"
 
 # ------------------------------------------------------------------
 # COMPREHENSIVE TEAM CATALOGS (NCAA DIVISION 1 & PRO LEAGUES)
@@ -1235,7 +889,11 @@ def _ensure_member_in_persona_db():
         return
     name = st.session_state.get("member_name", "Rookie Fan")
     email = st.session_state.get("member_email", "fan@gmail.com")
-    user_entry = st.session_state.registered_fans_db.get(email, {})
+    fans_db = st.session_state.get("registered_fans_db")
+    if not fans_db:
+        st.session_state.registered_fans_db = _load_fans_db()
+        fans_db = st.session_state.registered_fans_db
+    user_entry = fans_db.get(email, {})
     m_sport = st.session_state.get("sport", "Basketball")
     is_bball = (m_sport == "Basketball")
     m_sec = "Section 114 (Thunder Row)" if is_bball else "Section 115 (End Zone Loyals)"
@@ -1298,6 +956,356 @@ def get_persona_options():
 _ensure_member_in_persona_db()
 
 # ==============================================================================
+
+
+def _set_active_sport(new_sport: str):
+    """Central synchronized sport switcher: ensures all session states, fixtures, and databases match."""
+    st.session_state.sport = new_sport
+    is_bb = (new_sport == "Basketball")
+    
+    st.session_state.tailgates_attended = st.session_state.get(f"tailgates_attended_{'bb' if is_bb else 'fb'}", 0)
+    st.session_state.meetup_rsvps = list(st.session_state.get(f"meetup_rsvps_{'bb' if is_bb else 'fb'}", []))
+    st.session_state.early_checkin = st.session_state.get(f"early_checkin_{'bb' if is_bb else 'fb'}", False)
+    st.session_state.chant_action_taken = st.session_state.get(f"chant_action_taken_{'bb' if is_bb else 'fb'}", False)
+    st.session_state.storycard_exported_flag = st.session_state.get(f"storycard_exported_{'bb' if is_bb else 'fb'}", False)
+    st.session_state.user_respect_taps_sent = st.session_state.get(f"user_respect_taps_sent_{'bb' if is_bb else 'fb'}", 0)
+    st.session_state.synergy_score = st.session_state.get(f"synergy_score_{'bb' if is_bb else 'fb'}", 0)
+    st.session_state.synergy_claimed = st.session_state.get(f"synergy_claimed_{'bb' if is_bb else 'fb'}", False)
+    st.session_state.squad_chat_history = []
+    
+    unlocked = st.session_state.get(f"unlocked_mentors_{'bb' if is_bb else 'fb'}", ["Marcus Vance" if is_bb else "Sarah Jenkins"])
+    lead_guide = "Marcus Vance" if is_bb else "Sarah Jenkins"
+    st.session_state.active_npc_guide = lead_guide if lead_guide in unlocked else unlocked[0]
+    
+    if st.session_state.get("is_logged_in") and st.session_state.get("member_name"):
+        st.session_state.active_member = st.session_state.member_name
+    else:
+        st.session_state.active_member = "Marcus Vance" if is_bb else "Sarah Jenkins"
+        
+    _ensure_member_in_persona_db()
+
+
+
+
+# --- Sidebar: Ultra-Clean Navigation & Game Situation Switcher ---
+st.sidebar.title("⚡ Kinetic FanLab")
+
+
+screen = st.sidebar.radio("Navigate:", [
+    "👤 Screen 1: Fan Passport & Roster",
+    "🎪 Screen 2: 36h Virtual Tailgate",
+    "🏟️ Screen 3: In-Arena Game Hub & Trigger",
+    "📊 Screen 4: Narrative Delta & Story Card",
+    "🤖 Screen 5: AI Squad & Game Intelligence"
+])
+
+st.sidebar.markdown("---")
+# If screen navigated, ensure bottom feedback expander is closed
+if "last_visited_screen" not in st.session_state:
+    st.session_state.last_visited_screen = screen
+if st.session_state.last_visited_screen != screen:
+    st.session_state.last_visited_screen = screen
+    st.session_state.show_bottom_feedback = False
+
+st.sidebar.markdown("---")
+st.sidebar.markdown("**💬 Member Experience & Feedback**")
+col_fb1, col_fb2 = st.sidebar.columns([3, 2])
+with col_fb1:
+    if st.button("📝 Open Form", key="btn_open_fb_drawer", use_container_width=True):
+        st.session_state.show_bottom_feedback = True
+        st.rerun()
+with col_fb2:
+    st.markdown('<a href="#member-feedback-section" target="_self"><button style="width:100%; height:38px; background-color:#1e2430; color:#5da8ff; border:1px solid #0f62fe; border-radius:6px; font-weight:bold; font-size:8.5pt; cursor:pointer;">👇 Jump</button></a>', unsafe_allow_html=True)
+
+if st.session_state.get("show_bottom_feedback"):
+    st.sidebar.caption("🟢 Feedback form is open at the bottom")
+
+st.sidebar.markdown("---")
+
+fixture_options = [
+    "BB-01: Basketball Baseline (Free Throw 1)",
+    "BB-02: Basketball Clutch (Free Throw 2)",
+    "FB-01: Football Pre-Kick Timeout",
+    "FB-02: Football 48-Yard FG Snap (Clutch)"
+]
+
+# Ensure initial sport
+if "sport" not in st.session_state:
+    st.session_state.sport = "Basketball"
+
+if "active_fixture" not in st.session_state:
+    st.session_state.active_fixture = fixture_options[0] if st.session_state.sport == "Basketball" else fixture_options[3]
+
+def _on_fixture_change():
+    chosen = st.session_state.get("active_fixture", fixture_options[0])
+    target_sp = "Football" if chosen.startswith("FB-") else "Basketball"
+    if st.session_state.get("sport") != target_sp:
+        _set_active_sport(target_sp)
+
+cur_fix_idx = fixture_options.index(st.session_state.active_fixture) if st.session_state.active_fixture in fixture_options else 0
+active_preset = st.sidebar.selectbox(
+    "Live Game Situation:",
+    fixture_options,
+    index=cur_fix_idx,
+    key="active_fixture",
+    on_change=_on_fixture_change
+)
+
+# Enforce sport from fixture selection immediately
+target_sport = "Football" if active_preset.startswith("FB-") else "Basketball"
+if st.session_state.sport != target_sport:
+    _set_active_sport(target_sport)
+
+# Real-time game tracker indicator badge in sidebar
+st.sidebar.caption(f"📍 Active: **{'🏀 Basketball' if st.session_state.sport == 'Basketball' else '🏈 Football'}** &bull; Preset: **{active_preset.split(':')[0]}**")
+
+# Update telemetry parameters according to active_preset
+if "last_fixture" not in st.session_state or st.session_state.last_fixture != active_preset:
+    st.session_state.last_fixture = active_preset
+    if "BB-01" in active_preset:
+        st.session_state.sport = "Basketball"
+        st.session_state.db = 82.0
+        st.session_state.hr = 98.0
+        st.session_state.taps = 2.5
+        st.session_state.vu = 0.55
+        st.session_state.is_clutch = False
+        st.session_state.fan_notes = ["Watch the shooter, need this stop"]
+    elif "BB-02" in active_preset:
+        st.session_state.sport = "Basketball"
+        st.session_state.db = 106.5
+        st.session_state.hr = 136.0
+        st.session_state.taps = 12.2
+        st.session_state.vu = 0.85
+        st.session_state.is_clutch = True
+        st.session_state.fan_notes = ["MISS IT! OFF THE RIM! BRING THE NOISE!"]
+    elif "FB-01" in active_preset:
+        st.session_state.sport = "Football"
+        st.session_state.db = 78.5
+        st.session_state.hr = 105.0
+        st.session_state.taps = 3.0
+        st.session_state.vu = 0.60
+        st.session_state.is_clutch = False
+        st.session_state.fan_notes = ["Timeout called, make him wait in the cold!"]
+    elif "FB-02" in active_preset:
+        st.session_state.sport = "Football"
+        st.session_state.db = 111.8
+        st.session_state.hr = 148.0
+        st.session_state.taps = 14.0
+        st.session_state.vu = 0.92
+        st.session_state.is_clutch = True
+        st.session_state.fan_notes = ["BLOCK THAT KICK! RATTLE THE KICKER! GET LOUD!"]
+
+    st.session_state.tap_count = 0
+    st.session_state.tap_times = []
+    st.session_state.synergy_claimed = False
+
+# --- Sidebar: Live Section Fan Chat with Sports Emojis & Interactive NPCs ---
+st.sidebar.markdown("---")
+is_bball_sidebar = (st.session_state.sport == "Basketball")
+sidebar_sec_name = "Section 114 (Thunder Row)" if is_bball_sidebar else "Section 115 (End Zone Loyals)"
+sidebar_sport_icon = "🏀" if is_bball_sidebar else "🏈"
+
+st.sidebar.markdown(f"**💬 Live Section Chat**  \n<span style='color:#0f62fe; font-size:8.5pt; font-weight:bold;'>{sidebar_sport_icon} {sidebar_sec_name}</span>", unsafe_allow_html=True)
+
+# Initialize sport-isolated sidebar chat channels
+if "sidebar_chat_bb" not in st.session_state:
+    st.session_state.sidebar_chat_bb = [
+        {"sender": "Marcus Vance", "handle": "@mvance_sec114", "msg": "Thunder Row pod locked in! Keep the noise steady. 🏀⚡", "time": "Just now"},
+        {"sender": "Elena Rostova", "handle": "@elena_props", "msg": "Waving thundersticks on 2nd dribble! 🌊🔥", "time": "1m ago"},
+        {"sender": "Devon Miller", "handle": "@devon_chants", "msg": "BRING THE NOISE on three! 📣🔊", "time": "2m ago"},
+    ]
+if "sidebar_chat_fb" not in st.session_state:
+    st.session_state.sidebar_chat_fb = [
+        {"sender": "Sarah Jenkins", "handle": "@sjenkins_sec115", "msg": "Section 115 shaking the bleachers! Ice him! 🏈❄️", "time": "Just now"},
+        {"sender": "Carlos Mendez", "handle": "@carlos_lotb", "msg": "Lot B crew is loud and ready for the snap! 🔥🥩", "time": "1m ago"},
+        {"sender": "Maya Patel", "handle": "@maya_pulse", "msg": "BLE pod telemetry reading 111 dB peak! ⌚⚡", "time": "2m ago"},
+    ]
+
+# Render chat feed in a neat scrollable container
+active_chat_list = st.session_state.sidebar_chat_bb if is_bball_sidebar else st.session_state.sidebar_chat_fb
+chat_author_name = st.session_state.get("member_name", "Rookie Fan") if st.session_state.get("is_logged_in") else "Guest Fan"
+chat_author_handle = st.session_state.get("member_handle", "@fan_rookie") if st.session_state.get("is_logged_in") else "@guest"
+
+chat_html = ""
+for cm in active_chat_list[-6:]:
+    is_user_msg = (cm.get("sender") == chat_author_name)
+    sender_color = "#42be65" if is_user_msg else "#0f62fe"
+    chat_html += f"""<div style="margin-bottom: 6px; padding-bottom: 5px; border-bottom: 1px solid #222;">
+<span style="color:{sender_color}; font-weight:bold; font-size:8pt;">{cm.get('sender', '')}</span> <span style="color:#777; font-size:7pt;">{cm.get('handle', '')} &bull; {cm.get('time', '')}</span><br/>
+<span style="color:#f4f4f4; font-size:8pt;">{cm.get('msg', '')}</span></div>"""
+
+st.sidebar.markdown(f"""
+<div style="background-color: #11141c; border: 1px solid #2a3345; border-radius: 8px; padding: 8px 10px; max-height: 180px; overflow-y: auto; margin-bottom: 8px;">
+    {chat_html}
+</div>
+""", unsafe_allow_html=True)
+
+# Quick Sports Emoji Reaction Buttons (4 columns x 2 rows)
+st.sidebar.caption("⚡ Quick Sports Reactions:")
+if is_bball_sidebar:
+    emoji_reactions = [
+        ("🏀", "🏀 Swish! Need this stop!"),
+        ("🔥", "🔥 LET'S GET LOUD!"),
+        ("⚡", "⚡ SURGE ENERGY!"),
+        ("🛡️", "🛡️ DEFENSE ON THREE!"),
+        ("📣", "📣 BRING THE NOISE!"),
+        ("👏", "👏 Let's hear it Thunder Row!"),
+        ("🏆", "🏆 Defense Belt Winner!"),
+        ("🙌", "🙌 Distraction Wave!")
+    ]
+else:
+    emoji_reactions = [
+        ("🏈", "🏈 Block that kick! Rattle him!"),
+        ("🔥", "🔥 LET'S GET LOUD!"),
+        ("⚡", "⚡ 111 dB SURGE!"),
+        ("🛡️", "🛡️ DEFENSE WALL!"),
+        ("📣", "📣 FALSE START! MAKE NOISE!"),
+        ("👏", "👏 Stomp the bleachers!"),
+        ("🏆", "🏆 Defense Belt Winner!"),
+        ("💥", "💥 CRUNCH TIME STOP!")
+    ]
+
+ec_row1 = st.sidebar.columns(4)
+for i in range(4):
+    em_icon, em_text = emoji_reactions[i]
+    if ec_row1[i].button(em_icon, key=f"btn_em_{'bb' if is_bball_sidebar else 'fb'}_{i}", use_container_width=True):
+        active_chat_list.append({"sender": chat_author_name, "handle": chat_author_handle, "msg": em_text, "time": "Just now"})
+        npc_reply = _generate_npc_chat_reply(em_text, chat_author_handle, st.session_state.sport)
+        active_chat_list.append(npc_reply)
+        while len(active_chat_list) > 25: active_chat_list.pop(0)
+        _append_fan_note(f"{em_text}")
+        st.rerun()
+
+ec_row2 = st.sidebar.columns(4)
+for i in range(4, 8):
+    em_icon, em_text = emoji_reactions[i]
+    if ec_row2[i-4].button(em_icon, key=f"btn_em_{'bb' if is_bball_sidebar else 'fb'}_{i}", use_container_width=True):
+        active_chat_list.append({"sender": chat_author_name, "handle": chat_author_handle, "msg": em_text, "time": "Just now"})
+        npc_reply = _generate_npc_chat_reply(em_text, chat_author_handle, st.session_state.sport)
+        active_chat_list.append(npc_reply)
+        while len(active_chat_list) > 25: active_chat_list.pop(0)
+        _append_fan_note(f"{em_text}")
+        st.rerun()
+
+# Text chat input form
+with st.sidebar.form(key=f"sidebar_chat_form_{'bb' if is_bball_sidebar else 'fb'}", clear_on_submit=True):
+    sidebar_in = st.text_input("Send message:", placeholder=f"Chat in {sidebar_sec_name.split(' (')[0]}...", label_visibility="collapsed")
+    sidebar_submit = st.form_submit_button("Send 💬", use_container_width=True)
+
+if sidebar_submit and sidebar_in.strip():
+    gov_res = evaluate_fan_content_safety(sidebar_in)
+    if gov_res.get("guardrail_status") == "REJECTED":
+        st.sidebar.error("🚨 Filtered: please keep chat respectful.")
+    else:
+        active_chat_list.append({"sender": chat_author_name, "handle": chat_author_handle, "msg": sidebar_in.strip(), "time": "Just now"})
+        npc_reply = _generate_npc_chat_reply(sidebar_in.strip(), chat_author_handle, st.session_state.sport)
+        active_chat_list.append(npc_reply)
+        while len(active_chat_list) > 25: active_chat_list.pop(0)
+        _append_fan_note(f"{sidebar_in.strip()}")
+        st.rerun()
+
+
+# Global session states
+if "sport" not in st.session_state: st.session_state.sport = "Basketball"
+if "onboarding_mode" not in st.session_state: st.session_state.onboarding_mode = "Rookie Walkthrough"
+if "is_logged_in" not in st.session_state: st.session_state.is_logged_in = False
+if "member_email" not in st.session_state: st.session_state.member_email = "fan@gmail.com"
+if "member_name" not in st.session_state: st.session_state.member_name = "Rookie Fan"
+if "member_handle" not in st.session_state: st.session_state.member_handle = "@fan_rookie"
+if "member_hash" not in st.session_state: st.session_state.member_hash = "0xROOKIE-sec114-8f7a2"
+if "member_role" not in st.session_state: st.session_state.member_role = "Rookie Fan"
+if "member_tier" not in st.session_state: st.session_state.member_tier = "Rookie Member (Tier 1)"
+if "member_seat" not in st.session_state: st.session_state.member_seat = "Section 114, Row 3, Seat 12"
+if "member_games" not in st.session_state: st.session_state.member_games = 0
+if "member_career_db" not in st.session_state: st.session_state.member_career_db = "0.0 dB"
+if "member_clutch_stops" not in st.session_state: st.session_state.member_clutch_stops = 0
+
+# Sport-isolated Tailgates & Meetups
+if "tailgates_attended_bb" not in st.session_state: st.session_state.tailgates_attended_bb = 0
+if "tailgates_attended_fb" not in st.session_state: st.session_state.tailgates_attended_fb = 0
+if "meetup_rsvps_bb" not in st.session_state: st.session_state.meetup_rsvps_bb = []
+if "meetup_rsvps_fb" not in st.session_state: st.session_state.meetup_rsvps_fb = []
+if "tailgates_attended" not in st.session_state: st.session_state.tailgates_attended = 0
+if "meetup_rsvps" not in st.session_state: st.session_state.meetup_rsvps = []
+
+# Sport-isolated in-game action flags
+if "early_checkin_bb" not in st.session_state: st.session_state.early_checkin_bb = False
+if "early_checkin_fb" not in st.session_state: st.session_state.early_checkin_fb = False
+if "chant_action_taken_bb" not in st.session_state: st.session_state.chant_action_taken_bb = False
+if "chant_action_taken_fb" not in st.session_state: st.session_state.chant_action_taken_fb = False
+if "storycard_exported_bb" not in st.session_state: st.session_state.storycard_exported_bb = False
+if "storycard_exported_fb" not in st.session_state: st.session_state.storycard_exported_fb = False
+if "user_respect_taps_sent_bb" not in st.session_state: st.session_state.user_respect_taps_sent_bb = 0
+if "user_respect_taps_sent_fb" not in st.session_state: st.session_state.user_respect_taps_sent_fb = 0
+if "social_x" not in st.session_state: st.session_state.social_x = ""
+if "social_ig" not in st.session_state: st.session_state.social_ig = ""
+if "social_yt" not in st.session_state: st.session_state.social_yt = "@W3bHippo"
+if "social_tiktok" not in st.session_state: st.session_state.social_tiktok = ""
+if "social_discord" not in st.session_state: st.session_state.social_discord = ""
+if "wearable_device" not in st.session_state: st.session_state.wearable_device = "Apple Watch Ultra 2 (ECG/dB)"
+if "ble_sensitivity" not in st.session_state: st.session_state.ble_sensitivity = -54
+if "notif_clutch" not in st.session_state: st.session_state.notif_clutch = True
+if "notif_tailgate" not in st.session_state: st.session_state.notif_tailgate = True
+if "notif_chaser" not in st.session_state: st.session_state.notif_chaser = True
+if "pref_leaderboard_public" not in st.session_state: st.session_state.pref_leaderboard_public = True
+if "pref_anonymize_biometrics" not in st.session_state: st.session_state.pref_anonymize_biometrics = True
+if "share_trophy_clicked" not in st.session_state: st.session_state.share_trophy_clicked = False
+
+# Distinct sport levels and sport-isolated team registries
+if "bb_level" not in st.session_state: st.session_state.bb_level = "Both (NCAA D1 & NBA)"
+if "fb_level" not in st.session_state: st.session_state.fb_level = "Both (NCAA D1 & NFL)"
+if "teams_bb" not in st.session_state: st.session_state.teams_bb = ["Duke Blue Devils", "Boston Celtics"]
+if "teams_fb" not in st.session_state: st.session_state.teams_fb = ["Michigan Wolverines", "Green Bay Packers"]
+
+if "unlocked_mentors_bb" not in st.session_state: st.session_state.unlocked_mentors_bb = ["Marcus Vance"]
+if "unlocked_mentors_fb" not in st.session_state: st.session_state.unlocked_mentors_fb = ["Sarah Jenkins"]
+if "active_npc_guide" not in st.session_state: st.session_state.active_npc_guide = "Marcus Vance"
+if "capstone_claimed_bb" not in st.session_state: st.session_state.capstone_claimed_bb = False
+if "capstone_claimed_fb" not in st.session_state: st.session_state.capstone_claimed_fb = False
+if "chant_action_taken" not in st.session_state: st.session_state.chant_action_taken = False
+if "storycard_exported_flag" not in st.session_state: st.session_state.storycard_exported_flag = False
+if "user_respect_taps_sent" not in st.session_state: st.session_state.user_respect_taps_sent = 0
+if "just_signed_up" not in st.session_state: st.session_state.just_signed_up = False
+
+if "active_member" not in st.session_state:
+    st.session_state.active_member = "Marcus Vance" if st.session_state.sport == "Basketball" else "Sarah Jenkins"
+if "tap_count" not in st.session_state: st.session_state.tap_count = 0
+if "tap_times" not in st.session_state: st.session_state.tap_times = []
+if "early_checkin" not in st.session_state: st.session_state.early_checkin = False
+if "synergy_score" not in st.session_state: st.session_state.synergy_score = 92
+if "synergy_claimed" not in st.session_state: st.session_state.synergy_claimed = False
+if "selected_squad_agent" not in st.session_state: st.session_state.selected_squad_agent = "@strategist"
+if "squad_chat_history" not in st.session_state: st.session_state.squad_chat_history = []
+if "respect_dict" not in st.session_state:
+    st.session_state.respect_dict = {
+        "Marcus Vance": 313, "Elena Rostova": 168, "Devon Miller": 245, "Jordan Lee": 28,
+        "Sarah Jenkins": 480, "Carlos Mendez": 395, "Maya Patel": 185, "Alex Taylor": 45
+    }
+
+# Fallback defaults for live telemetry states
+if "db" not in st.session_state: st.session_state.db = 82.0
+if "hr" not in st.session_state: st.session_state.hr = 98.0
+if "taps" not in st.session_state: st.session_state.taps = 2.5
+if "vu" not in st.session_state: st.session_state.vu = 0.55
+if "is_clutch" not in st.session_state: st.session_state.is_clutch = False
+if "fan_notes" not in st.session_state: st.session_state.fan_notes = ["Watch the shooter, need this stop"]
+
+# Ensure active member matches current sport unless logged in
+if st.session_state.get("is_logged_in") and st.session_state.get("member_name"):
+    st.session_state.active_member = st.session_state.member_name
+elif st.session_state.sport == "Basketball" and st.session_state.active_member not in bb_members:
+    st.session_state.active_member = "Marcus Vance"
+elif st.session_state.sport == "Football" and st.session_state.active_member not in fb_members:
+    st.session_state.active_member = "Sarah Jenkins"
+
+current_cmi = calc_momentum_index(st.session_state.db, st.session_state.hr, st.session_state.taps, st.session_state.vu)
+tier = get_tier(current_cmi)
+color = get_color(current_cmi)
+
+is_basketball = (st.session_state.sport == "Basketball")
+start_term = "tip-off" if is_basketball else "kickoff"
+role_tag = "6th Man" if is_basketball else "12th Man"
+
 # SCREEN 1: THE LIVING FAN PASSPORT & SECTION ROSTER
 # ==============================================================================
 if screen == "👤 Screen 1: Fan Passport & Roster":
@@ -3437,8 +3445,8 @@ with st.expander("📝 Share Member Feedback & Experience Survey", expanded=st.s
             key="bot_fb_features_in"
         )
         
-        bot_fb_favorite = st.text_area("3. What was your favorite feature, and why did it stand out?", value="The arm chair call out is cool but would like better interaction and clarity.", placeholder="e.g. The live 35/25/20/20 formula breakdown made it obvious how my taps move the score...", key="bot_fb_fav_in")
-        bot_fb_improve = st.text_area("4. What was confusing, or what would you like improved in the app?", value="how do i know what game is being tracked at log in? How do we know it is real-time and accurate to the correct game and sport?", placeholder="e.g. Any suggestions for pacing, visuals, or audio cues...", key="bot_fb_imp_in")
+        bot_fb_favorite = st.text_area("3. What was your favorite feature, and why did it stand out?", value="", placeholder="e.g., The live 35/25/20/20 formula breakdown made it obvious how my taps move the score...", key="bot_fb_fav_in")
+        bot_fb_improve = st.text_area("4. What was confusing, or what would you like improved in the app?", value="", placeholder="e.g., Any suggestions for pacing, visuals, or audio cues...", key="bot_fb_imp_in")
         
         bot_sub_clicked = st.form_submit_button("🚀 Submit Member Feedback to IBM Cloudant", key="btn_bot_fb_submit", use_container_width=True)
             
