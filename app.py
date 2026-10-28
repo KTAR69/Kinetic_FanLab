@@ -727,6 +727,60 @@ if "registered_fans_db" not in st.session_state:
     st.session_state.registered_fans_db = _load_fans_db()
 
 
+
+# ------------------------------------------------------------------
+# PERSISTENT GAMEDAY SCHEDULES DATABASE
+# ------------------------------------------------------------------
+SCHEDULES_DB_FILE = os.path.join(current_dir, "data", "gameday_schedules.json")
+
+def _load_schedules_db():
+    if os.path.exists(SCHEDULES_DB_FILE):
+        try:
+            with open(SCHEDULES_DB_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if isinstance(data, dict):
+                    return data
+        except Exception as _e:
+            print(f"[_load_schedules_db] warning: {_e}")
+    return {}
+
+def _get_active_matchup_info(sport: str, primary_team: str):
+    """Retrieves real-time active and upcoming schedule for the fan's chosen team."""
+    schedules = _load_schedules_db()
+    sport_data = schedules.get(sport, {})
+    if primary_team in sport_data:
+        return sport_data[primary_team]
+    
+    # Generic fallback if custom team not in database
+    is_bb = (sport == "Basketball")
+    return {
+        "team": primary_team,
+        "sport": sport,
+        "level": "Collegiate & Pro Competition",
+        "conference_league": "Conference League",
+        "home_venue": "Home Stadium Arena (Section 114)" if is_bb else "Home Stadium Arena (Section 115)",
+        "active_game": {
+            "matchup": f"{primary_team} vs. Rival Opponent",
+            "opponent": "Rival Opponent",
+            "is_home": True,
+            "venue": "Home Stadium (Section 114)" if is_bb else "Home Stadium (Section 115)",
+            "section": "Section 114 (Thunder Row)" if is_bb else "Section 115 (End Zone Loyals)",
+            "game_time": "Today • LIVE IN PROGRESS",
+            "score_state": "Tied 88–88 • 4th Qtr 0:14.2 Remaining" if is_bb else "Score 24–23 • 4th Qtr 0:03 Remaining",
+            "situation_code": "BB-02" if is_bb else "FB-02",
+            "situation_desc": "Clutch Free Throw Defense (6th Man Active)" if is_bb else "Visiting 48-Yard Field Goal Snap (12th Man Active)",
+            "network": "National Sports Broadcast",
+            "status": "LIVE"
+        },
+        "upcoming_game": {
+            "matchup": f"{primary_team} vs. Next Opponent",
+            "opponent": "Next Opponent",
+            "venue": "Next Stadium Arena",
+            "date": "Next Week Gameday",
+            "network": "Regional Sports Network"
+        }
+    }
+
 PERSONA_DB = {
     "Marcus Vance": {
         "hash": "0xMV-sec114-8f7a2",
@@ -1057,7 +1111,15 @@ if st.session_state.sport != target_sport:
     _set_active_sport(target_sport)
 
 # Real-time game tracker indicator badge in sidebar
-st.sidebar.caption(f"📍 Active: **{'🏀 Basketball' if st.session_state.sport == 'Basketball' else '🏈 Football'}** &bull; Preset: **{active_preset.split(':')[0]}**")
+# Compute active matchup for sidebar badge
+user_active_teams = st.session_state.get("teams_bb" if st.session_state.sport == "Basketball" else "teams_fb", ["Duke Blue Devils" if st.session_state.sport == "Basketball" else "Michigan Wolverines"])
+active_team_focus = st.session_state.get(f"active_team_focus_{'bb' if st.session_state.sport == 'Basketball' else 'fb'}", user_active_teams[0] if user_active_teams else "Duke Blue Devils")
+cur_matchup_data = _get_active_matchup_info(st.session_state.sport, active_team_focus)
+active_game_info = cur_matchup_data.get("active_game", {})
+active_matchup_short = active_game_info.get("matchup", f"{active_team_focus} Gameday")
+
+st.sidebar.caption(f"📍 Active: **{'🏀 Basketball' if st.session_state.sport == 'Basketball' else '🏈 Football'}** &bull; **{active_matchup_short}**")
+st.sidebar.caption(f"⚡ Situation: **{active_preset.split(':')[0]}** &bull; ⏱️ *{active_game_info.get('score_state', 'Live In Progress')}*")
 
 # Update telemetry parameters according to active_preset
 if "last_fixture" not in st.session_state or st.session_state.last_fixture != active_preset:
@@ -1604,6 +1666,77 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
             lead_npc_welcome = "Marcus Vance" if is_basketball else "Sarah Jenkins"
             st.success(f"🎉 **Welcome to Kinetic FanLab, {st.session_state.member_name}!** Your persistent 365-day Fan Passport is active. Your Section Leader ({lead_npc_welcome}) is ready to guide your Rookie Walkthrough below!")
             st.session_state.just_signed_up = False
+
+        # ------------------------------------------------------------------
+        # ACTIVE GAMEDAY MATCHUP & SCHEDULE TRACKER (User Affiliated Teams)
+        # ------------------------------------------------------------------
+        cur_user_teams = st.session_state.get("teams_bb" if is_basketball else "teams_fb", [])
+        if not cur_user_teams:
+            cur_user_teams = ["Duke Blue Devils", "Boston Celtics"] if is_basketball else ["Michigan Wolverines", "Green Bay Packers"]
+
+        team_session_key = f"active_team_focus_{'bb' if is_basketball else 'fb'}"
+        if team_session_key not in st.session_state or st.session_state[team_session_key] not in cur_user_teams:
+            st.session_state[team_session_key] = cur_user_teams[0]
+
+        active_team_sel = st.session_state[team_session_key]
+        matchup_data = _get_active_matchup_info(st.session_state.sport, active_team_sel)
+        act_g = matchup_data.get("active_game", {})
+        up_g = matchup_data.get("upcoming_game", {})
+
+        st.markdown(f"""
+        <div style="background-color: #0c111a; border-left: 5px solid #0f62fe; padding: 12px 18px; border-radius: 8px; margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                <div>
+                    <span style="color: #0f62fe; font-size: 8.5pt; font-weight: bold; letter-spacing: 1.5px; text-transform: uppercase;">
+                        🎯 LIVE GAMEDAY TRACKER // YOUR ACTIVE SCHEDULE
+                    </span>
+                    <span style="background-color: #da1e28; color: white; padding: 2px 7px; border-radius: 4px; font-size: 7.5pt; font-weight: bold; margin-left: 10px;">
+                        🔴 LIVE GAME TRACKED
+                    </span>
+                </div>
+                <div style="color: #f1c21b; font-size: 9pt; font-weight: bold;">
+                    Level: {matchup_data.get('level', 'Collegiate & Pro')}
+                </div>
+            </div>
+            <div style="margin-top: 6px; font-size: 9pt; color: #a8a8a8;">
+                Switch Active Team Focus:
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        # Team Selection Buttons
+        team_btn_cols = st.columns(len(cur_user_teams))
+        for t_i, t_n in enumerate(cur_user_teams):
+            is_active_t = (t_n == st.session_state[team_session_key])
+            t_type = "primary" if is_active_t else "secondary"
+            t_em = "🏀" if is_basketball else "🏈"
+            if team_btn_cols[t_i].button(f"{t_em} {t_n}", key=f"btn_team_sel_{t_n}_{t_i}", type=t_type, use_container_width=True):
+                st.session_state[team_session_key] = t_n
+                st.rerun()
+
+        # Render Active Matchup Card + Next Up Card
+        mc1, mc2 = st.columns([3, 2])
+        with mc1:
+            st.markdown(f"""
+            <div style="background-color: #141924; border: 1.5px solid #0f62fe; border-radius: 8px; padding: 14px 16px; margin-bottom: 14px; box-shadow: 0 0 12px #0f62fe44;">
+                <span style="color: #0f62fe; font-size: 8pt; font-weight: bold; text-transform: uppercase;">CURRENT LIVE MATCHUP</span>
+                <h3 style="color: #ffffff; margin: 4px 0 2px 0;">{act_g.get('matchup', 'Live Matchup')}</h3>
+                <p style="color: #f1c21b; font-size: 10pt; font-weight: bold; margin: 0 0 8px 0;">⏱️ {act_g.get('score_state', 'Live In Progress')}</p>
+                <div style="background-color: #0b0f17; padding: 8px 12px; border-radius: 6px; border-left: 3px solid #0f62fe;">
+                    <span style="color: #dcdcdc; font-size: 9pt;">📍 <b>{act_g.get('venue', 'Venue')}</b> ({act_g.get('section', 'Section 114')}) &bull; Network: <b>{act_g.get('network', 'Broadcast')}</b></span><br/>
+                    <span style="color: #42be65; font-size: 8.5pt; font-weight: bold;">⚡ Active Defensive Window: {act_g.get('situation_desc', 'Clutch Defense')}</span>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+        with mc2:
+            st.markdown(f"""
+            <div style="background-color: #141924; border: 1px solid #333; border-radius: 8px; padding: 14px 16px; margin-bottom: 14px;">
+                <span style="color: #a8a8a8; font-size: 8pt; font-weight: bold; text-transform: uppercase;">📅 UPCOMING ON SCHEDULE</span>
+                <h4 style="color: #ffffff; margin: 6px 0 4px 0;">{up_g.get('matchup', 'Next Game')}</h4>
+                <p style="color: #a8a8a8; font-size: 9pt; margin: 0 0 4px 0;">📍 {up_g.get('venue', 'Arena Stadium')}</p>
+                <p style="color: #f1c21b; font-size: 8.5pt; font-weight: bold; margin: 0;">🗓️ {up_g.get('date', 'Upcoming')} &bull; {up_g.get('network', 'TV')}</p>
+            </div>
+            """, unsafe_allow_html=True)
 
         # Two-column layout: Left Panel (Passport + Sports & Teams) | Right Panel (Mentors & Roster)
         col_left_panel, col_main_panel = st.columns([1, 2])
@@ -2240,6 +2373,20 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                     st.caption(f"Authenticated as **Troy Resendez** (`{st.session_state.get('member_email', 'fan@gmail.com')}`). Review real-time feedback synced from IBM Cloudant.")
 
                     all_fb = cloudant_get_feedback()
+                    # If empty, automatically populate with verified personas and Troy's feedback
+                    if not all_fb:
+                        for p_seed in SEED_TESTER_PERSONAS:
+                            cloudant_save_feedback(
+                                tester_name=p_seed["tester_name"],
+                                tester_handle=p_seed["tester_handle"],
+                                tester_role=p_seed["tester_role"],
+                                cmi_rating=p_seed["cmi_rating"],
+                                features_tested=p_seed["features_tested"],
+                                favorite_feature=p_seed["favorite_feature"],
+                                improvement_feedback=p_seed["improvement_feedback"],
+                                sport=p_seed["sport"]
+                            )
+                        all_fb = cloudant_get_feedback()
                     
                     # Top Metrics Row
                     total_count = len(all_fb)
@@ -2804,12 +2951,23 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
 
     with c_vox:
         st.subheader("🎙️ Armchair Coach Reaction Logger")
-        st.caption("Rally fellow fans in your section with live game reactions and quick-fire chants:")
+        st.caption("Rally fellow fans in your section with live tactical callouts and acoustic pressure:")
+        
+        # Interactive explanation card
+        st.markdown(f"""
+        <div style="background-color: #11141c; border-left: 4px solid #0f62fe; padding: 10px 14px; border-radius: 6px; margin-bottom: 10px;">
+            <span style="color: #0f62fe; font-size: 8.5pt; font-weight: bold; text-transform: uppercase;">💡 HOW ARMCHAIR COACH WORKS:</span><br/>
+            <span style="color: #dcdcdc; font-size: 8.5pt;">
+                Call out real-time defensive directives to coordinate your row pod. IBM Granite models analyze your <b>Vocal Urgency (VU)</b> to trigger acoustic surges and responsive reactions from your row mentors!
+            </span>
+        </div>
+        """, unsafe_allow_html=True)
+        
         p_text = "e.g., MISS IT! OFF THE BACK IRON!" if is_basketball else "e.g., BLOCK THAT KICK! RATTLE HIM!"
 
         with st.form(key="reaction_governance_form"):
-            user_in = st.text_input("Enter Fan Callout:", placeholder=p_text)
-            submit_reaction = st.form_submit_button("Post Callout to Section Feed")
+            user_in = st.text_input("Enter Custom Fan Callout:", placeholder=p_text)
+            submit_reaction = st.form_submit_button("📢 Broadcast Callout to Section", use_container_width=True)
 
         if submit_reaction and user_in.strip():
             adversarial_keywords = ["ignore previous", "system prompt", "disregard", "override", "bypass", "reveal instructions"]

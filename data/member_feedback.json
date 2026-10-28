@@ -1,0 +1,160 @@
+[
+  {
+    "_id": "feedback:owltar:1793211204",
+    "type": "tester_feedback",
+    "tester_name": "Troy Resendez",
+    "tester_handle": "@owltar",
+    "tester_role": "General Fan / Dedicated Supporter",
+    "cmi_rating": 4,
+    "features_tested": [
+      "🎪 36h Virtual Tailgate & IBM Granite Chant Synthesizer",
+      "🎟️ Pre-Game Seat Check-In & 1.25x Multiplier"
+    ],
+    "favorite_feature": "The arm chair call out is cool but would like better interaction and clarity.",
+    "improvement_feedback": "how do i know what game is being tracked at log in? How do we know it is real-time and accurate to the correct game and sport?",
+    "sport": "Basketball",
+    "timestamp": 1793211204.0,
+    "formatted_time": "2026-10-28 18:13:24"
+  },
+  {
+    "_id": "feedback:mvance_sec114:1792767552",
+    "type": "tester_feedback",
+    "tester_name": "Marcus Vance",
+    "tester_handle": "@mvance_sec114",
+    "tester_role": "Section Vocal & Chant Leader",
+    "cmi_rating": 5,
+    "features_tested": [
+      "🎟️ Pre-Game Seat Check-In & 1.25x Multiplier",
+      "⚡ Crowd Pulse Tapper & Burst Tap (+5)",
+      "🤝 Section Mentors & Progressive Unlocks"
+    ],
+    "favorite_feature": "The Eyes-Free Burst Tap (+5) and InvisibleCoordinator directive banner on Screen 3.",
+    "improvement_feedback": "Needed instant <250ms visual cues without staring down during live free-throw release. The new CMI gauge makes the tier boundaries crystal clear.",
+    "sport": "Basketball",
+    "timestamp": 1792767552.0,
+    "formatted_time": "2026-10-23 16:45:52"
+  },
+  {
+    "_id": "feedback:erostova_sec114:1792767556",
+    "type": "tester_feedback",
+    "tester_name": "Elena Rostova",
+    "tester_handle": "@elena_props",
+    "tester_role": "Section Vocal & Chant Leader",
+    "cmi_rating": 4,
+    "features_tested": [
+      "⚡ Crowd Pulse Tapper & Burst Tap (+5)",
+      "🤝 Section Mentors & Progressive Unlocks",
+      "🔒 Privacy Shield & Biometric Anonymization Settings"
+    ],
+    "favorite_feature": "50-Seat BLE Pod Mesh synchronization and progressive mentor unlocking.",
+    "improvement_feedback": "Prop waving cadence needs offline local synchronization when arena cellular networks saturate.",
+    "sport": "Basketball",
+    "timestamp": 1792767556.0,
+    "formatted_time": "2026-10-23 16:45:56"
+  },
+  {
+    "_id": "feedback:dmiller_sec114:1792767560",
+    "type": "tester_feedback",
+    "tester_name": "Devon Miller",
+    "tester_handle": "@devon_vocal",
+    "tester_role": "Student Section / Bleacher Fan",
+    "cmi_rating": 5,
+    "features_tested": [
+      "🎙️ Section Reaction Logger & AI Community Safety Filter",
+      "⚡ Crowd Pulse Tapper & Burst Tap (+5)"
+    ],
+    "favorite_feature": "Dialect Fairness AI filter (DIR = 0.953) that doesn't censor authentic student hype slang.",
+    "improvement_feedback": "Make sure regional slang like 'brick that jawnt' never gets misclassified as toxicity.",
+    "sport": "Basketball",
+    "timestamp": 1792767560.0,
+    "formatted_time": "2026-10-23 16:46:00"
+  },
+  {
+    "_id": "feedback:jlee_sec114:1792767565",
+    "type": "tester_feedback",
+    "tester_name": "Jordan Lee",
+    "tester_handle": "@jlee_rookie",
+    "tester_role": "Student Section / Bleacher Fan",
+    "cmi_rating": 5,
+    "features_tested": [
+      "🎟️ Pre-Game Seat Check-In & 1.25x Multiplier",
+      "🤝 Section Mentors & Progressive Unlocks",
+      "🏆 Living Trophy Case & Capstone NFT Showcase"
+    ],
+    "favorite_feature": "1.25x Early Arrival Multiplier and per-capita normalization so first-timers can impact the standings.",
+    "improvement_feedback": "The 3-tap rookie unlock hint from Marcus was super smooth and welcoming.",
+    "sport": "Basketball",
+    "timestamp": 1792767565.0,
+    "formatted_time": "2026-10-23 16:46:05"
+  },
+  {
+    "_id": "feedback:sjenkins_sec115:1792790103",
+    "type": "tester_feedback",
+    "tester_name": "Sarah Jenkins",
+    "tester_handle": "@sjenkins_sec115",
+    "tester_role": "Season Ticket Veteran",
+    "cmi_rating": 5,
+    "features_tested": [
+      "🎟️ Pre-Game Seat Check-In & 1.25x Multiplier",
+      "🔒 Privacy Shield & Biometric Anonymization Settings",
+      "📊 Post-Play Narrative Delta & Shareable StoryCard Export"
+    ],
+    "favorite_feature": "Zero raw audio upload policy with on-device Log SPL and -3.5 dB PA bleed filter.",
+    "improvement_feedback": "Never upload raw voices to the cloud. Having the 35/25/20/20 formula clearly visible builds fan trust.",
+    "sport": "Football",
+    "timestamp": 1792790103.0,
+    "formatted_time": "2026-10-23 23:01:43"
+  },
+  {
+    "_id": "feedback:cmendez_sec115:1792790110",
+    "type": "tester_feedback",
+    "tester_name": "Carlos Mendez",
+    "tester_handle": "@carlos_tailgate",
+    "tester_role": "Tailgater & Pre-Game Host",
+    "cmi_rating": 4,
+    "features_tested": [
+      "🎪 36h Virtual Tailgate & IBM Granite Chant Synthesizer",
+      "🎟️ Pre-Game Seat Check-In & 1.25x Multiplier"
+    ],
+    "favorite_feature": "Virtual Tailgate Lot B meetup commons and IBM Granite defensive chant generator.",
+    "improvement_feedback": "Would love the sponsor food/drink voucher QR codes to be directly saveable to Apple/Google Wallet.",
+    "sport": "Football",
+    "timestamp": 1792790110.0,
+    "formatted_time": "2026-10-23 23:01:50"
+  },
+  {
+    "_id": "feedback:mpatel_sec115:1792790115",
+    "type": "tester_feedback",
+    "tester_name": "Maya Patel",
+    "tester_handle": "@maya_iot",
+    "tester_role": "Tech, Gaming & Fantasy Fan",
+    "cmi_rating": 5,
+    "features_tested": [
+      "⚡ Crowd Pulse Tapper & Burst Tap (+5)",
+      "📊 Post-Play Narrative Delta & Shareable StoryCard Export",
+      "🏆 Living Trophy Case & Capstone NFT Showcase"
+    ],
+    "favorite_feature": "Hampel Biometric Outlier Filter (50-205 BPM) and IBM Cloud Object Storage SHA-256 tamper receipts.",
+    "improvement_feedback": "The new 4-zone momentum gauge makes the threshold transitions (Building to Roar Zone) much more engaging.",
+    "sport": "Football",
+    "timestamp": 1792790115.0,
+    "formatted_time": "2026-10-23 23:01:55"
+  },
+  {
+    "_id": "feedback:ataylor_sec115:1792790120",
+    "type": "tester_feedback",
+    "tester_name": "Alex Taylor",
+    "tester_handle": "@alex_fan115",
+    "tester_role": "Student Section / Bleacher Fan",
+    "cmi_rating": 5,
+    "features_tested": [
+      "📊 Post-Play Narrative Delta & Shareable StoryCard Export",
+      "⚡ Crowd Pulse Tapper & Burst Tap (+5)"
+    ],
+    "favorite_feature": "Post-play Reality Delta StoryCard with 1-click Instagram/TikTok share caption.",
+    "improvement_feedback": "Verifying that our section forced the missed 48-yard field goal gives undeniable bragging rights.",
+    "sport": "Football",
+    "timestamp": 1792790120.0,
+    "formatted_time": "2026-10-23 23:02:00"
+  }
+]

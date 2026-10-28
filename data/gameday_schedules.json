@@ -1,0 +1,249 @@
+{
+  "Basketball": {
+    "Duke Blue Devils": {
+      "team": "Duke Blue Devils",
+      "sport": "Basketball",
+      "level": "College Basketball (NCAA D1)",
+      "conference_league": "ACC",
+      "home_venue": "Cameron Indoor Stadium (Section 114)",
+      "active_game": {
+        "matchup": "Duke Blue Devils vs. North Carolina Tar Heels",
+        "opponent": "North Carolina Tar Heels",
+        "is_home": true,
+        "venue": "Cameron Indoor Stadium",
+        "section": "Section 114 (Thunder Row)",
+        "game_time": "Today • LIVE IN PROGRESS",
+        "score_state": "Tied 88–88 • 4th Qtr 0:14.2 Remaining",
+        "situation_code": "BB-02",
+        "situation_desc": "Visiting 2nd Free Throw (Clutch 6th Man Defense)",
+        "network": "ESPN / ACC Network",
+        "status": "LIVE"
+      },
+      "upcoming_game": {
+        "matchup": "Duke Blue Devils vs. Kentucky Wildcats",
+        "opponent": "Kentucky Wildcats",
+        "venue": "State Farm Champions Classic",
+        "date": "Tuesday, Nov 10, 2026 • 9:30 PM EST",
+        "network": "ESPN"
+      }
+    },
+    "Boston Celtics": {
+      "team": "Boston Celtics",
+      "sport": "Basketball",
+      "level": "Pro Basketball (NBA)",
+      "conference_league": "NBA Eastern Conference",
+      "home_venue": "TD Garden (Section 114)",
+      "active_game": {
+        "matchup": "Boston Celtics vs. New York Knicks",
+        "opponent": "New York Knicks",
+        "is_home": true,
+        "venue": "TD Garden",
+        "section": "Section 114 (Balcony Row)",
+        "game_time": "Tonight • LIVE IN PROGRESS",
+        "score_state": "Celtics 104, Knicks 103 • 4th Qtr 0:11.8",
+        "situation_code": "BB-02",
+        "situation_desc": "Opponent Free Throw 2 (Clutch Defensive Stop)",
+        "network": "TNT / NBC Sports Boston",
+        "status": "LIVE"
+      },
+      "upcoming_game": {
+        "matchup": "Boston Celtics at Miami Heat",
+        "opponent": "Miami Heat",
+        "venue": "Kaseya Center (Miami, FL)",
+        "date": "Friday, Oct 30, 2026 • 7:30 PM EST",
+        "network": "NBA TV"
+      }
+    },
+    "Texas Longhorns": {
+      "team": "Texas Longhorns",
+      "sport": "Basketball",
+      "level": "College Basketball (NCAA D1)",
+      "conference_league": "SEC",
+      "home_venue": "Moody Center (Section 114)",
+      "active_game": {
+        "matchup": "Texas Longhorns vs. Baylor Bears",
+        "opponent": "Baylor Bears",
+        "is_home": true,
+        "venue": "Moody Center (Austin, TX)",
+        "section": "Section 114 (Thunder Row)",
+        "game_time": "Today • LIVE IN PROGRESS",
+        "score_state": "Tied 79–79 • 2nd Half 0:24",
+        "situation_code": "BB-02",
+        "situation_desc": "Clutch Free Throw Defensive Stop",
+        "network": "SEC Network",
+        "status": "LIVE"
+      },
+      "upcoming_game": {
+        "matchup": "Texas Longhorns vs. Texas A&M Aggies",
+        "opponent": "Texas A&M Aggies",
+        "venue": "Moody Center",
+        "date": "Saturday, Nov 14, 2026 • 8:00 PM CST",
+        "network": "ESPN"
+      }
+    },
+    "San Antonio Spurs": {
+      "team": "San Antonio Spurs",
+      "sport": "Basketball",
+      "level": "Pro Basketball (NBA)",
+      "conference_league": "NBA Western Conference",
+      "home_venue": "Frost Bank Center (Section 114)",
+      "active_game": {
+        "matchup": "San Antonio Spurs vs. Dallas Mavericks",
+        "opponent": "Dallas Mavericks",
+        "is_home": true,
+        "venue": "Frost Bank Center (San Antonio, TX)",
+        "section": "Section 114 (Baseline Thunder)",
+        "game_time": "Tonight • LIVE IN PROGRESS",
+        "score_state": "Spurs 108, Mavs 107 • 4th Qtr 0:18",
+        "situation_code": "BB-02",
+        "situation_desc": "Opponent Free Throw 2 (Wemby Rim Defense Window)",
+        "network": "Bally Sports SW / NBA TV",
+        "status": "LIVE"
+      },
+      "upcoming_game": {
+        "matchup": "San Antonio Spurs at Houston Rockets",
+        "opponent": "Houston Rockets",
+        "venue": "Toyota Center (Houston, TX)",
+        "date": "Sunday, Nov 1, 2026 • 6:00 PM CST",
+        "network": "Space City Home Network"
+      }
+    },
+    "UConn Huskies": {
+      "team": "UConn Huskies",
+      "sport": "Basketball",
+      "level": "College Basketball (NCAA D1)",
+      "conference_league": "Big East",
+      "home_venue": "Gampel Pavilion (Section 114)",
+      "active_game": {
+        "matchup": "UConn Huskies vs. Villanova Wildcats",
+        "opponent": "Villanova Wildcats",
+        "is_home": true,
+        "venue": "Gampel Pavilion",
+        "section": "Section 114",
+        "game_time": "Today • LIVE IN PROGRESS",
+        "score_state": "Tied 82–82 • 2nd Half 0:30",
+        "situation_code": "BB-02",
+        "situation_desc": "Clutch Free Throw Defense",
+        "network": "FS1",
+        "status": "LIVE"
+      },
+      "upcoming_game": {
+        "matchup": "UConn Huskies vs. Gonzaga Bulldogs",
+        "opponent": "Gonzaga Bulldogs",
+        "venue": "Madison Square Garden",
+        "date": "Tuesday, Nov 17, 2026 • 9:00 PM EST",
+        "network": "ESPN"
+      }
+    }
+  },
+  "Football": {
+    "Michigan Wolverines": {
+      "team": "Michigan Wolverines",
+      "sport": "Football",
+      "level": "College Football (NCAA D1 FBS)",
+      "conference_league": "Big Ten",
+      "home_venue": "Michigan Stadium 'The Big House' (Section 115)",
+      "active_game": {
+        "matchup": "Michigan Wolverines vs. Ohio State Buckeyes",
+        "opponent": "Ohio State Buckeyes",
+        "is_home": true,
+        "venue": "Michigan Stadium (Ann Arbor, MI)",
+        "section": "Section 115 (End Zone Loyals)",
+        "game_time": "Gameday • LIVE 4TH QUARTER",
+        "score_state": "Michigan 24, Ohio State 23 • 4th Qtr 0:03",
+        "situation_code": "FB-02",
+        "situation_desc": "Visiting 48-Yard Field Goal Snap (12th Man Bleacher Wall)",
+        "network": "FOX Big Noon Kickoff",
+        "status": "LIVE"
+      },
+      "upcoming_game": {
+        "matchup": "Michigan Wolverines vs. Penn State Nittany Lions",
+        "opponent": "Penn State Nittany Lions",
+        "venue": "Michigan Stadium",
+        "date": "Saturday, Nov 7, 2026 • 12:00 PM EST",
+        "network": "CBS"
+      }
+    },
+    "Green Bay Packers": {
+      "team": "Green Bay Packers",
+      "sport": "Football",
+      "level": "Pro Football (NFL)",
+      "conference_league": "NFC North",
+      "home_venue": "Lambeau Field (Section 115)",
+      "active_game": {
+        "matchup": "Green Bay Packers vs. Chicago Bears",
+        "opponent": "Chicago Bears",
+        "is_home": true,
+        "venue": "Lambeau Field (Green Bay, WI)",
+        "section": "Section 115 (South End Zone)",
+        "game_time": "Sunday Gameday • LIVE 4TH QUARTER",
+        "score_state": "Packers 21, Bears 20 • 4th Qtr 0:03",
+        "situation_code": "FB-02",
+        "situation_desc": "Opponent 48-Yard Field Goal Snap (Lambeau Roar)",
+        "network": "FOX / NFL Sunday Ticket",
+        "status": "LIVE"
+      },
+      "upcoming_game": {
+        "matchup": "Green Bay Packers at Minnesota Vikings",
+        "opponent": "Minnesota Vikings",
+        "venue": "U.S. Bank Stadium (Minneapolis, MN)",
+        "date": "Sunday, Nov 8, 2026 • 3:25 PM CST",
+        "network": "FOX"
+      }
+    },
+    "Texas Longhorns": {
+      "team": "Texas Longhorns",
+      "sport": "Football",
+      "level": "College Football (NCAA D1 FBS)",
+      "conference_league": "SEC",
+      "home_venue": "DKR Texas Memorial Stadium (Section 115)",
+      "active_game": {
+        "matchup": "Texas Longhorns vs. Texas A&M Aggies",
+        "opponent": "Texas A&M Aggies",
+        "is_home": true,
+        "venue": "DKR Texas Memorial Stadium (Austin, TX)",
+        "section": "Section 115 (South End Zone)",
+        "game_time": "Gameday • LIVE 4TH QUARTER",
+        "score_state": "Texas 27, Texas A&M 26 • 4th Qtr 0:03",
+        "situation_code": "FB-02",
+        "situation_desc": "Aggies 48-Yard FG Attempt (Ice the Kicker Snap)",
+        "network": "ABC / ESPN",
+        "status": "LIVE"
+      },
+      "upcoming_game": {
+        "matchup": "Texas Longhorns vs. Georgia Bulldogs",
+        "opponent": "Georgia Bulldogs",
+        "venue": "DKR Texas Memorial Stadium",
+        "date": "Saturday, Nov 14, 2026 • 6:30 PM CST",
+        "network": "ABC"
+      }
+    },
+    "Dallas Cowboys": {
+      "team": "Dallas Cowboys",
+      "sport": "Football",
+      "level": "Pro Football (NFL)",
+      "conference_league": "NFC East",
+      "home_venue": "AT&T Stadium (Section 115)",
+      "active_game": {
+        "matchup": "Dallas Cowboys vs. Philadelphia Eagles",
+        "opponent": "Philadelphia Eagles",
+        "is_home": true,
+        "venue": "AT&T Stadium (Arlington, TX)",
+        "section": "Section 115 (End Zone Party Plaza)",
+        "game_time": "Sunday Night • LIVE 4TH QUARTER",
+        "score_state": "Cowboys 28, Eagles 27 • 4th Qtr 0:03",
+        "situation_code": "FB-02",
+        "situation_desc": "Visiting 48-Yard FG Snap (Acoustic Pressure)",
+        "network": "NBC Sunday Night Football",
+        "status": "LIVE"
+      },
+      "upcoming_game": {
+        "matchup": "Dallas Cowboys at Washington Commanders",
+        "opponent": "Washington Commanders",
+        "venue": "Northwest Stadium (Landover, MD)",
+        "date": "Sunday, Nov 8, 2026 • 12:00 PM CST",
+        "network": "FOX"
+      }
+    }
+  }
+}
