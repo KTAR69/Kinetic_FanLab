@@ -709,7 +709,7 @@ def compute_game_situation_scenarios(
                 "target_cmi": f"{max(85.0, round(cmi, 1))}/100 (Maximum Tier)",
                 "required_action": "106.5+ dB Knee-Bend Roar + 2.0x Clutch Window",
                 "opponent_impact": "46.2% FT Make (53.8% Forced Miss + Rebound)",
-                "win_prob_delta": "+18.4% Home Win Swing",
+                "win_prob_delta": f"+{round(win_prob_swing + 8.6, 1)}% Home Win Swing",
                 "section_outcome": "Lock Section Defense Belt + 15% Merch Perk",
             },
         ]
@@ -745,7 +745,7 @@ def compute_game_situation_scenarios(
                 "target_cmi": f"{max(92.0, round(cmi, 1))}/100 (Maximum Tier)",
                 "required_action": "111.8+ dB Roar at 0:03 Snap + 2.0x Clutch Window",
                 "opponent_impact": "42.0% FG Make (58.0% Wide-Left Miss / False Start)",
-                "win_prob_delta": "+22.6% Home Win Swing",
+                "win_prob_delta": f"+{round(win_prob_swing + 11.2, 1)}% Home Win Swing",
                 "section_outcome": "Win Section Defense Belt + 20% Store & Concession Perk",
             },
         ]
