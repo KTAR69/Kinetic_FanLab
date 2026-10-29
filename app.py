@@ -738,6 +738,11 @@ def _load_user_into_session(user_data, email):
     st.session_state.capstone_claimed_bb = user_data.get("capstone_claimed_bb", False)
     st.session_state.capstone_claimed_fb = user_data.get("capstone_claimed_fb", False)
 
+    # Dynamic NFTs — hydrate on login so state survives container restarts
+    st.session_state.armchair_callouts_count = user_data.get("armchair_callouts_count", 0)
+    st.session_state.armchair_nft_unlocked_bb = user_data.get("armchair_nft_unlocked_bb", False)
+    st.session_state.armchair_nft_unlocked_fb = user_data.get("armchair_nft_unlocked_fb", False)
+
     # Sport-isolated Tailgates & Meetups
     st.session_state.tailgates_attended_bb = user_data.get("tailgates_attended_bb", 0)
     st.session_state.tailgates_attended_fb = user_data.get("tailgates_attended_fb", 0)
