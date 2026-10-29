@@ -538,6 +538,7 @@ NFL_TEAMS = [
 # ------------------------------------------------------------------
 USERS_DB_FILE = os.path.join(current_dir, "data", "registered_fans.json")
 
+@st.cache_data(ttl=60, show_spinner=False)
 def _load_fans_db():
     defaults = {
         "fan@gmail.com": {
@@ -614,6 +615,8 @@ def _save_fans_db(db):
         os.makedirs(os.path.dirname(USERS_DB_FILE), exist_ok=True)
         with open(USERS_DB_FILE, "w", encoding="utf-8") as f:
             json.dump(db, f, indent=2)
+        # Item 7: invalidate the 60s cache so the next read picks up the new data
+        _load_fans_db.clear()
     except Exception as e:
         print(f"[_save_fans_db] warning: {e}")
 
@@ -922,6 +925,7 @@ def _clear_user_session_state():
     st.session_state.tap_times = []
     st.session_state.armchair_callouts_count = 0
 
+@st.cache_data(ttl=120, show_spinner=False)
 def _load_all_feedback_with_fallbacks():
     """Aggregates tester validation feedback across Cloudant live, local JSON, in-memory session list, and personas."""
     records = []
@@ -1340,6 +1344,25 @@ fixture_options = [
     "FB-02: Football 48-Yard FG Snap (Clutch)"
 ]
 
+# Item 8: Health check — render diagnostic panel when ?debug=health is in the URL
+_debug_param = st.query_params.get("debug", "")
+if _debug_param == "health":
+    st.title("⚡ Kinetic FanLab — Deployment Health Check")
+    st.caption("Internal diagnostic page. Remove `?debug=health` from the URL to return to the app.")
+    _hc_col1, _hc_col2 = st.columns(2)
+    with _hc_col1:
+        st.metric("WATSONX_LIVE", "✅ Active" if WATSONX_LIVE else "⚠️ Fallback Mode")
+        st.metric("CLOUDANT_ENGINE_LIVE", "✅ Active" if CLOUDANT_ENGINE_LIVE else "⚠️ Fallback Mode")
+        st.metric("COS_ARCHIVE_LIVE", "✅ Active" if COS_ARCHIVE_LIVE else "⚠️ Fallback Mode")
+    with _hc_col2:
+        st.metric("GOVERNANCE_LIVE", "✅ Active" if GOVERNANCE_LIVE else "⚠️ Fallback Mode")
+        st.metric("FACTSHEET_LIVE", "✅ Active" if FACTSHEET_LIVE else "⚠️ Fallback Mode")
+        st.metric("ORCHESTRATE_AGENTS_LIVE", "✅ Active" if ORCHESTRATE_AGENTS_LIVE else "⚠️ Fallback Mode")
+    _hc_appid = bool(os.getenv("APPID_TENANT_ID") or (hasattr(st, "secrets") and st.secrets.get("APPID_TENANT_ID")))
+    st.metric("APPID_ENABLED", "✅ Configured" if _hc_appid else "⚠️ Not Configured")
+    st.info("All ⚠️ Fallback Mode services are running on local deterministic fallbacks — no IBM Cloud credentials detected for that service.")
+    st.stop()
+
 # Item 5: IBM App ID — handle OAuth2 callback at the very top of every run
 try:
     from ibm_appid_auth import handle_oauth_callback, is_appid_enabled
@@ -1652,6 +1675,64 @@ color = get_color(current_cmi)
 is_basketball = (st.session_state.sport == "Basketball")
 start_term = "tip-off" if is_basketball else "kickoff"
 role_tag = "6th Man" if is_basketball else "12th Man"
+
+
+# Item 6: @st.fragment — Pulse Tapper fragment defined at module scope (before if/elif chain)
+# so it can be called from Screen 3 without decorator-in-elif syntax error.
+@st.fragment
+def _render_pulse_tapper_fragment(is_basketball: bool, auto_tick_key: str) -> None:
+    """Renders the Crowd Pulse Tapper inside a Streamlit fragment for sub-50ms rerenders."""
+    st.subheader("⚡ Crowd Pulse Tapper")
+    st.caption("Tap in rhythm with your section to build collective crowd momentum.")
+    _auto_on = st.toggle("🔴 Auto-Tick Live Simulation (3s interval)", key=auto_tick_key, value=False)
+    if _auto_on:
+        import time as _time_mod
+        _time_mod.sleep(3)
+        try:
+            import stream_simulator as _ss
+            _sim = st.session_state.get("sim_instance") or _ss.TelemetryStreamSimulator(
+                "Basketball" if is_basketball else "Football"
+            )
+        except Exception:
+            _sim = None
+        if _sim:
+            _auto_tick = _sim.generate_live_tick(is_clutch=st.session_state.is_clutch, noise_variance=0.06)
+            st.session_state.db   = _auto_tick["db"]
+            st.session_state.hr   = _auto_tick["hr"]
+            st.session_state.taps = _auto_tick["taps"]
+            st.session_state.vu   = _auto_tick["vu"]
+            st.session_state.tap_count += 1
+        st.rerun(scope="fragment")
+    now = time.time()
+    tap_col1, tap_col2 = st.columns(2)
+    with tap_col1:
+        if st.button("🔥 PULSE TAP +1", use_container_width=True, key="btn_tap_single"):
+            st.session_state.tap_count += 1
+            st.session_state.tap_times.append(now)
+            st.session_state.taps = min(15.0, round(st.session_state.taps + 0.5, 1))
+            st.rerun(scope="fragment")
+    with tap_col2:
+        if st.button("⚡ SURGE BURST (+5)", use_container_width=True, key="btn_tap_burst"):
+            st.session_state.tap_count += 5
+            st.session_state.tap_times.extend([now] * 5)
+            st.session_state.taps = min(15.0, round(st.session_state.taps + 2.5, 1))
+            st.rerun(scope="fragment")
+    st.session_state.tap_times = [t for t in st.session_state.tap_times if now - t <= 2.5]
+    active_taps = len(st.session_state.tap_times)
+    if active_taps > 0:
+        calc_speed = round(min(15.0, (active_taps / 2.5) * 3.5), 1)
+        st.session_state.taps = max(st.session_state.taps, calc_speed)
+    tc1, tc2 = st.columns(2)
+    tc1.metric("Pulse Taps Logged", st.session_state.tap_count)
+    _tempo_label = "🟢 Active" if active_taps > 0 else "⚪ Cooling Down"
+    tc2.metric("Active Pulse Tempo", f"{st.session_state.taps} taps/s", delta=_tempo_label)
+    if st.button("Reset Pulse Tapper", key="btn_reset_tapper"):
+        st.session_state.tap_count = 0
+        st.session_state.tap_times = []
+        st.session_state.taps = 2.5 if is_basketball else 3.0
+        st.session_state.synergy_claimed = False
+        st.rerun(scope="fragment")
+
 
 # SCREEN 1: THE LIVING FAN PASSPORT & SECTION ROSTER
 # ==============================================================================
@@ -3420,62 +3501,9 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
     st.markdown("---")
     c_tap, c_vox = st.columns(2)
     with c_tap:
-        st.subheader("⚡ Crowd Pulse Tapper")
-        st.caption("Tap in rhythm with your section to build collective crowd momentum.")
-        # New-Feature: Auto-Tick live simulation toggle (st.fragment-style — auto-advances every 3 s)
-        auto_tick_key = f"auto_tick_{'bb' if is_basketball else 'fb'}"
-        _auto_on = st.toggle("🔴 Auto-Tick Live Simulation (3s interval)", key=auto_tick_key, value=False)
-        if _auto_on:
-            import time as _time_mod
-            _time_mod.sleep(3)
-            try:
-                import stream_simulator as _ss
-                _sim = st.session_state.get("sim_instance") or _ss.TelemetryStreamSimulator(st.session_state.sport)
-            except Exception:
-                _sim = None
-            if _sim:
-                _auto_tick = _sim.generate_live_tick(is_clutch=st.session_state.is_clutch, noise_variance=0.06)
-                st.session_state.db   = _auto_tick["db"]
-                st.session_state.hr   = _auto_tick["hr"]
-                st.session_state.taps = _auto_tick["taps"]
-                st.session_state.vu   = _auto_tick["vu"]
-                st.session_state.tap_count += 1
-            st.rerun()
-        now = time.time()
-
-        tap_col1, tap_col2 = st.columns(2)
-        with tap_col1:
-            if st.button("🔥 PULSE TAP +1", use_container_width=True, key="btn_tap_single"):
-                st.session_state.tap_count += 1
-                st.session_state.tap_times.append(now)
-                st.session_state.taps = min(15.0, round(st.session_state.taps + 0.5, 1))
-                st.rerun()
-        with tap_col2:
-            if st.button("⚡ SURGE BURST (+5)", use_container_width=True, key="btn_tap_burst"):
-                st.session_state.tap_count += 5
-                st.session_state.tap_times.extend([now] * 5)
-                st.session_state.taps = min(15.0, round(st.session_state.taps + 2.5, 1))
-                st.rerun()
-
-        st.session_state.tap_times = [t for t in st.session_state.tap_times if now - t <= 2.5]
-        active_taps = len(st.session_state.tap_times)
-
-        if active_taps > 0:
-            calc_speed = round(min(15.0, (active_taps / 2.5) * 3.5), 1)
-            st.session_state.taps = max(st.session_state.taps, calc_speed)
-
-        tc1, tc2 = st.columns(2)
-        tc1.metric("Pulse Taps Logged", st.session_state.tap_count)
-        # P2-FE: show Active/Cooling Down state so fans know the window expired
-        _tempo_label = "🟢 Active" if active_taps > 0 else "⚪ Cooling Down"
-        tc2.metric("Active Pulse Tempo", f"{st.session_state.taps} taps/s", delta=_tempo_label)
-
-        if st.button("Reset Pulse Tapper", key="btn_reset_tapper"):
-            st.session_state.tap_count = 0
-            st.session_state.tap_times = []
-            st.session_state.taps = 2.5 if is_basketball else 3.0
-            st.session_state.synergy_claimed = False
-            st.rerun()
+        # Item 6: Pulse Tapper rendered via @st.fragment — only this column rerenders on tap
+        _atk = f"auto_tick_{'bb' if is_basketball else 'fb'}"
+        _render_pulse_tapper_fragment(is_basketball, _atk)
 
     with c_vox:
         st.subheader("🎙️ Armchair Coach Reaction Logger")
