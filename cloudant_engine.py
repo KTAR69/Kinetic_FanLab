@@ -36,6 +36,9 @@ class CloudantEngineClient:
         self.is_connected = False
         self._init_connection()
         self._init_local_cache()
+        # Fix #4: replay any ops queued while Cloudant was offline in a prior session.
+        if self.is_connected:
+            self._flush_uncommitted_queue()
 
     def _init_connection(self):
         if not CLOUDANT_URL or not CLOUDANT_APIKEY:
@@ -85,6 +88,54 @@ class CloudantEngineClient:
         with _lock:
             with open(CACHE_FILE, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=2)
+
+    def _flush_uncommitted_queue(self):
+        """Replays queued write ops that accumulated while Cloudant was offline.
+
+        Each entry in uncommitted_queue carries an ``op`` key that maps to the
+        corresponding in-memory record already written to the local cache.  We
+        simply re-POST those records to Cloudant and clear the queue on success.
+        """
+        if not (self.is_connected and self.client):
+            return
+        try:
+            cache = self._read_cache()
+            queue = cache.get("uncommitted_queue", [])
+            if not queue:
+                return
+
+            flushed_ids: set = set()
+            for entry in queue:
+                op = entry.get("op", "")
+                doc_id = entry.get("id", "")
+                if not doc_id:
+                    continue
+                try:
+                    if op == "save_passport":
+                        # Locate the document in fan_passports by member_hash extracted from doc_id
+                        member_hash = doc_id.replace("passport:", "")
+                        doc = cache.get("fan_passports", {}).get(member_hash)
+                    elif op == "save_feedback":
+                        doc = next(
+                            (d for d in cache.get("tester_feedback", []) if d.get("_id") == doc_id),
+                            None,
+                        )
+                    else:
+                        doc = None
+
+                    if doc:
+                        self.client.post_document(db=DB_NAME, document=doc).get_result()
+                        flushed_ids.add(doc_id)
+                except Exception:
+                    pass  # leave un-flushed items in the queue for the next restart
+
+            # Remove only successfully flushed entries
+            cache["uncommitted_queue"] = [
+                e for e in queue if e.get("id") not in flushed_ids
+            ]
+            self._write_cache(cache)
+        except Exception:
+            pass  # never crash startup due to a queue flush failure
 
     # --- DOCUMENT REPOSITORY METHODS ---
 

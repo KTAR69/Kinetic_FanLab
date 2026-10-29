@@ -217,5 +217,24 @@ def run_verification() -> int:
     return 0 if failed == 0 else 1
 
 
+# ---------------------------------------------------------------------------
+# pytest bridge — makes all 44 checks discoverable by pytest without changing
+# the existing __main__ script runner that CI and direct execution still use.
+# ---------------------------------------------------------------------------
+def test_full_16_agent_production_suite():
+    """Single pytest entry-point that runs the full 44-check verification suite."""
+    import subprocess
+    result = subprocess.run(
+        [sys.executable, __file__],
+        capture_output=True,
+        text=True,
+        cwd=str(ROOT_DIR),
+    )
+    if result.returncode != 0:
+        raise AssertionError(
+            f"16-Agent Production Suite failed:\n{result.stdout}\n{result.stderr}"
+        )
+
+
 if __name__ == "__main__":
     sys.exit(run_verification())

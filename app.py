@@ -749,10 +749,23 @@ def _load_schedules_db():
 
 def _get_active_matchup_info(sport: str, primary_team: str):
     """Retrieves real-time active and upcoming schedule for the fan's chosen team."""
+    import datetime as _dt
     schedules = _load_schedules_db()
     sport_data = schedules.get(sport, {})
     if primary_team in sport_data:
-        return sport_data[primary_team]
+        entry = sport_data[primary_team]
+        # Fix #7: derive is_game_today dynamically from game_time string so the
+        # badge flips automatically on game day without manual JSON edits.
+        game_time_str = entry.get("active_game", {}).get("game_time", "")
+        try:
+            # Expected format e.g. "Friday, Oct 30, 2026 • 6:30 PM EDT"
+            date_part = game_time_str.split("•")[0].strip()
+            game_date = _dt.datetime.strptime(date_part, "%A, %b %d, %Y").date()
+            entry = dict(entry)  # shallow copy to avoid mutating the loaded JSON
+            entry["is_game_today"] = (game_date == _dt.date.today())
+        except (ValueError, IndexError, AttributeError):
+            pass  # fall back to the static JSON value
+        return entry
     
     # Generic fallback if custom team not in database
     is_bb = (sport == "Basketball")
@@ -923,6 +936,27 @@ def _handle_armchair_callout(callout_text: str, vu_score: float = 0.85):
     if curr_callouts >= 3 and not st.session_state.get(nft_unlocked_key, False):
         st.session_state[nft_unlocked_key] = True
         st.session_state.just_unlocked_armchair_nft = True
+
+    # Fix #8: archive a telemetry snapshot to Cloudant on every callout so the
+    # Chronicle / Scout agents have per-callout CMI data points for longitudinal trends.
+    try:
+        _cmi_snap = calc_momentum_index(
+            st.session_state.db, st.session_state.hr,
+            st.session_state.taps, vu_score
+        )
+        _sec_id = "Section 114 (Thunder Row)" if is_bb else "Section 115 (End Zone Loyals)"
+        cloudant_save_telemetry(
+            section_id=_sec_id,
+            sport=st.session_state.sport,
+            cmi=_cmi_snap,
+            tier=get_tier(_cmi_snap),
+            db=st.session_state.db,
+            hr=st.session_state.hr,
+            taps=st.session_state.taps,
+            vu=vu_score,
+        )
+    except Exception:
+        pass  # never block the fan UX for a telemetry write failure
 
     _sync_and_persist_user_state()
 
@@ -3330,7 +3364,10 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
                     tap_bonus = min(20, st.session_state.tap_count * 2)
                     checkin_bonus = 10 if st.session_state.early_checkin else 0
                     capstone_bonus = 5 if (st.session_state.capstone_claimed_bb if is_basketball else st.session_state.capstone_claimed_fb) else 0
-                    calc_syn = min(100, base_sync + tap_bonus + checkin_bonus + capstone_bonus)
+                    # Fix #5: reward Screen 2 meetup RSVPs in the synergy score (up to +10 pts)
+                    rsvp_count = (st.session_state.tailgates_attended_bb if is_basketball else st.session_state.tailgates_attended_fb)
+                    rsvp_bonus = min(10, rsvp_count * 5)
+                    calc_syn = min(100, base_sync + tap_bonus + checkin_bonus + capstone_bonus + rsvp_bonus)
                     
                     st.session_state.synergy_score = calc_syn
                     st.session_state.synergy_claimed = True
@@ -3342,6 +3379,8 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
                         st.session_state.synergy_claimed_fb = True
                     _sync_and_persist_user_state()
                     st.success(f"🎉 Energy Synchronized! Section Co-Op Synergy is now at **{calc_syn}%** (Synchronized)!")
+                    # Fix #6: nudge fans to Screen 4 to claim their Proof-of-Momentum card
+                    st.info("🏆 Your CMI is locked in! Head to **📊 Screen 4: Narrative Delta & Story Card** to claim your Proof-of-Momentum card and export your Crowd Box Score.")
                     st.rerun()
         else:
             sec_target_name = "Section 114 (Thunder Row)" if is_basketball else "Section 115 (End Zone Loyals)"
@@ -3461,7 +3500,9 @@ elif screen == "📊 Screen 4: Narrative Delta & Story Card":
     """, unsafe_allow_html=True)
 
     st.subheader(f"🤖 Post-Play Narrative Breakdown ({st.session_state.sport})")
-    _narrative_key = f"narrative_{active_preset}_{current_cmi}"
+    # Fix #2: key on tier (4 values) not the float CMI (100 possible values) to
+    # prevent session_state from accumulating hundreds of stale Granite strings.
+    _narrative_key = f"narrative_{active_preset}_{get_tier(current_cmi)}"
     if _narrative_key not in st.session_state:
         with st.spinner(f"Synthesizing {st.session_state.sport} post-play narrative..."):
             st.session_state[_narrative_key] = generate_narrative_live(
@@ -3529,6 +3570,13 @@ elif screen == "📊 Screen 4: Narrative Delta & Story Card":
                 },
             )
             st.session_state.storycard_exported_flag = True
+            # Fix #3: write through to the sport-specific twin so the export block
+            # persists correctly across reruns (line 693 re-derives the flag from these).
+            if is_basketball:
+                st.session_state.storycard_exported_bb = True
+            else:
+                st.session_state.storycard_exported_fb = True
+            _sync_and_persist_user_state()
 
         import urllib.parse
         proof_url = f"https://kineticfanlab.com/proof/{st.session_state.sport.lower()}/{int(current_cmi)}?fan={st.session_state.member_handle}&hash={st.session_state.member_hash[:8]}"
