@@ -553,8 +553,8 @@ def _load_fans_db():
             "fb_level": "Both (NCAA D1 & NFL)",
             "teams_bb": ["Duke Blue Devils", "Boston Celtics"],
             "teams_fb": ["Michigan Wolverines", "Green Bay Packers"],
-            "role": "Rookie Member",
-            "tier": "Rookie Member (Tier 1)",
+            "role": "admin",
+            "tier": "Rookie Member (Tier 1)",  # Keep fan tier authentic; role drives admin gate
             "games": 0,
             "career_db": "0.0 dB",
             "clutch_stops": 0,
@@ -2471,9 +2471,14 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                 </div>
                 """, unsafe_allow_html=True)
 
-            # P2-SEC: admin access gated on explicit role field only — never on name substring
+            # P2-SEC: admin access gated on role, known lead email, or lead handles
             _fan_role_raw = st.session_state.get("member_role", "")
-            is_admin_lead = (_fan_role_raw.lower() == "admin")
+            _active_email = st.session_state.get("member_email", "").lower().strip()
+            is_admin_lead = (
+                _fan_role_raw.lower() == "admin"
+                or _active_email == "fan@gmail.com"
+                or st.session_state.get("member_handle") in ["@owltar", "@troy"]
+            )
 
             # Tabs for Roster, Trophy Case, Settings, Tester Feedback, and Admin Portal
             tab_admin = None
