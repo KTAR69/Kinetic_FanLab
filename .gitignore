@@ -30,3 +30,5 @@ cos_archive_store/
 # P2-SEC: fan passport data contains hashes/handles - never commit to git
 data/registered_fans.json
 data/member_feedback.json
+
+registered_fans.json

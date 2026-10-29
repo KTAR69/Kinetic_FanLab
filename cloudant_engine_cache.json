@@ -37,7 +37,7 @@
       "tier": 5,
       "device_anchor": "Wearable BLE Anchor",
       "early_multiplier": 1.25,
-      "updated_at": 1793293758.7253346
+      "updated_at": 1793298633.558976
     },
     "0xROOKIE-sec114-8f7a2": {
       "_id": "passport:0xROOKIE-sec114-8f7a2",
@@ -309,6 +309,38 @@
       },
       "fan_count": 50,
       "timestamp": 1793293758.7273352
+    },
+    {
+      "_id": "cmi:football:section115(endzoneloyals):1793298200589",
+      "type": "cmi_telemetry",
+      "section_id": "Section 115 (End Zone Loyals)",
+      "sport": "Football",
+      "cmi": 90.3,
+      "tier": "Maximum",
+      "components": {
+        "acoustic_db": 108.5,
+        "heart_rate_bpm": 149.5,
+        "taps_per_sec": 14.0,
+        "vocal_urgency": 0.92
+      },
+      "fan_count": 50,
+      "timestamp": 1793298200.5890934
+    },
+    {
+      "_id": "cmi:football:section115(endzoneloyals):1793298633561",
+      "type": "cmi_telemetry",
+      "section_id": "Section 115 (End Zone Loyals)",
+      "sport": "Football",
+      "cmi": 90.3,
+      "tier": "Maximum",
+      "components": {
+        "acoustic_db": 108.5,
+        "heart_rate_bpm": 149.5,
+        "taps_per_sec": 14.0,
+        "vocal_urgency": 0.92
+      },
+      "fan_count": 50,
+      "timestamp": 1793298633.5610454
     }
   ],
   "storycards": [
@@ -551,6 +583,16 @@
       "op": "save_passport",
       "id": "passport:0xSJ-sec115-7b2a5",
       "timestamp": 1793293758.726335
+    },
+    {
+      "op": "save_passport",
+      "id": "passport:0xSJ-sec115-7b2a5",
+      "timestamp": 1793298200.5880902
+    },
+    {
+      "op": "save_passport",
+      "id": "passport:0xSJ-sec115-7b2a5",
+      "timestamp": 1793298633.560045
     }
   ],
   "tester_feedback": [
