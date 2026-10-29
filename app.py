@@ -582,6 +582,9 @@ def _sync_and_persist_user_state():
     user_rec["synergy_score_fb"] = st.session_state.get("synergy_score_fb", 0)
     user_rec["synergy_claimed_bb"] = st.session_state.get("synergy_claimed_bb", False)
     user_rec["synergy_claimed_fb"] = st.session_state.get("synergy_claimed_fb", False)
+    user_rec["armchair_callouts_count"] = st.session_state.get("armchair_callouts_count", 0)
+    user_rec["armchair_nft_unlocked_bb"] = st.session_state.get("armchair_nft_unlocked_bb", False)
+    user_rec["armchair_nft_unlocked_fb"] = st.session_state.get("armchair_nft_unlocked_fb", False)
     user_rec["career_db"] = st.session_state.get("member_career_db", user_rec.get("career_db", "0.0 dB"))
     user_rec["clutch_stops"] = st.session_state.get("member_clutch_stops", user_rec.get("clutch_stops", 0))
 
@@ -780,6 +783,135 @@ def _get_active_matchup_info(sport: str, primary_team: str):
             "network": "Regional Sports Network"
         }
     }
+
+
+def _clear_user_session_state():
+    """Completely clears the active user's session state upon logout to prevent cross-account contamination."""
+    _sync_and_persist_user_state()
+    st.session_state.is_logged_in = False
+    st.session_state.just_signed_up = False
+    st.session_state.member_name = "Guest Fan"
+    st.session_state.member_handle = "@guest"
+    st.session_state.member_email = ""
+    st.session_state.member_hash = ""
+    st.session_state.member_role = "Guest Fan"
+    st.session_state.member_tier = "Guest Fan"
+    st.session_state.member_seat = ""
+    st.session_state.member_games = 0
+    st.session_state.member_career_db = "0.0 dB"
+    st.session_state.member_clutch_stops = 0
+    st.session_state.meetup_rsvps_bb = []
+    st.session_state.meetup_rsvps_fb = []
+    st.session_state.meetup_rsvps = []
+    st.session_state.tailgates_attended_bb = 0
+    st.session_state.tailgates_attended_fb = 0
+    st.session_state.tailgates_attended = 0
+    st.session_state.early_checkin_bb = False
+    st.session_state.early_checkin_fb = False
+    st.session_state.early_checkin = False
+    st.session_state.chant_action_taken_bb = False
+    st.session_state.chant_action_taken_fb = False
+    st.session_state.chant_action_taken = False
+    st.session_state.storycard_exported_bb = False
+    st.session_state.storycard_exported_fb = False
+    st.session_state.storycard_exported_flag = False
+    st.session_state.synergy_claimed_bb = False
+    st.session_state.synergy_claimed_fb = False
+    st.session_state.synergy_score_bb = 0
+    st.session_state.synergy_score_fb = 0
+    st.session_state.synergy_claimed = False
+    st.session_state.synergy_score = 0
+    st.session_state.user_respect_taps_sent_bb = 0
+    st.session_state.user_respect_taps_sent_fb = 0
+    st.session_state.user_respect_taps_sent = 0
+    st.session_state.tap_count = 0
+    st.session_state.tap_times = []
+    st.session_state.armchair_callouts_count = 0
+
+def _load_all_feedback_with_fallbacks():
+    """Aggregates tester validation feedback across Cloudant live, local JSON, in-memory session list, and personas."""
+    records = []
+    seen_ids = set()
+
+    # 1. Read directly from persistent disk data/member_feedback.json
+    fb_disk_path = os.path.join(current_dir, "data", "member_feedback.json")
+    if os.path.exists(fb_disk_path):
+        try:
+            with open(fb_disk_path, "r", encoding="utf-8") as f:
+                f_docs = json.load(f)
+                if isinstance(f_docs, list):
+                    for d in f_docs:
+                        if isinstance(d, dict) and d.get("_id") and d["_id"] not in seen_ids:
+                            seen_ids.add(d["_id"])
+                            records.append(d)
+        except Exception as _e:
+            print(f"[_load_all_feedback] disk read warning: {_e}")
+
+    # 2. Query cloudant_get_feedback()
+    try:
+        cf_list = cloudant_get_feedback()
+        if cf_list and isinstance(cf_list, list):
+            for d in cf_list:
+                if isinstance(d, dict) and d.get("_id") and d["_id"] not in seen_ids:
+                    seen_ids.add(d["_id"])
+                    records.append(d)
+    except Exception as _e:
+        print(f"[_load_all_feedback] cloudant_get_feedback warning: {_e}")
+
+    # 3. Read from in-memory session list (newest submissions in active session)
+    if "submitted_feedback_list" in st.session_state and isinstance(st.session_state.submitted_feedback_list, list):
+        for d in st.session_state.submitted_feedback_list:
+            if isinstance(d, dict) and d.get("_id") and d["_id"] not in seen_ids:
+                seen_ids.add(d["_id"])
+                records.insert(0, d)
+
+    # 4. Fallback to SEED_TESTER_PERSONAS if still empty
+    if not records:
+        for p_seed in SEED_TESTER_PERSONAS:
+            if p_seed["_id"] not in seen_ids:
+                seen_ids.add(p_seed["_id"])
+                records.append(p_seed)
+
+    return records
+
+def _handle_armchair_callout(callout_text: str, vu_score: float = 0.85):
+    """Broadcasts Armchair Coach callout to Live Section Chat, triggers NPC mentor reaction, and increments Dynamic NFT interaction counters."""
+    is_bb = (st.session_state.sport == "Basketball")
+    chat_list = st.session_state.sidebar_chat_bb if is_bb else st.session_state.sidebar_chat_fb
+    author_name = st.session_state.get("member_name", "Rookie Fan") if st.session_state.get("is_logged_in") else "Guest Fan"
+    author_handle = st.session_state.get("member_handle", "@fan_rookie") if st.session_state.get("is_logged_in") else "@guest"
+
+    # 1. Post to Live Section Chat in Sidebar
+    chat_list.append({
+        "sender": author_name,
+        "handle": author_handle,
+        "msg": f"📢 {callout_text}",
+        "time": "Just now"
+    })
+
+    # 2. Generate and append intelligent NPC mentor reply
+    npc_reply = _generate_npc_chat_reply(callout_text, author_handle, st.session_state.sport)
+    chat_list.append(npc_reply)
+
+    while len(chat_list) > 25:
+        chat_list.pop(0)
+
+    # 3. Update session telemetry & fan notes
+    st.session_state.vu = vu_score
+    _append_fan_note(f"{callout_text} ({vu_score} VU)")
+
+    # 4. Increment Armchair Callout interaction counter
+    curr_callouts = st.session_state.get("armchair_callouts_count", 0) + 1
+    st.session_state.armchair_callouts_count = curr_callouts
+    st.session_state.synergy_score = min(100, st.session_state.synergy_score + 3)
+
+    # 5. Check Dynamic NFT Award (Milestone = 3 callouts)
+    nft_unlocked_key = f"armchair_nft_unlocked_{'bb' if is_bb else 'fb'}"
+    if curr_callouts >= 3 and not st.session_state.get(nft_unlocked_key, False):
+        st.session_state[nft_unlocked_key] = True
+        st.session_state.just_unlocked_armchair_nft = True
+
+    _sync_and_persist_user_state()
 
 PERSONA_DB = {
     "Marcus Vance": {
@@ -1657,8 +1789,7 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
             """, unsafe_allow_html=True)
         with col_status_act:
             if st.button("🚪 Sign Out", key="btn_logout_user", use_container_width=True):
-                _sync_and_persist_user_state()
-                st.session_state.is_logged_in = False
+                _clear_user_session_state()
                 st.rerun()
 
         # Celebration card for newly signed-up user
@@ -1717,6 +1848,8 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
         # Render Active Matchup Card + Next Up Card
         mc1, mc2 = st.columns([3, 2])
         with mc1:
+            recent_txt = matchup_data.get("recent_games", "")
+            recent_pill = f'''<div style="margin-top:6px; background-color:#0b0f17; padding:4px 8px; border-radius:4px; font-size:8pt; color:#a8a8a8;"><span style="color:#f1c21b; font-weight:bold;">🗓️ Verified Recent:</span> {recent_txt}</div>''' if recent_txt else ""
             st.markdown(f"""
             <div style="background-color: #141924; border: 1.5px solid #0f62fe; border-radius: 8px; padding: 14px 16px; margin-bottom: 14px; box-shadow: 0 0 12px #0f62fe44;">
                 <span style="color: #0f62fe; font-size: 8pt; font-weight: bold; text-transform: uppercase;">CURRENT LIVE MATCHUP</span>
@@ -1726,8 +1859,8 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                     <span style="color: #dcdcdc; font-size: 9pt;">📍 <b>{act_g.get('venue', 'Venue')}</b> ({act_g.get('section', 'Section 114')}) &bull; Network: <b>{act_g.get('network', 'Broadcast')}</b></span><br/>
                     <span style="color: #42be65; font-size: 8.5pt; font-weight: bold;">⚡ Active Defensive Window: {act_g.get('situation_desc', 'Clutch Defense')}</span>
                 </div>
-            </div>
-            """, unsafe_allow_html=True)
+                {recent_pill}
+            </div>""", unsafe_allow_html=True)
         with mc2:
             st.markdown(f"""
             <div style="background-color: #141924; border: 1px solid #333; border-radius: 8px; padding: 14px 16px; margin-bottom: 14px;">
@@ -2131,6 +2264,29 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                         </div>
                         """, unsafe_allow_html=True)
 
+                # Armchair Tactician Dynamic NFT Badge
+                armchair_nft_title = "Cadence Commander" if is_basketball else "12th Man Noise Enforcer"
+                armchair_nft_color = "#0f62fe" if is_basketball else "#da1e28"
+                armchair_nft_icon = "📣" if is_basketball else "🎙️"
+                callout_stat_count = st.session_state.get("armchair_callouts_count", 0)
+                armchair_unlocked = st.session_state.get(f"armchair_nft_unlocked_{'bb' if is_basketball else 'fb'}", False) or (callout_stat_count >= 3)
+
+                st.markdown(f"""
+                <div style="background-color: #1a1a1a; border: 2px solid {armchair_nft_color if armchair_unlocked else '#444'}; border-radius: 10px; padding: 16px; margin-top: 14px; box-shadow: 0 0 10px {armchair_nft_color + '44' if armchair_unlocked else 'transparent'};">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="background-color: {armchair_nft_color}33; color: {armchair_nft_color}; padding: 3px 8px; border-radius: 4px; font-size: 8pt; font-weight: bold; text-transform: uppercase;">
+                            {'DYNAMIC TACTICAL NFT UNLOCKED' if armchair_unlocked else 'TACTICAL NFT IN PROGRESS'}
+                        </span>
+                        <span style="color: #f1c21b; font-size: 9pt; font-weight: bold;">{callout_stat_count}/3 {st.session_state.sport} Armchair Callouts</span>
+                    </div>
+                    <h4 style="color: white; margin: 8px 0 4px 0;">{armchair_nft_icon} {armchair_nft_title}</h4>
+                    <p style="color: #a8a8a8; font-size: 9.5pt; margin-bottom: 6px;">
+                        {'Awarded for verified tactical leadership: synchronized 3+ live calls into Section Chat triggering mentor acoustic waves.' if armchair_unlocked else 'Broadcast 3 live tactical callouts or chants on Screen 3 to unlock this Armchair Tactician Dynamic NFT!'}
+                    </p>
+                    <p style="color: #42be65; font-size: 8.5pt; font-weight: bold; margin: 0;">🎁 Verified Perk: +5% Permanent Section Synergy Boost &amp; PA Booth Mention</p>
+                </div>
+                """, unsafe_allow_html=True)
+
                 # Community Consistency NFT Badge (Future Accolade based on Meetups & Tailgates)
                 comm_nft_title = "Plaza Rally Vanguard" if is_basketball else "Lot B Tailgate Legend"
                 comm_nft_color = "#0f62fe" if is_basketball else "#fa4d56"
@@ -2354,6 +2510,36 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
 
                     if fb_submit:
                         clean_sport_val = "Basketball" if "Basketball" in fb_t_sport else "Football"
+                        new_fb_doc = {
+                            "_id": f"feedback:{fb_t_handle.replace('@', '').lower().strip()}:{int(time.time())}",
+                            "type": "tester_feedback",
+                            "tester_name": fb_t_name.strip() or "Anonymous Fan",
+                            "tester_handle": fb_t_handle.strip() or "@anonymous",
+                            "tester_role": fb_t_role,
+                            "cmi_rating": int(fb_t_cmi),
+                            "features_tested": fb_t_features,
+                            "favorite_feature": fb_t_favorite.strip(),
+                            "improvement_feedback": fb_t_improve.strip(),
+                            "sport": clean_sport_val,
+                            "timestamp": time.time(),
+                            "formatted_time": time.strftime("%Y-%m-%d %H:%M:%S")
+                        }
+                        if "submitted_feedback_list" not in st.session_state:
+                            st.session_state.submitted_feedback_list = []
+                        st.session_state.submitted_feedback_list.insert(0, new_fb_doc)
+                        try:
+                            _dpath = os.path.join(current_dir, "data", "member_feedback.json")
+                            os.makedirs(os.path.dirname(_dpath), exist_ok=True)
+                            _fl = []
+                            if os.path.exists(_dpath):
+                                with open(_dpath, "r", encoding="utf-8") as _f:
+                                    _fl = json.load(_f)
+                                    if not isinstance(_fl, list): _fl = []
+                            _fl.insert(0, new_fb_doc)
+                            with open(_dpath, "w", encoding="utf-8") as _f:
+                                json.dump(_fl, _f, indent=2)
+                        except Exception as _fe:
+                            print(f"[feedback_save] disk write warning: {_fe}")
                         fb_res = cloudant_save_feedback(
                             tester_name=fb_t_name,
                             tester_handle=fb_t_handle,
@@ -2372,21 +2558,7 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                     st.subheader("👑 Team Lead Member Feedback & Analytics Portal")
                     st.caption(f"Authenticated as **Troy Resendez** (`{st.session_state.get('member_email', 'fan@gmail.com')}`). Review real-time feedback synced from IBM Cloudant.")
 
-                    all_fb = cloudant_get_feedback()
-                    # If empty, automatically populate with verified personas and Troy's feedback
-                    if not all_fb:
-                        for p_seed in SEED_TESTER_PERSONAS:
-                            cloudant_save_feedback(
-                                tester_name=p_seed["tester_name"],
-                                tester_handle=p_seed["tester_handle"],
-                                tester_role=p_seed["tester_role"],
-                                cmi_rating=p_seed["cmi_rating"],
-                                features_tested=p_seed["features_tested"],
-                                favorite_feature=p_seed["favorite_feature"],
-                                improvement_feedback=p_seed["improvement_feedback"],
-                                sport=p_seed["sport"]
-                            )
-                        all_fb = cloudant_get_feedback()
+                    all_fb = _load_all_feedback_with_fallbacks()
                     
                     # Top Metrics Row
                     total_count = len(all_fb)
@@ -2521,6 +2693,9 @@ elif screen == "🎪 Screen 2: 36h Virtual Tailgate":
     with tab_meet:
         st.subheader(f"Community Meetups & Gameday Logistics ({st.session_state.sport})")
         st.caption("RSVP for official section meetups and tailgates to earn Community Consistency streaks toward future NFT trophies.")
+        user_is_logged = st.session_state.get("is_logged_in", False)
+        if not user_is_logged:
+            st.info("🔒 **Sign In Required to RSVP:** You are browsing as a guest. Please log in or sign up on **Screen 1** to RSVP for section meetups and record community streaks on your Fan Passport.")
         m1, m2 = st.columns(2)
         if is_basketball:
             with m1:
@@ -2532,8 +2707,10 @@ elif screen == "🎪 Screen 2: 36h Virtual Tailgate":
                 * **Section Hosts:** Marcus Vance (Section Director) & Elena Rostova (Prop Captain)
                 """)
                 ev_plaza = "plaza_rally_bb"
-                rsvpd_plaza = ev_plaza in st.session_state.get("meetup_rsvps_bb", [])
-                if not rsvpd_plaza:
+                rsvpd_plaza = (ev_plaza in st.session_state.get("meetup_rsvps_bb", [])) if user_is_logged else False
+                if not user_is_logged:
+                    st.caption("🔑 Log in on Screen 1 to claim priority wristband & RSVP.")
+                elif not rsvpd_plaza:
                     if st.button("🎟️ RSVP for Plaza Rally", key="btn_rsvp_plaza", use_container_width=True):
                         st.session_state.meetup_rsvps_bb.append(ev_plaza)
                         st.session_state.tailgates_attended_bb = len(st.session_state.meetup_rsvps_bb)
@@ -2565,8 +2742,10 @@ elif screen == "🎪 Screen 2: 36h Virtual Tailgate":
                 * **Section Host:** Devon Miller (Vocal Tactician)
                 """)
                 ev_campus = "campus_walk_bb"
-                rsvpd_campus = ev_campus in st.session_state.get("meetup_rsvps_bb", [])
-                if not rsvpd_campus:
+                rsvpd_campus = (ev_campus in st.session_state.get("meetup_rsvps_bb", [])) if user_is_logged else False
+                if not user_is_logged:
+                    st.caption("🔑 Log in on Screen 1 to claim campus shuttle pass & RSVP.")
+                elif not rsvpd_campus:
                     if st.button("🎟️ RSVP for Campus Walk", key="btn_rsvp_campus", use_container_width=True):
                         st.session_state.meetup_rsvps_bb.append(ev_campus)
                         st.session_state.tailgates_attended_bb = len(st.session_state.meetup_rsvps_bb)
@@ -2596,8 +2775,10 @@ elif screen == "🎪 Screen 2: 36h Virtual Tailgate":
                 * **Section Hosts:** Carlos Mendez (Tailgate Host) & Sarah Jenkins (10-Yr Veteran)
                 """)
                 ev_lotb = "lotb_tailgate_fb"
-                rsvpd_lotb = ev_lotb in st.session_state.get("meetup_rsvps_fb", [])
-                if not rsvpd_lotb:
+                rsvpd_lotb = (ev_lotb in st.session_state.get("meetup_rsvps_fb", [])) if user_is_logged else False
+                if not user_is_logged:
+                    st.caption("🔑 Log in on Screen 1 to claim Lot B VIP voucher & RSVP.")
+                elif not rsvpd_lotb:
                     if st.button("🎟️ RSVP for Lot B Tailgate", key="btn_rsvp_lotb", use_container_width=True):
                         st.session_state.meetup_rsvps_fb.append(ev_lotb)
                         st.session_state.tailgates_attended_fb = len(st.session_state.meetup_rsvps_fb)
@@ -2629,8 +2810,10 @@ elif screen == "🎪 Screen 2: 36h Virtual Tailgate":
                 * **Section Host:** Maya Patel (Biometric & Tech Superfan)
                 """)
                 ev_shuttle = "north_shuttle_fb"
-                rsvpd_shuttle = ev_shuttle in st.session_state.get("meetup_rsvps_fb", [])
-                if not rsvpd_shuttle:
+                rsvpd_shuttle = (ev_shuttle in st.session_state.get("meetup_rsvps_fb", [])) if user_is_logged else False
+                if not user_is_logged:
+                    st.caption("🔑 Log in on Screen 1 to claim North Express shuttle pass & RSVP.")
+                elif not rsvpd_shuttle:
                     if st.button("🎟️ RSVP for North Express Shuttle", key="btn_rsvp_shuttle", use_container_width=True):
                         st.session_state.meetup_rsvps_fb.append(ev_shuttle)
                         st.session_state.tailgates_attended_fb = len(st.session_state.meetup_rsvps_fb)
@@ -2953,13 +3136,40 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
         st.subheader("🎙️ Armchair Coach Reaction Logger")
         st.caption("Rally fellow fans in your section with live tactical callouts and acoustic pressure:")
         
-        # Interactive explanation card
+        # Interactive explanation card & Chat Sync HUD
+        armchair_cnt = st.session_state.get("armchair_callouts_count", 0)
+        is_bb_c = (st.session_state.sport == "Basketball")
+        nft_unlocked = st.session_state.get(f"armchair_nft_unlocked_{'bb' if is_bb_c else 'fb'}", False)
+        nft_title = "Cadence Commander" if is_bb_c else "12th Man Noise Enforcer"
+        hud_border = "#f1c21b" if nft_unlocked else "#0f62fe"
+
         st.markdown(f"""
-        <div style="background-color: #11141c; border-left: 4px solid #0f62fe; padding: 10px 14px; border-radius: 6px; margin-bottom: 10px;">
-            <span style="color: #0f62fe; font-size: 8.5pt; font-weight: bold; text-transform: uppercase;">💡 HOW ARMCHAIR COACH WORKS:</span><br/>
-            <span style="color: #dcdcdc; font-size: 8.5pt;">
-                Call out real-time defensive directives to coordinate your row pod. IBM Granite models analyze your <b>Vocal Urgency (VU)</b> to trigger acoustic surges and responsive reactions from your row mentors!
-            </span>
+        <div style="background-color: #11141c; border-left: 4px solid {hud_border}; padding: 12px 14px; border-radius: 6px; margin-bottom: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <span style="color: {hud_border}; font-size: 8.5pt; font-weight: bold; text-transform: uppercase;">
+                    🎙️ ARMCHAIR COACH &bull; LIVE CHAT SYNC HUD
+                </span>
+                <span style="color: {'#f1c21b' if nft_unlocked else '#42be65'}; font-size: 8.5pt; font-weight: bold;">
+                    {'🏆 NFT UNLOCKED: ' + nft_title if nft_unlocked else f'⏳ Dynamic NFT: {armchair_cnt}/3 Callouts'}
+                </span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center;">
+                <div style="background-color: #171d29; padding: 6px; border-radius: 4px;">
+                    <span style="color: #8d8d8d; font-size: 7pt; text-transform: uppercase;">Broadcasts</span><br/>
+                    <b style="color: #fff; font-size: 10pt;">{armchair_cnt} sent</b>
+                </div>
+                <div style="background-color: #171d29; padding: 6px; border-radius: 4px;">
+                    <span style="color: #8d8d8d; font-size: 7pt; text-transform: uppercase;">Vocal Urgency</span><br/>
+                    <b style="color: #5da8ff; font-size: 10pt;">{st.session_state.vu} VU</b>
+                </div>
+                <div style="background-color: #171d29; padding: 6px; border-radius: 4px;">
+                    <span style="color: #8d8d8d; font-size: 7pt; text-transform: uppercase;">Sidebar Chat</span><br/>
+                    <b style="color: #42be65; font-size: 10pt;">🟢 Synced</b>
+                </div>
+            </div>
+            <p style="color: #a8a8a8; font-size: 8pt; margin: 6px 0 0 0; font-style: italic;">
+                Every tactical callout or chant posts directly to <b>Live Section Chat</b> in the sidebar and triggers live mentor responses. Send 3 to unlock the <b>{nft_title}</b> Dynamic NFT!
+            </p>
         </div>
         """, unsafe_allow_html=True)
         
@@ -2976,54 +3186,47 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
             if gov.get("guardrail_status") == "REJECTED" or is_prompt_injection:
                 st.error("🚨 Callout blocked by community safety filter. Please keep section reactions focused on clean gameday energy.")
             else:
-                with st.spinner("Scoring vocal urgency..."):
+                with st.spinner("Scoring vocal urgency & syncing chat..."):
                     u_score = analyze_vocal_urgency_live(user_in)
-                st.session_state.vu = u_score
-                _append_fan_note(f"{user_in} ({u_score} VU)")
-                p_cur = PERSONA_DB[st.session_state.active_member]
+                _handle_armchair_callout(user_in.strip(), u_score)
+                p_cur = PERSONA_DB.get(st.session_state.active_member) or PERSONA_DB.get("Marcus Vance") or {}
+                p_hash = p_cur.get("hash", "0xROOKIE-sec114-8f7a2")
+                p_sec = p_cur.get("sec", "Section 114 (Thunder Row)")
                 _trigger_silent_backend_pipeline(
                     active_preset.split(":")[0].strip(), st.session_state.sport,
-                    st.session_state.active_member, p_cur["hash"], p_cur["sec"],
+                    st.session_state.active_member, p_hash, p_sec,
                     user_in, st.session_state.db, st.session_state.hr, st.session_state.taps, u_score, st.session_state.is_clutch
                 )
-                st.success(f"✅ Callout posted to Section Feed! Vocal Urgency: **{u_score} VU**")
+                st.success(f"✅ Callout synced to Live Section Chat! Vocal Urgency: **{u_score} VU**")
                 st.rerun()
 
         st.markdown(f"**Quick-Fire Section Chants ({st.session_state.sport}):**")
         q_cols = st.columns(2)
         if is_basketball:
             if q_cols[0].button("MISS IT! OFF THE RIM!", use_container_width=True):
-                st.session_state.vu = 0.85
-                _append_fan_note("MISS IT! OFF THE RIM! (0.85 VU)")
+                _handle_armchair_callout("MISS IT! OFF THE RIM!", 0.85)
                 st.rerun()
             if q_cols[1].button("BRING THE NOISE!", use_container_width=True):
-                st.session_state.vu = 0.90
-                _append_fan_note("BRING THE NOISE! (0.90 VU)")
+                _handle_armchair_callout("BRING THE NOISE!", 0.90)
                 st.rerun()
             if q_cols[0].button("AIR BALL! AIR BALL!", use_container_width=True):
-                st.session_state.vu = 0.88
-                _append_fan_note("AIR BALL! AIR BALL! (0.88 VU)")
+                _handle_armchair_callout("AIR BALL! AIR BALL!", 0.88)
                 st.rerun()
             if q_cols[1].button("DEFENSE ON THREE!", use_container_width=True):
-                st.session_state.vu = 0.82
-                _append_fan_note("DEFENSE ON THREE! (0.82 VU)")
+                _handle_armchair_callout("DEFENSE ON THREE!", 0.82)
                 st.rerun()
         else:
             if q_cols[0].button("BLOCK THAT KICK!", use_container_width=True):
-                st.session_state.vu = 0.92
-                _append_fan_note("BLOCK THAT KICK! (0.92 VU)")
+                _handle_armchair_callout("BLOCK THAT KICK!", 0.92)
                 st.rerun()
             if q_cols[1].button("ICE THE KICKER!", use_container_width=True):
-                st.session_state.vu = 0.88
-                _append_fan_note("ICE THE KICKER! (0.88 VU)")
+                _handle_armchair_callout("ICE THE KICKER!", 0.88)
                 st.rerun()
             if q_cols[0].button("FALSE START! GET LOUD!", use_container_width=True):
-                st.session_state.vu = 0.95
-                _append_fan_note("FALSE START! GET LOUD! (0.95 VU)")
+                _handle_armchair_callout("FALSE START! GET LOUD!", 0.95)
                 st.rerun()
             if q_cols[1].button("THIRD DOWN ROAR!", use_container_width=True):
-                st.session_state.vu = 0.90
-                _append_fan_note("THIRD DOWN ROAR! (0.90 VU)")
+                _handle_armchair_callout("THIRD DOWN ROAR!", 0.90)
                 st.rerun()
 
         st.markdown("**Live Section Fan Feed:**")
@@ -3321,7 +3524,8 @@ elif screen == "🤖 Screen 5: AI Squad & Game Intelligence":
     p_idx = persona_options.index(st.session_state.active_member) if st.session_state.active_member in persona_options else 0
     active_fan = st.selectbox("Active Fan Profile:", persona_options, index=p_idx, key="s5_fan_select")
     st.session_state.active_member = active_fan
-    p_info = PERSONA_DB.get(active_fan, PERSONA_DB[st.session_state.member_name if st.session_state.get("is_logged_in") else ("Marcus Vance" if is_basketball else "Sarah Jenkins")])
+    default_p = PERSONA_DB.get(st.session_state.member_name if st.session_state.get("is_logged_in") else ("Marcus Vance" if is_basketball else "Sarah Jenkins")) or PERSONA_DB.get("Marcus Vance") or {}
+    p_info = PERSONA_DB.get(active_fan) or default_p
     fixture_code = active_preset.split(":")[0].strip()
 
     # Compute live game statistics & 3 scenarios via backend teamwork
@@ -3610,6 +3814,36 @@ with st.expander("📝 Share Member Feedback & Experience Survey", expanded=st.s
             
     if bot_sub_clicked:
         clean_sport_tag = "Basketball" if "Basketball" in bot_fb_sport else "Football"
+        new_fb_doc = {
+            "_id": f"feedback:{bot_fb_handle.replace('@', '').lower().strip()}:{int(time.time())}",
+            "type": "tester_feedback",
+            "tester_name": bot_fb_name.strip() or "Anonymous Fan",
+            "tester_handle": bot_fb_handle.strip() or "@anonymous",
+            "tester_role": bot_fb_role,
+            "cmi_rating": int(bot_fb_cmi),
+            "features_tested": bot_fb_features,
+            "favorite_feature": bot_fb_favorite.strip(),
+            "improvement_feedback": bot_fb_improve.strip(),
+            "sport": clean_sport_tag,
+            "timestamp": time.time(),
+            "formatted_time": time.strftime("%Y-%m-%d %H:%M:%S")
+        }
+        if "submitted_feedback_list" not in st.session_state:
+            st.session_state.submitted_feedback_list = []
+        st.session_state.submitted_feedback_list.insert(0, new_fb_doc)
+        try:
+            _dpath = os.path.join(current_dir, "data", "member_feedback.json")
+            os.makedirs(os.path.dirname(_dpath), exist_ok=True)
+            _fl = []
+            if os.path.exists(_dpath):
+                with open(_dpath, "r", encoding="utf-8") as _f:
+                    _fl = json.load(_f)
+                    if not isinstance(_fl, list): _fl = []
+            _fl.insert(0, new_fb_doc)
+            with open(_dpath, "w", encoding="utf-8") as _f:
+                json.dump(_fl, _f, indent=2)
+        except Exception as _fe:
+            print(f"[bottom_feedback_save] disk write warning: {_fe}")
         fb_res = cloudant_save_feedback(
             tester_name=bot_fb_name,
             tester_handle=bot_fb_handle,
