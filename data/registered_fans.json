@@ -1,4 +1,4 @@
-{
+﻿{
   "fan@gmail.com": {
     "email": "fan@gmail.com",
     "password": "password123",
@@ -17,7 +17,7 @@
       "Michigan Wolverines",
       "Green Bay Packers"
     ],
-    "role": "Section Loyalist",
+    "role": "admin",
     "tier": "Rookie Member (Tier 1)",
     "games": 1,
     "career_db": "0.0 dB",

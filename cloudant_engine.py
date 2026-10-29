@@ -240,6 +240,9 @@ class CloudantEngineClient:
 
         cache = self._read_cache()
         cache["storycards"].append(doc)
+        # P2-BE: cap storycards to 100 to prevent unbounded cache growth
+        if len(cache["storycards"]) > 100:
+            cache["storycards"] = cache["storycards"][-100:]
         self._write_cache(cache)
 
         return {"status": "SUCCESS", "doc_id": doc_id, "headline": headline}
@@ -281,7 +284,12 @@ class CloudantEngineClient:
         cache = self._read_cache()
         if "tester_feedback" not in cache:
             cache["tester_feedback"] = []
+        # P2-BE: add schema_version for forward-compatibility
+        doc["schema_version"] = 1
         cache["tester_feedback"].append(doc)
+        # P2-BE: cap feedback to 500 records
+        if len(cache["tester_feedback"]) > 500:
+            cache["tester_feedback"] = cache["tester_feedback"][-500:]
         cache["uncommitted_queue"].append({"op": "save_feedback", "id": doc_id, "timestamp": time.time()})
         self._write_cache(cache)
 

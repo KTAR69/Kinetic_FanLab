@@ -23,3 +23,10 @@ Thumbs.db
 # These accumulate real fan data during demos and must not be committed.
 cloudant_cache.json
 cloud_storage_archive/
+
+cloudant_engine_cache.json
+cos_archive_store/
+
+# P2-SEC: fan passport data contains hashes/handles - never commit to git
+data/registered_fans.json
+data/member_feedback.json
