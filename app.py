@@ -1834,20 +1834,26 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
         matchup_data = _get_active_matchup_info(st.session_state.sport, active_team_sel)
         act_g = matchup_data.get("active_game", {})
         up_g = matchup_data.get("upcoming_game", {})
+        is_today = matchup_data.get("is_game_today", False)
+        t_record = matchup_data.get("record", "")
+
+        gameday_badge = (
+            '<span style="background-color: #da1e28; color: white; padding: 2px 8px; border-radius: 4px; font-size: 7.5pt; font-weight: bold; margin-left: 10px;">🔴 LIVE GAMEDAY TONIGHT</span>'
+            if is_today else
+            '<span style="background-color: #0f62fe; color: white; padding: 2px 8px; border-radius: 4px; font-size: 7.5pt; font-weight: bold; margin-left: 10px;">🗓️ NEXT UPCOMING GAMEDAY</span>'
+        )
 
         st.markdown(f"""
         <div style="background-color: #0c111a; border-left: 5px solid #0f62fe; padding: 12px 18px; border-radius: 8px; margin-bottom: 12px;">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
                 <div>
                     <span style="color: #0f62fe; font-size: 8.5pt; font-weight: bold; letter-spacing: 1.5px; text-transform: uppercase;">
-                        🎯 LIVE GAMEDAY TRACKER // YOUR ACTIVE SCHEDULE
+                        🎯 OFFICIAL GAMEDAY TRACKER // 2026-27 SCHEDULE
                     </span>
-                    <span style="background-color: #da1e28; color: white; padding: 2px 7px; border-radius: 4px; font-size: 7.5pt; font-weight: bold; margin-left: 10px;">
-                        🔴 LIVE GAME TRACKED
-                    </span>
+                    {gameday_badge}
                 </div>
                 <div style="color: #f1c21b; font-size: 9pt; font-weight: bold;">
-                    Level: {matchup_data.get('level', 'Collegiate & Pro')}
+                    Level: {matchup_data.get('level', 'Collegiate & Pro')} &bull; <span style="color:#ffffff;">Record: {t_record}</span>
                 </div>
             </div>
             <div style="margin-top: 6px; font-size: 9pt; color: #a8a8a8;">
@@ -1866,31 +1872,77 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                 st.session_state[team_session_key] = t_n
                 st.rerun()
 
-        # Render Active Matchup Card + Next Up Card
+        # Render Primary Matchup Card + Next Up Card
         mc1, mc2 = st.columns([3, 2])
         with mc1:
+            card1_title = "🔴 TONIGHT'S ACTIVE GAMEDAY MATCHUP" if is_today else "🗓️ NEXT ACTIVE GAME ON SCHEDULE"
             recent_txt = matchup_data.get("recent_games", "")
             recent_pill = f'''<div style="margin-top:6px; background-color:#0b0f17; padding:4px 8px; border-radius:4px; font-size:8pt; color:#a8a8a8;"><span style="color:#f1c21b; font-weight:bold;">🗓️ Verified Recent:</span> {recent_txt}</div>''' if recent_txt else ""
             st.markdown(f"""
             <div style="background-color: #141924; border: 1.5px solid #0f62fe; border-radius: 8px; padding: 14px 16px; margin-bottom: 14px; box-shadow: 0 0 12px #0f62fe44;">
-                <span style="color: #0f62fe; font-size: 8pt; font-weight: bold; text-transform: uppercase;">CURRENT LIVE MATCHUP</span>
+                <span style="color: #0f62fe; font-size: 8pt; font-weight: bold; text-transform: uppercase;">{card1_title}</span>
                 <h3 style="color: #ffffff; margin: 4px 0 2px 0;">{act_g.get('matchup', 'Live Matchup')}</h3>
-                <p style="color: #f1c21b; font-size: 10pt; font-weight: bold; margin: 0 0 8px 0;">⏱️ {act_g.get('score_state', 'Live In Progress')}</p>
+                <p style="color: #f1c21b; font-size: 10pt; font-weight: bold; margin: 0 0 8px 0;">⏱️ {act_g.get('score_state', 'Gameday In Progress')}</p>
                 <div style="background-color: #0b0f17; padding: 8px 12px; border-radius: 6px; border-left: 3px solid #0f62fe;">
-                    <span style="color: #dcdcdc; font-size: 9pt;">📍 <b>{act_g.get('venue', 'Venue')}</b> ({act_g.get('section', 'Section 114')}) &bull; Network: <b>{act_g.get('network', 'Broadcast')}</b></span><br/>
-                    <span style="color: #42be65; font-size: 8.5pt; font-weight: bold;">⚡ Active Defensive Window: {act_g.get('situation_desc', 'Clutch Defense')}</span>
+                    <span style="color: #dcdcdc; font-size: 9pt;">📍 <b>{act_g.get('venue', 'Venue')}</b> ({act_g.get('section', 'Section 114')}) &bull; Broadcast: <b>{act_g.get('network', 'Broadcast')}</b></span><br/>
+                    <span style="color: #42be65; font-size: 8.5pt; font-weight: bold;">⚡ Defensive Coordination Window: {act_g.get('situation_desc', 'Clutch Defense')}</span>
                 </div>
                 {recent_pill}
             </div>""", unsafe_allow_html=True)
         with mc2:
             st.markdown(f"""
             <div style="background-color: #141924; border: 1px solid #333; border-radius: 8px; padding: 14px 16px; margin-bottom: 14px;">
-                <span style="color: #a8a8a8; font-size: 8pt; font-weight: bold; text-transform: uppercase;">📅 UPCOMING ON SCHEDULE</span>
+                <span style="color: #a8a8a8; font-size: 8pt; font-weight: bold; text-transform: uppercase;">📅 SUBSEQUENT GAME ON SCHEDULE</span>
                 <h4 style="color: #ffffff; margin: 6px 0 4px 0;">{up_g.get('matchup', 'Next Game')}</h4>
                 <p style="color: #a8a8a8; font-size: 9pt; margin: 0 0 4px 0;">📍 {up_g.get('venue', 'Arena Stadium')}</p>
                 <p style="color: #f1c21b; font-size: 8.5pt; font-weight: bold; margin: 0;">🗓️ {up_g.get('date', 'Upcoming')} &bull; {up_g.get('network', 'TV')}</p>
             </div>
             """, unsafe_allow_html=True)
+
+        # Full Official Schedule Table
+        full_sched = matchup_data.get("full_schedule", [])
+        if full_sched:
+            with st.expander(f"📅 View Official 2026-27 {active_team_sel} Schedule & Past Results", expanded=True):
+                sched_rows = ""
+                for item in full_sched:
+                    st_val = item.get("status", "")
+                    if st_val == "Tonight":
+                        st_badge = "<span style='background:#da1e28; color:white; padding:2px 7px; border-radius:3px; font-weight:bold; font-size:7.5pt;'>TONIGHT</span>"
+                    elif st_val == "Next Game":
+                        st_badge = "<span style='background:#0f62fe; color:white; padding:2px 7px; border-radius:3px; font-weight:bold; font-size:7.5pt;'>NEXT GAME</span>"
+                    else:
+                        st_badge = f"<span style='color:#a8a8a8; font-size:7.5pt;'>{st_val}</span>"
+                    
+                    row_style = "background-color: #182232;" if st_val in ["Tonight", "Next Game"] else ""
+                    res_val = item.get("result", "")
+                    res_color = "#42be65" if res_val.startswith("W ") else ("#fa4d56" if res_val.startswith("L ") else "#f1c21b")
+                    
+                    sched_rows += f"""<tr style="{row_style} border-bottom: 1px solid #222;">
+                        <td style="padding: 7px 10px; font-weight: bold; color: #f4f4f4;">{item.get('date')}</td>
+                        <td style="padding: 7px 10px; color: #ffffff;">{item.get('opponent')}</td>
+                        <td style="padding: 7px 10px; color: #a8a8a8;">{item.get('venue')}</td>
+                        <td style="padding: 7px 10px; font-weight: bold; color: {res_color};">{res_val}</td>
+                        <td style="padding: 7px 10px; color: #5da8ff;">{item.get('tv')}</td>
+                        <td style="padding: 7px 10px;">{st_badge}</td>
+                    </tr>"""
+
+                st.markdown(f"""
+                <table style="width: 100%; border-collapse: collapse; font-size: 8.5pt; text-align: left; background-color: #11141c; border-radius: 6px; overflow: hidden; margin-bottom: 12px;">
+                    <thead>
+                        <tr style="background-color: #0b0f17; color: #8d8d8d; text-transform: uppercase; font-size: 7.5pt; letter-spacing: 1px;">
+                            <th style="padding: 8px 10px;">Date</th>
+                            <th style="padding: 8px 10px;">Opponent</th>
+                            <th style="padding: 8px 10px;">Venue</th>
+                            <th style="padding: 8px 10px;">Result / Time</th>
+                            <th style="padding: 8px 10px;">Broadcast</th>
+                            <th style="padding: 8px 10px;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {sched_rows}
+                    </tbody>
+                </table>
+                """, unsafe_allow_html=True)
 
         # Two-column layout: Left Panel (Passport + Sports & Teams) | Right Panel (Mentors & Roster)
         col_left_panel, col_main_panel = st.columns([1, 2])
