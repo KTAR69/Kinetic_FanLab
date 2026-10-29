@@ -7,17 +7,17 @@
       "conference_league": "ACC",
       "home_venue": "Cameron Indoor Stadium (Section 114)",
       "active_game": {
-        "matchup": "Duke Blue Devils vs. North Carolina Tar Heels",
-        "opponent": "North Carolina Tar Heels",
+        "matchup": "Duke Blue Devils vs. Army West Point (Season Opener)",
+        "opponent": "Army West Point",
         "is_home": true,
         "venue": "Cameron Indoor Stadium (Durham, NC)",
         "section": "Section 114 (Cameron Crazies Thunder Row)",
-        "game_time": "Today • LIVE IN PROGRESS",
-        "score_state": "Tied 88–88 • 4th Qtr 0:14.2 Remaining",
-        "situation_code": "BB-02",
-        "situation_desc": "Visiting 2nd Free Throw (Clutch 6th Man Defense)",
-        "network": "ESPN / ACC Network",
-        "status": "LIVE"
+        "game_time": "Monday, Nov 2, 2026 • 6:30 PM EST",
+        "score_state": "Season Opener Countdown • 4 Days to Tipoff • Cameron Crazies Ready",
+        "situation_code": "BB-01",
+        "situation_desc": "Season Opener Hype & Baseline Tipoff Focus",
+        "network": "ACC Network / ESPN",
+        "status": "UPCOMING TIPOFF"
       },
       "upcoming_game": {
         "matchup": "Duke Blue Devils vs. Kentucky Wildcats / Michigan State (Champions Classic)",
@@ -25,7 +25,8 @@
         "venue": "United Center (Chicago, IL)",
         "date": "Tuesday, Nov 10, 2026 • 6:30 PM EST",
         "network": "ESPN"
-      }
+      },
+      "recent_games": "Preseason Countdown: 4 Days, 9 Hours to Season Opener vs. Army West Point (Nov 2, 6:30 PM EST)"
     },
     "Boston Celtics": {
       "team": "Boston Celtics",
@@ -34,25 +35,26 @@
       "conference_league": "NBA Eastern Conference",
       "home_venue": "TD Garden (Section 114)",
       "active_game": {
-        "matchup": "Boston Celtics at Indiana Pacers",
-        "opponent": "Indiana Pacers",
-        "is_home": false,
-        "venue": "Gainbridge Fieldhouse (Indianapolis, IN)",
+        "matchup": "Boston Celtics vs. Chicago Bulls",
+        "opponent": "Chicago Bulls",
+        "is_home": true,
+        "venue": "TD Garden (Boston, MA)",
         "section": "Section 114 (Balcony Row)",
-        "game_time": "Tonight • Wednesday, Oct 28, 2026 • 7:30 PM EDT",
-        "score_state": "Celtics 104, Pacers 103 • 4th Qtr 0:11.8",
+        "game_time": "Friday, Oct 30, 2026 • 6:30 PM EDT",
+        "score_state": "Next Game • Friday 6:30 PM EDT • TD Garden",
         "situation_code": "BB-02",
-        "situation_desc": "Opponent Free Throw 2 (Clutch Defensive Stop)",
-        "network": "NBC Sports Boston / ESPN",
-        "status": "LIVE"
+        "situation_desc": "Clutch 4th Quarter Defense Stop (Free Throw Focus)",
+        "network": "NBC Sports Boston / NBA League Pass",
+        "status": "ACTIVE GAMEDAY"
       },
       "upcoming_game": {
-        "matchup": "Boston Celtics at Charlotte Hornets",
-        "opponent": "Charlotte Hornets",
-        "venue": "Spectrum Center (Charlotte, NC)",
-        "date": "Friday, Oct 30, 2026 • 7:00 PM EDT",
-        "network": "NBC Sports Boston / NBA League Pass"
-      }
+        "matchup": "Boston Celtics at Orlando Magic",
+        "opponent": "Orlando Magic",
+        "venue": "Kia Center (Orlando, FL)",
+        "date": "Sunday, Nov 1, 2026 • 2:30 PM EST",
+        "network": "NBC Sports Boston"
+      },
+      "recent_games": "Oct 27: vs. BKN (W 125-124 OT); Oct 26: vs. CHI (W 134-99); Oct 23: vs. NYK (W 107-103); Oct 20: @ DET (L 121-113) — Record: 3-1"
     },
     "Texas Longhorns": {
       "team": "Texas Longhorns",
@@ -61,17 +63,17 @@
       "conference_league": "SEC",
       "home_venue": "Moody Center (Section 114)",
       "active_game": {
-        "matchup": "Texas Longhorns vs. Baylor Bears",
-        "opponent": "Baylor Bears",
+        "matchup": "Texas Longhorns vs. Houston Christian Huskies (Season Opener)",
+        "opponent": "Houston Christian Huskies",
         "is_home": true,
         "venue": "Moody Center (Austin, TX)",
         "section": "Section 114 (Thunder Row)",
-        "game_time": "Today • LIVE IN PROGRESS",
-        "score_state": "Tied 79–79 • 2nd Half 0:24",
-        "situation_code": "BB-02",
-        "situation_desc": "Clutch Free Throw Defensive Stop",
-        "network": "SEC Network / ESPN",
-        "status": "LIVE"
+        "game_time": "Monday, Nov 2, 2026 • 7:00 PM CST",
+        "score_state": "Season Opener Countdown • 4 Days to Tipoff • Moody Center Ready",
+        "situation_code": "BB-01",
+        "situation_desc": "Pre-Game Hype & Baseline Tipoff Focus",
+        "network": "SEC Network / ESPN+",
+        "status": "UPCOMING TIPOFF"
       },
       "upcoming_game": {
         "matchup": "Texas Longhorns vs. Texas A&M Aggies (Lone Star Showdown)",
@@ -79,7 +81,8 @@
         "venue": "Moody Center (Austin, TX)",
         "date": "Saturday, Nov 14, 2026 • 8:00 PM CST",
         "network": "ESPN"
-      }
+      },
+      "recent_games": "Preseason Countdown: 4 Days to Season Opener at Moody Center; Previous Rivalry vs. Baylor (W 79-76)"
     },
     "San Antonio Spurs": {
       "team": "San Antonio Spurs",
@@ -92,12 +95,12 @@
         "opponent": "Utah Jazz",
         "is_home": false,
         "venue": "Delta Center (Salt Lake City, UT)",
-        "section": "Section 114 (Baseline Thunder)",
+        "section": "Section 114 (Spurs Fandom Row)",
         "game_time": "Tonight • Wednesday, Oct 28, 2026 • 8:00 PM CDT",
-        "score_state": "Spurs 108, Jazz 107 • 4th Qtr 0:18",
+        "score_state": "Spurs 108, Jazz 106 • 4th Qtr 0:19.4",
         "situation_code": "BB-02",
-        "situation_desc": "Opponent Free Throw 2 (Wemby Rim Defense Window)",
-        "network": "Bally Sports SW / KJZZ / NBA TV",
+        "situation_desc": "Clutch Defensive Stop / Opponent Inbound",
+        "network": "Bally Sports SW / NBA League Pass",
         "status": "LIVE"
       },
       "upcoming_game": {
@@ -105,27 +108,28 @@
         "opponent": "Phoenix Suns",
         "venue": "Footprint Center (Phoenix, AZ)",
         "date": "Saturday, Oct 31, 2026 • 9:00 PM CDT",
-        "network": "Bally Sports SW / NBA League Pass"
-      }
+        "network": "NBA TV"
+      },
+      "recent_games": "Oct 24, 2026: vs. Houston Rockets (W 109–106)"
     },
     "UConn Huskies": {
       "team": "UConn Huskies",
       "sport": "Basketball",
       "level": "College Basketball (NCAA D1)",
       "conference_league": "Big East",
-      "home_venue": "Gampel Pavilion (Section 114)",
+      "home_venue": "Gampel Pavilion / XL Center (Section 114)",
       "active_game": {
-        "matchup": "UConn Huskies vs. Villanova Wildcats",
-        "opponent": "Villanova Wildcats",
+        "matchup": "UConn Huskies vs. Sacred Heart Pioneers (Season Opener)",
+        "opponent": "Sacred Heart Pioneers",
         "is_home": true,
-        "venue": "Gampel Pavilion (Storrs, CT)",
-        "section": "Section 114",
-        "game_time": "Today • LIVE IN PROGRESS",
-        "score_state": "Tied 82–82 • 2nd Half 0:30",
-        "situation_code": "BB-02",
-        "situation_desc": "Clutch Free Throw Defense",
-        "network": "FS1 / FOX",
-        "status": "LIVE"
+        "venue": "Harry A. Gampel Pavilion (Storrs, CT)",
+        "section": "Section 114 (Husky Crazies)",
+        "game_time": "Wednesday, Nov 4, 2026 • 7:00 PM EST",
+        "score_state": "Championship Banner Raising & Season Opener Tipoff",
+        "situation_code": "BB-01",
+        "situation_desc": "Pre-Game Banner Celebration & Baseline Tipoff",
+        "network": "FS1",
+        "status": "UPCOMING TIPOFF"
       },
       "upcoming_game": {
         "matchup": "UConn Huskies vs. Gonzaga Bulldogs",
@@ -133,37 +137,38 @@
         "venue": "Madison Square Garden (New York, NY)",
         "date": "Tuesday, Nov 17, 2026 • 9:00 PM EST",
         "network": "ESPN"
-      }
+      },
+      "recent_games": "Reigning National Champions Preseason Countdown"
     }
   },
   "Football": {
     "Michigan Wolverines": {
       "team": "Michigan Wolverines",
       "sport": "Football",
-      "level": "College Football (NCAA D1 FBS)",
+      "level": "College Football (NCAA FBS)",
       "conference_league": "Big Ten",
-      "home_venue": "Michigan Stadium 'The Big House' (Section 115)",
-      "recent_games": "Oct 17, 2026: Defeated Penn State 21–18 | Oct 24, 2026: vs. #4 Indiana (L 6-13 OT)",
+      "home_venue": "Michigan Stadium (Section 115)",
       "active_game": {
         "matchup": "Michigan Wolverines at Rutgers Scarlet Knights",
         "opponent": "Rutgers Scarlet Knights",
         "is_home": false,
         "venue": "SHI Stadium (Piscataway, NJ)",
-        "section": "Section 115 (Wolverines Visitors Section)",
+        "section": "Visiting Fan Section (Section 115 Loyalists)",
         "game_time": "Saturday, Oct 31, 2026 • 12:30 PM EST",
-        "score_state": "Michigan 24, Rutgers 23 • 4th Qtr 0:03",
+        "score_state": "Gameday Week 9 • Saturday 12:30 PM EST",
         "situation_code": "FB-02",
-        "situation_desc": "Visiting 48-Yard Field Goal Snap (12th Man Bleacher Wall)",
+        "situation_desc": "4th Down Defensive Stand / Clutch 48-Yard Field Goal Snap",
         "network": "Big Ten Network (BTN)",
-        "status": "LIVE"
+        "status": "ACTIVE GAMEDAY"
       },
       "upcoming_game": {
         "matchup": "Michigan Wolverines vs. Michigan State Spartans (Paul Bunyan Trophy)",
         "opponent": "Michigan State Spartans",
-        "venue": "Michigan Stadium 'The Big House' (Ann Arbor, MI)",
+        "venue": "Michigan Stadium (Ann Arbor, MI)",
         "date": "Saturday, Nov 7, 2026 • TBA",
-        "network": "CBS / Big Ten Network"
-      }
+        "network": "FOX / Big Ten Network"
+      },
+      "recent_games": "Oct 17, 2026: Defeated Penn State 21–18; Oct 24, 2026: vs. #4 Indiana (L 6-13 OT)"
     },
     "Green Bay Packers": {
       "team": "Green Bay Packers",
@@ -176,13 +181,13 @@
         "opponent": "Carolina Panthers",
         "is_home": true,
         "venue": "Lambeau Field (Green Bay, WI)",
-        "section": "Section 115 (South End Zone)",
+        "section": "Section 115 (End Zone Loyals)",
         "game_time": "Thursday, Oct 29, 2026 • 7:15 PM CDT (Week 8)",
-        "score_state": "Packers 21, Panthers 20 • 4th Qtr 0:03",
+        "score_state": "Tonight • Thursday Night Football 7:15 PM CDT",
         "situation_code": "FB-02",
-        "situation_desc": "Opponent 48-Yard Field Goal Snap (Lambeau Roar)",
-        "network": "Prime Video / Packers Radio Network",
-        "status": "LIVE"
+        "situation_desc": "Goal Line Defense / Clutch Field Goal Stand",
+        "network": "Prime Video (TNF) / FOX",
+        "status": "LIVE GAMEDAY"
       },
       "upcoming_game": {
         "matchup": "Green Bay Packers at New England Patriots",
@@ -190,34 +195,36 @@
         "venue": "Gillette Stadium (Foxborough, MA)",
         "date": "Sunday, Nov 8, 2026 • 4:25 PM EST",
         "network": "FOX"
-      }
+      },
+      "recent_games": "Week 7: Defeated Houston Texans 24–22 (Lambeau Field); Week 6: Defeated Arizona Cardinals 34–13"
     },
     "Texas Longhorns": {
       "team": "Texas Longhorns",
       "sport": "Football",
-      "level": "College Football (NCAA D1 FBS)",
+      "level": "College Football (NCAA FBS)",
       "conference_league": "SEC",
-      "home_venue": "DKR Texas Memorial Stadium (Section 115)",
+      "home_venue": "Darrell K Royal–Texas Memorial Stadium (Section 115)",
       "active_game": {
         "matchup": "Texas Longhorns vs. Mississippi State Bulldogs",
         "opponent": "Mississippi State Bulldogs",
         "is_home": true,
-        "venue": "DKR Texas Memorial Stadium (Austin, TX)",
-        "section": "Section 115 (South End Zone)",
+        "venue": "Darrell K Royal–Texas Memorial Stadium (Austin, TX)",
+        "section": "Section 115 (End Zone Loyals)",
         "game_time": "Saturday, Oct 31, 2026 • 6:30 PM CT",
-        "score_state": "Texas 27, Mississippi State 26 • 4th Qtr 0:03",
+        "score_state": "Gameday Week 9 • Saturday 6:30 PM CT",
         "situation_code": "FB-02",
-        "situation_desc": "Opponent 48-Yard FG Attempt (Ice the Kicker Snap)",
-        "network": "SEC Network / ABC",
-        "status": "LIVE"
+        "situation_desc": "Clutch Red Zone Stop / Goal Line Stand",
+        "network": "SEC Network / ESPN",
+        "status": "ACTIVE GAMEDAY"
       },
       "upcoming_game": {
         "matchup": "Texas Longhorns vs. Georgia Bulldogs",
         "opponent": "Georgia Bulldogs",
-        "venue": "DKR Texas Memorial Stadium (Austin, TX)",
+        "venue": "Darrell K Royal–Texas Memorial Stadium (Austin, TX)",
         "date": "Saturday, Nov 14, 2026 • 6:30 PM CST",
         "network": "ABC / ESPN"
-      }
+      },
+      "recent_games": "Oct 17, 2026: Defeated Kentucky 31–14; Oct 10, 2026: Red River Rivalry vs. Oklahoma (W 34–3)"
     },
     "Dallas Cowboys": {
       "team": "Dallas Cowboys",
@@ -230,13 +237,13 @@
         "opponent": "Arizona Cardinals",
         "is_home": true,
         "venue": "AT&T Stadium (Arlington, TX)",
-        "section": "Section 115 (End Zone Party Plaza)",
+        "section": "Section 115 (End Zone Loyals)",
         "game_time": "Sunday, Nov 1, 2026 • 1:00 PM EST (Week 8)",
-        "score_state": "Cowboys 28, Cardinals 27 • 4th Qtr 0:03",
+        "score_state": "Week 8 Gameday • Sunday 1:00 PM EST",
         "situation_code": "FB-02",
-        "situation_desc": "Visiting 48-Yard FG Snap (Acoustic Pressure)",
-        "network": "FOX / NFL Sunday Ticket",
-        "status": "LIVE"
+        "situation_desc": "Clutch 4th Down Stop / 48-Yard Field Goal Snap",
+        "network": "FOX",
+        "status": "ACTIVE GAMEDAY"
       },
       "upcoming_game": {
         "matchup": "Dallas Cowboys at Washington Commanders",
@@ -244,7 +251,8 @@
         "venue": "Northwest Stadium (Landover, MD)",
         "date": "Sunday, Nov 8, 2026 • 1:00 PM EST",
         "network": "FOX"
-      }
+      },
+      "recent_games": "Week 6: vs. Detroit Lions (L 9-47); Week 7: Bye Week"
     }
   }
 }

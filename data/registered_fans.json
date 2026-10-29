@@ -17,25 +17,19 @@
       "Michigan Wolverines",
       "Green Bay Packers"
     ],
-    "role": "Team Lead & Admin",
-    "tier": "Team Lead & Admin (Tier 5)",
+    "role": "Section Loyalist",
+    "tier": "Rookie Member (Tier 1)",
     "games": 1,
-    "career_db": "82.0 dB",
+    "career_db": "0.0 dB",
     "clutch_stops": 0,
     "unlocked_mentors_bb": [
-      "Marcus Vance",
-      "Jordan Lee",
-      "Elena Rostova",
-      "Devon Miller"
+      "Marcus Vance"
     ],
     "unlocked_mentors_fb": [
       "Sarah Jenkins"
     ],
-    "tailgates_attended": 2,
-    "meetup_rsvps": [
-      "plaza_rally_bb",
-      "campus_walk_bb"
-    ],
+    "tailgates_attended": 0,
+    "meetup_rsvps": [],
     "socials": {
       "x": "",
       "instagram": "",
@@ -53,18 +47,15 @@
       "pref_anonymize_biometrics": true,
       "retention": "Gameday Session Only (Zero Cloud Raw Storage)"
     },
-    "capstone_claimed_bb": true,
+    "capstone_claimed_bb": false,
     "capstone_claimed_fb": false,
-    "tailgates_attended_bb": 2,
+    "tailgates_attended_bb": 0,
     "tailgates_attended_fb": 0,
-    "meetup_rsvps_bb": [
-      "plaza_rally_bb",
-      "campus_walk_bb"
-    ],
+    "meetup_rsvps_bb": [],
     "meetup_rsvps_fb": [],
     "early_checkin_bb": true,
     "early_checkin_fb": false,
-    "chant_action_taken_bb": true,
+    "chant_action_taken_bb": false,
     "chant_action_taken_fb": false,
     "storycard_exported_bb": false,
     "storycard_exported_fb": false,
@@ -76,7 +67,7 @@
     "seat_fb": "Section 115, Row 18, Seat 10",
     "hash_bb": "0xROOKIE-sec114-8f7a2",
     "hash_fb": "0xROOKIE-sec115-8f7a2",
-    "synergy_score_bb": 95,
+    "synergy_score_bb": 85,
     "synergy_score_fb": 0,
     "synergy_claimed_bb": true,
     "synergy_claimed_fb": false
@@ -92,12 +83,12 @@
     "bb_level": "Both (NCAA D1 & NBA)",
     "fb_level": "Both (NCAA D1 & NFL)",
     "teams_bb": [
-      "Duke Blue Devils",
-      "Boston Celtics"
+      "Texas Longhorns",
+      "San Antonio Spurs"
     ],
     "teams_fb": [
-      "Michigan Wolverines",
-      "Green Bay Packers"
+      "Texas Longhorns",
+      "Dallas Cowboys"
     ],
     "role": "Student Section Director",
     "tier": "Section Director (Tier 4)",
@@ -144,14 +135,14 @@
     "bb_level": "Both (NCAA D1 & NBA)",
     "fb_level": "Both (NCAA D1 & NFL)",
     "teams_bb": [
-      "Duke Blue Devils",
-      "Boston Celtics"
+      "Texas Longhorns",
+      "San Antonio Spurs"
     ],
     "teams_fb": [
-      "Michigan Wolverines",
-      "Green Bay Packers"
+      "Texas Longhorns",
+      "Dallas Cowboys"
     ],
-    "role": "10-Year Season Ticket Holder",
+    "role": "10-Year Stadium Veteran",
     "tier": "Stadium Veteran (Tier 5)",
     "games": 62,
     "career_db": "6,850 dB",

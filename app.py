@@ -649,7 +649,7 @@ def _load_user_into_session(user_data, email):
     st.session_state.member_handle = user_data.get("handle", "@fan_rookie")
     st.session_state.member_hash = user_data.get("hash", "0xROOKIE-sec114-8f7a2")
     st.session_state.member_role = user_data.get("role", "Rookie Member")
-    st.session_state.member_tier = user_data.get("tier", "Rookie Member (Tier 1)")
+    st.session_state.member_tier = _sanitize_fan_tier(user_data.get("tier", "Rookie Member (Tier 1)"))
     st.session_state.member_seat = user_data.get("seat", "Section 114, Row 3, Seat 12")
     st.session_state.games_bb = user_data.get("games_bb", 1)
     st.session_state.games_fb = user_data.get("games_fb", 0)
@@ -784,6 +784,19 @@ def _get_active_matchup_info(sport: str, primary_team: str):
         }
     }
 
+
+
+def _sanitize_fan_tier(tier_str: str) -> str:
+    """Guarantees member tier reflects authentic fan community tiers, never internal project roles."""
+    if not tier_str or 'Team Lead' in tier_str or 'Admin' in tier_str:
+        return 'Rookie Member (Tier 1)'
+    return tier_str
+
+def _sanitize_fan_role(role_str: str) -> str:
+    """Guarantees member role reflects fan community role, never internal project roles."""
+    if not role_str or 'Team Lead' in role_str or 'Admin' in role_str:
+        return 'Section Loyalist'
+    return role_str
 
 def _clear_user_session_state():
     """Completely clears the active user's session state upon logout to prevent cross-account contamination."""
@@ -1215,6 +1228,13 @@ fixture_options = [
     "FB-02: Football 48-Yard FG Snap (Clutch)"
 ]
 
+# Handle pending sport change from Screen 1 before widget instantiation
+if "_pending_sport_change" in st.session_state:
+    pend_sp = st.session_state.pop("_pending_sport_change")
+    _set_active_sport(pend_sp)
+    st.session_state["active_fixture"] = "BB-01: Basketball Baseline (Free Throw 1)" if pend_sp == "Basketball" else "FB-02: Football 48-Yard FG Snap (Clutch)"
+    st.session_state["last_fixture"] = st.session_state["active_fixture"]
+
 # Ensure initial sport
 if "sport" not in st.session_state:
     st.session_state.sport = "Basketball"
@@ -1321,15 +1341,16 @@ chat_author_name = st.session_state.get("member_name", "Rookie Fan") if st.sessi
 chat_author_handle = st.session_state.get("member_handle", "@fan_rookie") if st.session_state.get("is_logged_in") else "@guest"
 
 chat_html = ""
-for cm in active_chat_list[-6:]:
+for cm in reversed(active_chat_list[-8:]):
     is_user_msg = (cm.get("sender") == chat_author_name)
     sender_color = "#42be65" if is_user_msg else "#0f62fe"
     chat_html += f"""<div style="margin-bottom: 6px; padding-bottom: 5px; border-bottom: 1px solid #222;">
 <span style="color:{sender_color}; font-weight:bold; font-size:8pt;">{cm.get('sender', '')}</span> <span style="color:#777; font-size:7pt;">{cm.get('handle', '')} &bull; {cm.get('time', '')}</span><br/>
-<span style="color:#f4f4f4; font-size:8pt;">{cm.get('msg', '')}</span></div>"""
+<span style="color:#f4f4f4; font-size:8.5pt;">{cm.get('msg', '')}</span></div>"""
 
 st.sidebar.markdown(f"""
-<div style="background-color: #11141c; border: 1px solid #2a3345; border-radius: 8px; padding: 8px 10px; max-height: 180px; overflow-y: auto; margin-bottom: 8px;">
+<div style="background-color: #11141c; border: 1px solid #2a3345; border-radius: 8px; padding: 8px 10px; max-height: 220px; overflow-y: auto; margin-bottom: 8px;">
+    <div style="font-size:7pt; color:#42be65; margin-bottom:4px; font-weight:bold; letter-spacing:1px;">⚡ LATEST CALLOUTS FIRST</div>
     {chat_html}
 </div>
 """, unsafe_allow_html=True)
@@ -1921,9 +1942,7 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
             )
             new_sport_clean = "Basketball" if "Basketball" in picked_sport_radio else "Football"
             if new_sport_clean != st.session_state.sport:
-                _set_active_sport(new_sport_clean)
-                st.session_state.active_fixture = "BB-01: Basketball Baseline (Free Throw 1)" if new_sport_clean == "Basketball" else "FB-02: Football 48-Yard FG Snap (Clutch)"
-                st.session_state.last_fixture = st.session_state.active_fixture
+                st.session_state["_pending_sport_change"] = new_sport_clean
                 st.rerun()
 
             # Render SPORT-ISOLATED team list
@@ -3416,7 +3435,7 @@ elif screen == "📊 Screen 4: Narrative Delta & Story Card":
         <div style="background-color: #111622; padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #0f62fe55; text-align: left;">
             <p style="color: #f1c21b; font-size: 8.5pt; margin: 0; font-weight: bold; text-transform: uppercase;">VERIFIED FAN CERTIFICATE</p>
             <p style="color: #ffffff; font-size: 11pt; margin: 2px 0; font-weight: bold;">{st.session_state.member_name} <code style="color:#0f62fe;">{st.session_state.member_handle}</code></p>
-            <p style="color: #a8a8a8; font-size: 8.5pt; margin: 0;">Passport Hash: <code>{st.session_state.member_hash}</code> &bull; Tier: <b>{st.session_state.member_tier}</b></p>
+            <p style="color: #a8a8a8; font-size: 8.5pt; margin: 0;">Passport Hash: <code>{st.session_state.member_hash}</code> &bull; Tier: <b>{_sanitize_fan_tier(st.session_state.member_tier)}</b></p>
             <p style="color: #42be65; font-size: 8.5pt; margin: 2px 0 0 0;">Proof ID: <code>0xPRF-{st.session_state.sport[:2].upper()}-{int(current_cmi)}-{st.session_state.member_hash[2:6].upper()}</code></p>
         </div>
         <p style="color: #f4f4f4; font-size: 10.5pt; margin: 4px 0;">Sport: <b>{st.session_state.sport} ({role_tag})</b></p>
