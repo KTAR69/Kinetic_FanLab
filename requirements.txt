@@ -1,8 +1,8 @@
 # Kinetic FanLab — Core Runtime & Enterprise Testing Dependencies
 # Track 3: Fan-Centric Sports & Entertainment (IBM SkillsBuild AI Experiential Learning Lab)
 
-streamlit>=1.35.0
-ibm-watsonx-ai>=1.1.0
+streamlit>=1.37.0
+ibm-watsonx-ai>=1.1.2,<2.0.0
 pyyaml>=6.0.1
 python-dotenv>=1.0.1
 pydantic>=2.7.0

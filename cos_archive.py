@@ -19,11 +19,23 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-COS_ENDPOINT = os.getenv(
+def _secret(key: str, default: str = "") -> str:
+    """Read a credential from st.secrets (Streamlit Cloud) with os.getenv fallback."""
+    try:
+        import streamlit as st
+        val = st.secrets.get(key)
+        if val:
+            return str(val)
+    except Exception:
+        pass
+    return os.getenv(key, default)
+
+COS_ENDPOINT = _secret(
     "COS_ENDPOINT", "https://s3.us-south.cloud-object-storage.appdomain.cloud"
 )
-COS_APIKEY = os.getenv("COS_APIKEY")
-COS_BUCKET = os.getenv("COS_BUCKET", "kinetic-fanlab-archive")
+COS_APIKEY = _secret("COS_APIKEY")
+# secrets.toml.example uses COS_BUCKET_NAME; also accept COS_BUCKET for .env compatibility
+COS_BUCKET = _secret("COS_BUCKET_NAME") or _secret("COS_BUCKET", "kinetic-fanlab-archive")
 LOCAL_ARCHIVE_DIR = "cos_archive_store"
 
 

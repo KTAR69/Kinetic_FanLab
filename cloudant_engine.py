@@ -21,9 +21,20 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-CLOUDANT_URL = os.getenv("CLOUDANT_URL")
-CLOUDANT_APIKEY = os.getenv("CLOUDANT_APIKEY")
-DB_NAME = os.getenv("CLOUDANT_DB_NAME", "kinetic_fanlab_db")
+def _secret(key: str, default: str = "") -> str:
+    """Read a credential from st.secrets (Streamlit Cloud) with os.getenv fallback."""
+    try:
+        import streamlit as st
+        val = st.secrets.get(key)
+        if val:
+            return str(val)
+    except Exception:
+        pass
+    return os.getenv(key, default)
+
+CLOUDANT_URL = _secret("CLOUDANT_URL")
+CLOUDANT_APIKEY = _secret("CLOUDANT_APIKEY")
+DB_NAME = _secret("CLOUDANT_DB_NAME", "kinetic_fanlab_db")
 CACHE_FILE = "cloudant_engine_cache.json"
 
 _lock = threading.Lock()

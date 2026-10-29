@@ -23,11 +23,23 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-API_KEY = os.getenv("WO_API_KEY")
-PROJECT_ID = os.getenv("WATSONX_PROJECT_ID", "7be4956c-c4e8-4775-8559-f076dda7cfea")
-URL = os.getenv("WATSONX_URL", "https://us-south.ml.cloud.ibm.com")
-MODEL_ID = os.getenv("WATSONX_MODEL_ID", "ibm/granite-4-h-small")
-VERBOSE_LOG = os.getenv("WATSONX_VERBOSE", "0") == "1"
+def _secret(key: str, default: str = "") -> str:
+    """Read a credential from st.secrets (Streamlit Cloud) with os.getenv fallback."""
+    try:
+        import streamlit as st
+        val = st.secrets.get(key)
+        if val:
+            return str(val)
+    except Exception:
+        pass
+    return os.getenv(key, default)
+
+# watsonx.live uses WO_API_KEY locally; Streamlit Cloud uses WATSONX_APIKEY (per secrets.toml.example)
+API_KEY = _secret("WO_API_KEY") or _secret("WATSONX_APIKEY")
+PROJECT_ID = _secret("WATSONX_PROJECT_ID", "7be4956c-c4e8-4775-8559-f076dda7cfea")
+URL = _secret("WATSONX_URL", "https://us-south.ml.cloud.ibm.com")
+MODEL_ID = _secret("WATSONX_MODEL_ID", "ibm/granite-4-h-small")
+VERBOSE_LOG = _secret("WATSONX_VERBOSE", "0") == "1"
 
 
 def get_watsonx_engine_status() -> Dict[str, Any]:

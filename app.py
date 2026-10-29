@@ -44,6 +44,15 @@ except Exception:
     def evaluate_fan_content_safety(raw_text: str) -> dict:
         return {"input_text": raw_text, "guardrail_status": "APPROVED", "violations": [], "action": "Proceed"}
 
+try:
+    from governance_factsheet import log_inference_event, publish_governance_factsheet
+    FACTSHEET_LIVE = True
+except Exception:
+    FACTSHEET_LIVE = False
+    def log_inference_event(*args, **kwargs): pass  # type: ignore[misc]
+    def publish_governance_factsheet() -> dict:  # type: ignore[misc]
+        return {"source": "DISABLED", "status": "UNAVAILABLE"}
+
 # Import IBM Cloud services (graceful fallback included inside each module)
 try:
     import cloud_storage
@@ -291,6 +300,13 @@ def _generate_npc_chat_reply(user_msg: str, author_handle: str, sport: str) -> d
                 # Strip any spurious leading/trailing whitespace or role-echo from Granite
                 if granite_reply:
                     granite_reply = granite_reply.strip().lstrip(f"{tagged_npc}:").strip()
+                    # Item 4: log NPC Granite inference to watsonx.governance lineage trail
+                    log_inference_event(
+                        model_id="ibm/granite-4-h-small",
+                        inference_type="npc_reply",
+                        input_text=user_msg,
+                        output_value=granite_reply,
+                    )
             except Exception:
                 granite_reply = None  # silently fall back to keyword reply
 
@@ -1324,6 +1340,24 @@ fixture_options = [
     "FB-02: Football 48-Yard FG Snap (Clutch)"
 ]
 
+# Item 5: IBM App ID — handle OAuth2 callback at the very top of every run
+try:
+    from ibm_appid_auth import handle_oauth_callback, is_appid_enabled
+    _APPID_ENABLED = is_appid_enabled()
+    _appid_identity = handle_oauth_callback()
+    if _appid_identity and not st.session_state.get("is_logged_in"):
+        # Map IBMid claims into session state and auto-log the fan in
+        st.session_state.member_name = _appid_identity["member_name"]
+        st.session_state.member_handle = _appid_identity["member_handle"]
+        st.session_state.member_email = _appid_identity["member_email"]
+        st.session_state.member_hash = _appid_identity["member_hash"]
+        st.session_state.member_tier = "Rookie Member (Tier 1)"
+        st.session_state.is_logged_in = True
+        st.session_state.auth_provider = "IBM_APP_ID"
+        st.toast(f"✅ Signed in via IBMid as **{_appid_identity['member_name']}**!")
+except Exception:
+    _APPID_ENABLED = False
+
 # Handle pending sport change from Screen 1 before widget instantiation
 if "_pending_sport_change" in st.session_state:
     pend_sp = st.session_state.pop("_pending_sport_change")
@@ -1813,6 +1847,12 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
         with auth_tab_login:
             st.subheader("🔑 Member Sign In with Email & Password")
             st.caption("Sign in to your registered account with your verified email and password.")
+
+            # Item 5: IBM App ID SSO button — only renders when credentials are configured
+            if _APPID_ENABLED:
+                from ibm_appid_auth import render_appid_login_button
+                render_appid_login_button()
+                st.markdown("<p style='color:#8d8d8d;font-size:11px;margin:4px 0 10px 0;'>or sign in with your local account below</p>", unsafe_allow_html=True)
 
             with st.form(key="member_login_form"):
                 login_email = st.text_input("Registered Email Address", value="", placeholder="e.g., fan@gmail.com")
@@ -2779,8 +2819,8 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                     m_col3.metric("Cloudant Sync Status", "🟢 Connected & Live")
                     m_col4.metric("Milestone Target", "By Nov 6th (Ready)")
 
-                    # Action Buttons: Export CSV, Export JSON, Seed Personas
-                    act_col1, act_col2, act_col3 = st.columns(3)
+                    # Action Buttons: Export CSV, Export JSON, Seed Personas, Publish Factsheet
+                    act_col1, act_col2, act_col3, act_col4 = st.columns(4)
                     with act_col1:
                         fb_json_str = json.dumps(all_fb, indent=2)
                         st.download_button(
@@ -2830,6 +2870,15 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                                 )
                             st.toast("✅ Seeded 8 verified member profiles into Cloudant!")
                             st.rerun()
+                    with act_col4:
+                        if st.button("📊 Publish AI Factsheet", key="btn_publish_factsheet", use_container_width=True,
+                                     help="Publish governance factsheet (DIR, guardrail stats) to IBM watsonx.governance dashboard"):
+                            with st.spinner("Publishing to IBM watsonx.governance..."):
+                                _fs_result = publish_governance_factsheet()
+                            if _fs_result.get("status") == "PUBLISHED":
+                                st.toast(f"✅ Factsheet published! ID: `{_fs_result.get('factsheet_id')}`")
+                            else:
+                                st.toast(f"📁 Factsheet logged locally ({_fs_result.get('log_path', 'governance_factsheet_log.json')})")
 
                     st.markdown("---")
                     st.markdown("#### 📋 Live Feedback Stream from IBM Cloudant")
@@ -3494,6 +3543,14 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
                         u_score = analyze_vocal_urgency_live(user_in)
                     st.session_state.last_vu_call_time = _now_vu
                     st.session_state.last_vu_score = u_score
+                    # Item 4: log every live VU call to IBM watsonx.governance lineage trail
+                    log_inference_event(
+                        model_id="ibm/granite-4-h-small",
+                        inference_type="vocal_urgency",
+                        input_text=user_in,
+                        output_value=u_score,
+                        guardrail_status=gov.get("guardrail_status", "APPROVED"),
+                    )
                 else:
                     u_score = st.session_state.get("last_vu_score", 0.85)
                 _handle_armchair_callout(user_in.strip(), u_score)
