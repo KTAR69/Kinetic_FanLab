@@ -14,6 +14,7 @@ import hashlib
 import time
 import os
 import sys
+from typing import Any
 
 # Ensure local directory is in path for imports
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -44,32 +45,28 @@ except Exception:
     def evaluate_fan_content_safety(raw_text: str) -> dict:
         return {"input_text": raw_text, "guardrail_status": "APPROVED", "violations": [], "action": "Proceed"}
 
+log_inference_event: Any = None
+publish_governance_factsheet: Any = None
+
 try:
-    from governance_factsheet import log_inference_event, publish_governance_factsheet
+    import watsonx_governance_factsheet as _wgf
+    log_inference_event = _wgf.log_inference_event
+    publish_governance_factsheet = _wgf.publish_governance_factsheet
     FACTSHEET_LIVE = True
 except Exception:
     try:
-        import importlib.util
-        _gf_path = os.path.join(current_dir, "governance_factsheet.py")
-        if os.path.exists(_gf_path):
-            _gf_spec = importlib.util.spec_from_file_location("governance_factsheet", _gf_path)
-            if _gf_spec is not None and _gf_spec.loader is not None:
-                _gf_mod = importlib.util.module_from_spec(_gf_spec)
-                _gf_spec.loader.exec_module(_gf_mod)
-                log_inference_event = _gf_mod.log_inference_event
-                publish_governance_factsheet = _gf_mod.publish_governance_factsheet
-                FACTSHEET_LIVE = True
-            else:
-                FACTSHEET_LIVE = False
-        else:
-            FACTSHEET_LIVE = False
+        import governance_factsheet as _gf
+        log_inference_event = _gf.log_inference_event
+        publish_governance_factsheet = _gf.publish_governance_factsheet
+        FACTSHEET_LIVE = True
     except Exception:
         FACTSHEET_LIVE = False
-
-    if not FACTSHEET_LIVE:
-        def log_inference_event(*args, **kwargs): pass  # type: ignore[misc]
-        def publish_governance_factsheet() -> dict:  # type: ignore[misc]
+        def _fallback_log_inference_event(*args: Any, **kwargs: Any) -> Any:
+            return {}
+        def _fallback_publish_governance_factsheet(*args: Any, **kwargs: Any) -> Any:
             return {"source": "DISABLED", "status": "UNAVAILABLE"}
+        log_inference_event = _fallback_log_inference_event
+        publish_governance_factsheet = _fallback_publish_governance_factsheet
 
 # Import IBM Cloud services (graceful fallback included inside each module)
 try:
