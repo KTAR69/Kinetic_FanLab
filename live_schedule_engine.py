@@ -10,12 +10,12 @@ Eliminates manual schedule maintenance through a 3-tier autonomous architecture:
 """
 
 import os
+import functools
 import json
 import time
 import datetime as dt
 import urllib.request
 import urllib.error
-import threading
 from typing import Dict, Any, List, Optional, Tuple
 
 _BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -31,6 +31,7 @@ TEAM_CODE_MAP: Dict[str, Dict[str, Any]] = {
     "Dallas Cowboys": {"sport": "football", "league": "nfl", "espn_id": "6", "conf": "NFC East"},
 }
 
+import threading
 _LIVE_CACHE_LOCK = threading.Lock()
 _LIVE_CACHE: Dict[str, Tuple[float, Dict[str, Any]]] = {}
 
@@ -57,11 +58,13 @@ def fetch_live_scores_espn(sport: str, primary_team: str, timeout_sec: float = 1
         with urllib.request.urlopen(req, timeout=timeout_sec) as resp:
             data = json.loads(resp.read().decode("utf-8"))
             with _LIVE_CACHE_LOCK:
-                _LIVE_CACHE[cache_key] = (now_ts, data)
+                if cache_key not in _LIVE_CACHE or (time.time() - _LIVE_CACHE[cache_key][0] >= 300):
+                    _LIVE_CACHE[cache_key] = (now_ts, data)
             return data
     except Exception:
         return None
 
+@functools.lru_cache(maxsize=256)
 def parse_game_date(date_str: str) -> Optional[dt.date]:
     """Parses various gameday date strings into a standard dt.date object."""
     if not date_str:
@@ -70,10 +73,7 @@ def parse_game_date(date_str: str) -> Optional[dt.date]:
     if "," in cleaned and len(cleaned.split(",")) > 2:
         cleaned = ",".join(cleaned.split(",")[1:]).strip()
     
-    formats = [
-        "%b %d, %Y", "%B %d, %Y", "%Y-%m-%d", "%m/%d/%Y",
-        "%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%dT%H:%M:%S"
-    ]
+    formats = ["%b %d, %Y", "%B %d, %Y", "%Y-%m-%d", "%m/%d/%Y", "%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%dT%H:%M:%S"]
     for fmt in formats:
         try:
             return dt.datetime.strptime(cleaned, fmt).date()
@@ -203,12 +203,12 @@ def resolve_dynamic_team_matchup(
         time_or_res = active_sched_item.get("result", active_sched_item.get("time", "TBA"))
         
         if not future_games and not today_games and completed_games:
-            status_tag = f"SEASON COMPLETE • Last: {game_date_str}"
+            status_tag = f"SEASON COMPLETE &bull; Last: {game_date_str}"
         elif is_game_today:
             status_tag = "ACTIVE GAMEDAY TONIGHT"
         else:
             status_tag = f"UPCOMING ({game_date_str})"
-            
+
         matchup_title = f"{primary_team} {'vs.' if is_home else 'at'} {opp_clean}"
 
         team_entry["active_game"] = {

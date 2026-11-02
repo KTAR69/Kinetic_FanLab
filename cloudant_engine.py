@@ -38,50 +38,60 @@ class CloudantEngineClient:
     def __init__(self):
         self.client = None
         self.is_connected = False
+        self._mem_cache = None
         self._init_connection()
         self._init_local_cache()
         if self.is_connected:
             self._flush_uncommitted_queue()
 
     def _flush_uncommitted_queue(self):
-        """Flushes any offline-queued operations to live IBM Cloudant when reconnected."""
+        """Flushes any offline-queued operations to live IBM Cloudant with decoupled 3-phase lock release."""
         if not self.is_connected or not self.client:
             return
+        
+        # Phase 1: Read queue and snapshot documents under lock, then immediately release
         with _lock:
             cache = self._read_cache()
-            queue = cache.get("uncommitted_queue", [])
+            queue = list(cache.get("uncommitted_queue", []))
             if not queue:
                 return
             
-            remaining = []
+            docs_map = {}
             for item in queue:
+                op = item.get("op")
+                doc_id = item.get("id")
+                if op == "save_passport":
+                    for p in cache.get("fan_passports", {}).values():
+                        if p.get("_id") == doc_id:
+                            docs_map[doc_id] = p
+                            break
+                elif op == "save_feedback":
+                    for fb in cache.get("tester_feedback", []):
+                        if fb.get("_id") == doc_id:
+                            docs_map[doc_id] = fb
+                            break
+                elif op == "save_voucher":
+                    for vch in cache.get("sponsor_vouchers", []):
+                        if vch.get("_id") == doc_id:
+                            docs_map[doc_id] = vch
+                            break
+
+        # Phase 2: Perform network I/O OUTSIDE lock so other threads are never blocked
+        remaining = []
+        for item in queue:
+            doc_id = item.get("id")
+            doc_to_post = docs_map.get(doc_id)
+            if doc_to_post:
                 try:
-                    op = item.get("op")
-                    doc_id = item.get("id")
-                    doc_to_post = None
-                    if op == "save_passport":
-                        for p in cache.get("fan_passports", {}).values():
-                            if p.get("_id") == doc_id:
-                                doc_to_post = p
-                                break
-                    elif op == "save_feedback":
-                        for fb in cache.get("tester_feedback", []):
-                            if fb.get("_id") == doc_id:
-                                doc_to_post = fb
-                                break
-                    elif op == "save_voucher":
-                        for vch in cache.get("sponsor_vouchers", []):
-                            if vch.get("_id") == doc_id:
-                                doc_to_post = vch
-                                break
-                    
-                    if doc_to_post:
-                        self.client.post_document(db=DB_NAME, document=doc_to_post)
+                    self.client.post_document(db=DB_NAME, document=doc_to_post)
                 except Exception:
                     remaining.append(item)
-            
-            cache["uncommitted_queue"] = remaining
-            self._write_cache(cache)
+
+        # Phase 3: Update uncommitted queue under lock
+        with _lock:
+            fresh_cache = self._read_cache()
+            fresh_cache["uncommitted_queue"] = remaining
+            self._write_cache(fresh_cache)
 
     def _init_connection(self):
         if not CLOUDANT_URL or not CLOUDANT_APIKEY:
@@ -94,6 +104,16 @@ class CloudantEngineClient:
             self.client = CloudantV1(authenticator=authenticator)
             self.client.set_service_url(CLOUDANT_URL)
             self.is_connected = True
+            try:
+                self.client.post_index(
+                    db=DB_NAME,
+                    index={"fields": ["type"]},
+                    ddoc="kfl-type-idx",
+                    name="by-type",
+                    type="json"
+                )
+            except Exception:
+                pass
         except Exception:
             self.is_connected = False
 
@@ -113,6 +133,8 @@ class CloudantEngineClient:
 
     def _read_cache(self) -> Dict[str, Any]:
         with _lock:
+            if getattr(self, "_mem_cache", None) is not None:
+                return self._mem_cache
             try:
                 with open(CACHE_FILE, "r", encoding="utf-8") as f:
                     data = json.load(f)
@@ -120,9 +142,10 @@ class CloudantEngineClient:
                         data["tester_feedback"] = []
                     if "sponsor_vouchers" not in data:
                         data["sponsor_vouchers"] = []
+                    self._mem_cache = data
                     return data
             except Exception:
-                return {
+                self._mem_cache = {
                     "fan_passports": {},
                     "cmi_telemetry": [],
                     "storycards": [],
@@ -130,11 +153,13 @@ class CloudantEngineClient:
                     "sponsor_vouchers": [],
                     "uncommitted_queue": []
                 }
+                return self._mem_cache
 
     def _write_cache(self, data: Dict[str, Any]):
         with _lock:
+            self._mem_cache = data
             with open(CACHE_FILE, "w", encoding="utf-8") as f:
-                json.dump(data, f, indent=2)
+                json.dump(data, f)
 
     # --- DOCUMENT REPOSITORY METHODS ---
 
@@ -165,18 +190,10 @@ class CloudantEngineClient:
             "updated_at": time.time()
         }
 
-        with _lock:
-            cache = self._read_cache()
-            cache["fan_passports"][member_hash] = doc
-            cache["uncommitted_queue"].append({"op": "save_passport", "id": doc_id, "timestamp": time.time()})
-            self._write_cache(cache)
-
-        if self.is_connected and self.client:
-            try:
-                self.client.post_document(db=DB_NAME, document=doc).get_result()
-                return {"status": "SUCCESS", "source": "CLOUDANT_LIVE"}
-            except Exception:
-                pass
+        cache = self._read_cache()
+        cache["fan_passports"][member_hash] = doc
+        cache["uncommitted_queue"].append({"op": "save_passport", "id": doc_id, "timestamp": time.time()})
+        self._write_cache(cache)
 
         return {"status": "SUCCESS", "doc_id": doc_id, "source": "LOCAL_CACHE"}
 
@@ -211,12 +228,11 @@ class CloudantEngineClient:
             "timestamp": time.time()
         }
 
-        with _lock:
-            cache = self._read_cache()
-            cache["cmi_telemetry"].append(doc)
-            if len(cache["cmi_telemetry"]) > 200:
-                cache["cmi_telemetry"] = cache["cmi_telemetry"][-200:]
-            self._write_cache(cache)
+        cache = self._read_cache()
+        cache["cmi_telemetry"].append(doc)
+        if len(cache["cmi_telemetry"]) > 200:
+            cache["cmi_telemetry"] = cache["cmi_telemetry"][-200:]
+        self._write_cache(cache)
 
         return {"status": "SUCCESS", "doc_id": doc_id, "cmi": cmi}
 
@@ -246,10 +262,9 @@ class CloudantEngineClient:
             "timestamp": time.time()
         }
 
-        with _lock:
-            cache = self._read_cache()
-            cache["storycards"].append(doc)
-            self._write_cache(cache)
+        cache = self._read_cache()
+        cache["storycards"].append(doc)
+        self._write_cache(cache)
 
         return {"status": "SUCCESS", "doc_id": doc_id, "headline": headline}
 
@@ -287,26 +302,30 @@ class CloudantEngineClient:
             "formatted_time": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         }
 
-        with _lock:
-            cache = self._read_cache()
-            cache["tester_feedback"].append(doc)
-            cache["uncommitted_queue"].append({"op": "save_feedback", "id": doc_id, "timestamp": time.time()})
-            self._write_cache(cache)
+        # 1. Update in-memory & CACHE_FILE
+        cache = self._read_cache()
+        if "tester_feedback" not in cache:
+            cache["tester_feedback"] = []
+        cache["tester_feedback"].append(doc)
+        cache["uncommitted_queue"].append({"op": "save_feedback", "id": doc_id, "timestamp": time.time()})
+        self._write_cache(cache)
 
-            try:
-                os.makedirs(os.path.dirname(FEEDBACK_FILE), exist_ok=True)
+        # 2. Persist to FEEDBACK_FILE (data/member_feedback.json)
+        try:
+            os.makedirs(os.path.dirname(FEEDBACK_FILE), exist_ok=True)
+            existing_fb = []
+            if os.path.exists(FEEDBACK_FILE):
+                with open(FEEDBACK_FILE, "r", encoding="utf-8") as f:
+                    existing_fb = json.load(f)
+            if not isinstance(existing_fb, list):
                 existing_fb = []
-                if os.path.exists(FEEDBACK_FILE):
-                    with open(FEEDBACK_FILE, "r", encoding="utf-8") as f:
-                        existing_fb = json.load(f)
-                if not isinstance(existing_fb, list):
-                    existing_fb = []
-                existing_fb.append(doc)
-                with open(FEEDBACK_FILE, "w", encoding="utf-8") as f:
-                    json.dump(existing_fb, f, indent=2)
-            except Exception as _fe:
-                print(f"[save_tester_feedback] warning saving to FEEDBACK_FILE: {_fe}")
+            existing_fb.append(doc)
+            with open(FEEDBACK_FILE, "w", encoding="utf-8") as f:
+                json.dump(existing_fb, f, indent=2)
+        except Exception as _fe:
+            print(f"[save_tester_feedback] warning saving to FEEDBACK_FILE: {_fe}")
 
+        # 3. Commit to live IBM Cloudant if connected
         if self.is_connected and self.client:
             try:
                 self.client.post_document(db=DB_NAME, document=doc).get_result()
@@ -321,6 +340,7 @@ class CloudantEngineClient:
         records = []
         seen_ids = set()
 
+        # 1. Read from persistent FEEDBACK_FILE (data/member_feedback.json)
         if os.path.exists(FEEDBACK_FILE):
             try:
                 with open(FEEDBACK_FILE, "r", encoding="utf-8") as f:
@@ -333,12 +353,14 @@ class CloudantEngineClient:
             except Exception:
                 pass
 
+        # 2. Read from CACHE_FILE (cloudant_engine_cache.json)
         cache = self._read_cache()
         for d in cache.get("tester_feedback", []):
             if isinstance(d, dict) and d.get("_id") and d["_id"] not in seen_ids:
                 seen_ids.add(d["_id"])
                 records.append(d)
 
+        # 3. Query live IBM Cloudant if available
         if self.is_connected and self.client:
             try:
                 cloud_res = self.client.post_find(
@@ -382,6 +404,7 @@ class CloudantEngineClient:
             "integrity_sha256": hashlib.sha256(salt.encode("utf-8")).hexdigest()
         }
 
+        # 1. Post to live Cloudant if connected
         cloud_success = False
         cloud_res = None
         if self.is_connected and self.client:
@@ -391,6 +414,7 @@ class CloudantEngineClient:
             except Exception:
                 cloud_success = False
 
+        # 2. Atomic update to memory cache, queue, and persistent disk under lock
         with _lock:
             cache = self._read_cache()
             if "sponsor_vouchers" not in cache:
@@ -411,22 +435,33 @@ class CloudantEngineClient:
                     "id": doc_id,
                     "timestamp": time.time()
                 })
+            # Rolling cap: prevent unbounded offline queue and voucher cache bloat
+            if len(cache.get("uncommitted_queue", [])) > 500:
+                cache["uncommitted_queue"] = cache["uncommitted_queue"][-500:]
+            if len(cache.get("sponsor_vouchers", [])) > 500:
+                cache["sponsor_vouchers"] = cache["sponsor_vouchers"][-500:]
 
             self._write_cache(cache)
 
+            # Write to persistent disk data/claimed_vouchers.json
             vch_disk_path = os.path.join(_BASE_DIR, "data", "claimed_vouchers.json")
             try:
                 os.makedirs(os.path.dirname(vch_disk_path), exist_ok=True)
-                v_list = []
-                if os.path.exists(vch_disk_path):
-                    with open(vch_disk_path, "r", encoding="utf-8") as f:
-                        v_list = json.load(f)
-                        if not isinstance(v_list, list):
+                if getattr(self, "_mem_vouchers", None) is None:
+                    v_list = []
+                    if os.path.exists(vch_disk_path):
+                        try:
+                            with open(vch_disk_path, "r", encoding="utf-8") as f:
+                                v_list = json.load(f)
+                                if not isinstance(v_list, list):
+                                    v_list = []
+                        except Exception:
                             v_list = []
-                v_list = [v for v in v_list if v.get("claim_hash") != v_hash]
-                v_list.append(doc)
+                    self._mem_vouchers = v_list
+                self._mem_vouchers = [v for v in self._mem_vouchers if v.get("claim_hash") != v_hash]
+                self._mem_vouchers.append(doc)
                 with open(vch_disk_path, "w", encoding="utf-8") as f:
-                    json.dump(v_list, f, indent=2)
+                    json.dump(self._mem_vouchers, f)
             except Exception:
                 pass
 
@@ -451,18 +486,24 @@ class CloudantEngineClient:
         seen_hashes = set()
 
         with _lock:
-            vch_disk_path = os.path.join(_BASE_DIR, "data", "claimed_vouchers.json")
-            if os.path.exists(vch_disk_path):
-                try:
-                    with open(vch_disk_path, "r", encoding="utf-8") as f:
-                        v_docs = json.load(f)
-                        if isinstance(v_docs, list):
-                            for d in v_docs:
-                                if isinstance(d, dict) and d.get("claim_hash") and d["claim_hash"] not in seen_hashes:
-                                    seen_hashes.add(d["claim_hash"])
-                                    records.append(d)
-                except Exception:
-                    pass
+            if getattr(self, "_mem_vouchers", None) is not None:
+                for d in self._mem_vouchers:
+                    if isinstance(d, dict) and d.get("claim_hash") and d["claim_hash"] not in seen_hashes:
+                        seen_hashes.add(d["claim_hash"])
+                        records.append(d)
+            else:
+                vch_disk_path = os.path.join(_BASE_DIR, "data", "claimed_vouchers.json")
+                if os.path.exists(vch_disk_path):
+                    try:
+                        with open(vch_disk_path, "r", encoding="utf-8") as f:
+                            v_docs = json.load(f)
+                            if isinstance(v_docs, list):
+                                for d in v_docs:
+                                    if isinstance(d, dict) and d.get("claim_hash") and d["claim_hash"] not in seen_hashes:
+                                        seen_hashes.add(d["claim_hash"])
+                                        records.append(d)
+                    except Exception:
+                        pass
 
             cache = self._read_cache()
             for d in cache.get("sponsor_vouchers", []):

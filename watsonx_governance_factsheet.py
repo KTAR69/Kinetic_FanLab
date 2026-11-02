@@ -50,15 +50,20 @@ _INFERENCE_LOGS: List[Dict[str, Any]] = []
 
 def log_inference_event(
     model_id: str,
-    prompt_tokens: int,
-    completion_tokens: int,
-    latency_ms: float,
+    prompt_tokens: int = 0,
+    completion_tokens: int = 0,
+    latency_ms: float = 0.0,
     guardrail_status: str = "APPROVED",
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: Optional[Dict[str, Any]] = None,
+    **kwargs: Any
 ) -> Dict[str, Any]:
     """Records an immutable model inference event for watsonx governance auditing."""
     event_id = f"inf-{int(time.time() * 1000)}-{uuid.uuid4().hex[:6]}"
     compute_cost = round((prompt_tokens * 0.0000015) + (completion_tokens * 0.0000020), 6)
+    if metadata is None:
+        metadata = {}
+    if kwargs:
+        metadata.update(kwargs)
     
     entry = {
         "event_id": event_id,
@@ -70,12 +75,12 @@ def log_inference_event(
         "latency_ms": round(latency_ms, 2),
         "compute_cost_usd": compute_cost,
         "guardrail_status": guardrail_status,
-        "metadata": metadata or {}
+        "metadata": metadata
     }
     
     _INFERENCE_LOGS.append(entry)
     
-    # Persist to disk
+    # Persist to disk with rolling 1000-entry cap
     try:
         os.makedirs(os.path.dirname(FACTSHEET_LOG_PATH), exist_ok=True)
         disk_logs = []
@@ -85,6 +90,8 @@ def log_inference_event(
                 if not isinstance(disk_logs, list):
                     disk_logs = []
         disk_logs.append(entry)
+        if len(disk_logs) > 1000:
+            disk_logs = disk_logs[-1000:]
         with open(FACTSHEET_LOG_PATH, "w", encoding="utf-8") as f:
             json.dump(disk_logs, f, indent=2)
     except Exception:
