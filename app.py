@@ -579,22 +579,52 @@ def _load_fans_db():
         "fan@gmail.com": {
             "email": "fan@gmail.com",
             "password": "password123",
-            "name": "Rookie Fan",
-            "handle": "@fan_rookie",
+            "name": "Troy Resendez",
+            "handle": "@owltar",
             "seat": "Section 114, Row 3, Seat 12",
+            "seat_bb": "Section 114, Row 3, Seat 12",
+            "seat_fb": "Section 115, Row 18, Seat 10",
             "hash": "0xROOKIE-sec114-8f7a2",
+            "hash_bb": "0xROOKIE-sec114-8f7a2",
+            "hash_fb": "0xROOKIE-sec115-8f7a2",
             "sport": "Basketball",
             "bb_level": "Both (NCAA D1 & NBA)",
             "fb_level": "Both (NCAA D1 & NFL)",
-            "teams_bb": ["Duke Blue Devils", "Boston Celtics"],
-            "teams_fb": ["Michigan Wolverines", "Green Bay Packers"],
-            "role": "admin",
-            "tier": "Rookie Member (Tier 1)",  # Keep fan tier authentic; role drives admin gate
-            "games": 0,
-            "career_db": "0.0 dB",
-            "clutch_stops": 0,
-            "unlocked_mentors_bb": ["Marcus Vance"],
-            "unlocked_mentors_fb": ["Sarah Jenkins"]
+            "teams_bb": ["Duke Blue Devils", "Boston Celtics", "Texas Longhorns"],
+            "teams_fb": ["Michigan Wolverines", "Green Bay Packers", "Dallas Cowboys"],
+            "role": "Section Director / Verified Lead",
+            "tier": "Section Director (Tier 4)",
+            "games": 5,
+            "games_bb": 5,
+            "games_fb": 4,
+            "career_db": "106.2 dB",
+            "clutch_stops": 3,
+            "unlocked_mentors_bb": ["Marcus Vance", "Jordan Lee", "Elena Rostova", "Devon Miller"],
+            "unlocked_mentors_fb": ["Sarah Jenkins", "Alex Taylor", "Carlos Mendez", "Maya Patel"],
+            "tailgates_attended": 3,
+            "tailgates_attended_bb": 2,
+            "tailgates_attended_fb": 3,
+            "meetup_rsvps": ["Lot B Tailgate Zone", "Concourse Pep Rally"],
+            "meetup_rsvps_bb": ["Concourse Pep Rally"],
+            "meetup_rsvps_fb": ["Lot B Tailgate Zone"],
+            "early_checkin_bb": True,
+            "early_checkin_fb": True,
+            "chant_action_taken_bb": True,
+            "chant_action_taken_fb": True,
+            "storycard_exported_bb": True,
+            "storycard_exported_fb": True,
+            "user_respect_taps_sent_bb": 8,
+            "user_respect_taps_sent_fb": 6,
+            "synergy_score_bb": 92,
+            "synergy_score_fb": 88,
+            "synergy_claimed_bb": True,
+            "synergy_claimed_fb": True,
+            "armchair_callouts_count": 5,
+            "armchair_nft_unlocked_bb": True,
+            "armchair_nft_unlocked_fb": True,
+            "capstone_claimed_bb": True,
+            "capstone_claimed_fb": True,
+            "claimed_vouchers": []
         },
         "mvance@thunderrow.org": {
             "email": "mvance@thunderrow.org",
@@ -751,6 +781,10 @@ def _load_user_into_session(user_data, email):
     st.session_state.is_logged_in = True
     st.session_state.just_signed_up = False
     st.session_state.member_email = email
+    try:
+        st.query_params['member'] = email
+    except Exception:
+        pass
     st.session_state.member_name = user_data.get("name", "Rookie Fan")
     st.session_state.active_member = user_data.get("name", "Rookie Fan")
     st.session_state.member_handle = user_data.get("handle", "@fan_rookie")
@@ -931,6 +965,11 @@ def _sanitize_fan_role(role_str: str) -> str:
 def _clear_user_session_state():
     """Completely clears the active user's session state upon logout to prevent cross-account contamination."""
     _sync_and_persist_user_state()
+    try:
+        st.query_params.pop('member', None)
+        st.query_params.pop('fan', None)
+    except Exception:
+        pass
     st.session_state.is_logged_in = False
     st.session_state.just_signed_up = False
     st.session_state.member_name = "Guest Fan"
@@ -1059,6 +1098,7 @@ def _handle_armchair_callout(callout_text: str, vu_score: float = 0.85):
     if curr_callouts >= 3 and not st.session_state.get(nft_unlocked_key, False):
         st.session_state[nft_unlocked_key] = True
         st.session_state.just_unlocked_armchair_nft = True
+    _sync_and_persist_user_state()
 
     # P3-FE: guard synergy_score increment for guests — only logged-in fans earn synergy
     if not st.session_state.get("is_logged_in"):
@@ -1393,6 +1433,15 @@ fixture_options = [
 
 # Item 8: Health check — render diagnostic panel when ?debug=health is in the URL
 _debug_param = st.query_params.get("debug", "")
+
+# Auto-restore persistent fan session across browser reloads
+if not st.session_state.get("is_logged_in"):
+    _param_member = st.query_params.get("member") or st.query_params.get("fan")
+    if _param_member:
+        _fans_db = _load_fans_db()
+        if _param_member in _fans_db:
+            _load_user_into_session(_fans_db[_param_member], _param_member)
+            _ensure_member_in_persona_db()
 if _debug_param == "health":
     st.title("⚡ Kinetic FanLab — Deployment Health Check")
     st.caption("Internal diagnostic page. Remove `?debug=health` from the URL to return to the app.")
@@ -2597,7 +2646,12 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                     new_total = cloudant_db.increment_respect_tap(st.session_state.active_member, 1)
                     st.session_state.respect_dict[st.session_state.active_member] = new_total
                     st.session_state.user_respect_taps_sent += 1
+                    if is_basketball:
+                        st.session_state.user_respect_taps_sent_bb = st.session_state.get("user_respect_taps_sent_bb", 0) + 1
+                    else:
+                        st.session_state.user_respect_taps_sent_fb = st.session_state.get("user_respect_taps_sent_fb", 0) + 1
                     st.session_state.synergy_score = min(100, st.session_state.synergy_score + 2)
+                    _sync_and_persist_user_state()
                     st.success(f"Respect Tap transmitted to {p_info['neighbors'][0]['name']} and row neighbors! (+1 Respect Logged — Total: {new_total})")
 
                 with st.expander("🎯 Send Respect Tap to Any Specific Seat in the Venue"):
@@ -2610,7 +2664,12 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                         new_total = cloudant_db.increment_respect_tap(st.session_state.active_member, 1)
                         st.session_state.respect_dict[st.session_state.active_member] = new_total
                         st.session_state.user_respect_taps_sent += 1
+                        if is_basketball:
+                            st.session_state.user_respect_taps_sent_bb = st.session_state.get("user_respect_taps_sent_bb", 0) + 1
+                        else:
+                            st.session_state.user_respect_taps_sent_fb = st.session_state.get("user_respect_taps_sent_fb", 0) + 1
                         st.session_state.synergy_score = min(100, st.session_state.synergy_score + 2)
+                        _sync_and_persist_user_state()
                         st.success(f"✅ Respect Tap sent to **{target_sec}, {target_row}, {target_seat}**! (+1 Respect Tap — Total: {new_total})")
 
             with tab_trophy:

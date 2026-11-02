@@ -5,35 +5,99 @@
     "name": "Troy Resendez",
     "handle": "@owltar",
     "seat": "Section 114, Row 3, Seat 12",
+    "seat_bb": "Section 114, Row 3, Seat 12",
+    "seat_fb": "Section 115, Row 18, Seat 10",
     "hash": "0xROOKIE-sec114-8f7a2",
+    "hash_bb": "0xROOKIE-sec114-8f7a2",
+    "hash_fb": "0xROOKIE-sec115-8f7a2",
     "sport": "Basketball",
     "bb_level": "Both (NCAA D1 & NBA)",
     "fb_level": "Both (NCAA D1 & NFL)",
     "teams_bb": [
       "Duke Blue Devils",
-      "Boston Celtics"
+      "Boston Celtics",
+      "Texas Longhorns"
     ],
     "teams_fb": [
       "Michigan Wolverines",
-      "Green Bay Packers"
+      "Green Bay Packers",
+      "Dallas Cowboys"
     ],
-    "role": "admin",
-    "tier": "Rookie Member (Tier 1)",
-    "games": 1,
-    "career_db": "0.0 dB",
-    "clutch_stops": 0,
+    "role": "Section Director / Verified Lead",
+    "tier": "Section Director (Tier 4)",
+    "games": 5,
+    "games_bb": 5,
+    "games_fb": 4,
+    "career_db": "106.2 dB",
+    "clutch_stops": 3,
     "unlocked_mentors_bb": [
-      "Marcus Vance"
+      "Marcus Vance",
+      "Jordan Lee",
+      "Elena Rostova",
+      "Devon Miller"
     ],
     "unlocked_mentors_fb": [
-      "Sarah Jenkins"
+      "Sarah Jenkins",
+      "Alex Taylor",
+      "Carlos Mendez",
+      "Maya Patel"
     ],
-    "tailgates_attended": 0,
-    "meetup_rsvps": [],
+    "tailgates_attended": 3,
+    "tailgates_attended_bb": 2,
+    "tailgates_attended_fb": 3,
+    "meetup_rsvps": [
+      "Lot B Tailgate Zone",
+      "Concourse Pep Rally"
+    ],
+    "meetup_rsvps_bb": [
+      "Concourse Pep Rally"
+    ],
+    "meetup_rsvps_fb": [
+      "Lot B Tailgate Zone"
+    ],
+    "early_checkin_bb": true,
+    "early_checkin_fb": true,
+    "chant_action_taken_bb": true,
+    "chant_action_taken_fb": true,
+    "storycard_exported_bb": true,
+    "storycard_exported_fb": true,
+    "user_respect_taps_sent_bb": 8,
+    "user_respect_taps_sent_fb": 6,
+    "synergy_score_bb": 92,
+    "synergy_score_fb": 88,
+    "synergy_claimed_bb": true,
+    "synergy_claimed_fb": true,
+    "armchair_callouts_count": 5,
+    "armchair_nft_unlocked_bb": true,
+    "armchair_nft_unlocked_fb": true,
+    "capstone_claimed_bb": true,
+    "capstone_claimed_fb": true,
+    "claimed_vouchers": [
+      {
+        "voucher_id": "VCH-TEXAS-CLUTCH-01",
+        "brand": "Whataburger\u00ae",
+        "brand_color": "#ff6600",
+        "icon": "\ud83c\udf54",
+        "title": "Orange & White Honey Butter Chicken Biscuit Voucher",
+        "desc": "Unlocked by Section 114 roar surge! Redeemable at arena concourse stands.",
+        "discount_code": "WHATACLUTCH26",
+        "retail_value": 6.5,
+        "partner_fee": 4.85,
+        "partner_category": "Official Gameday Quick-Service Partner",
+        "claim_hash": "0xVCH-D618AA52A49F",
+        "claimed_by_name": "Troy Resendez",
+        "claimed_by_handle": "@owltar",
+        "seat": "Section 114, Row 3, Seat 12",
+        "trigger_cmi": 88.5,
+        "sport": "Basketball",
+        "team": "Texas Longhorns",
+        "status": "CLAIMED"
+      }
+    ],
     "socials": {
       "x": "",
       "instagram": "",
-      "youtube": "",
+      "youtube": "@W3bHippo",
       "tiktok": "",
       "discord": ""
     },
@@ -46,31 +110,7 @@
       "pref_leaderboard_public": true,
       "pref_anonymize_biometrics": true,
       "retention": "Gameday Session Only (Zero Cloud Raw Storage)"
-    },
-    "capstone_claimed_bb": false,
-    "capstone_claimed_fb": false,
-    "tailgates_attended_bb": 0,
-    "tailgates_attended_fb": 0,
-    "meetup_rsvps_bb": [],
-    "meetup_rsvps_fb": [],
-    "early_checkin_bb": true,
-    "early_checkin_fb": false,
-    "chant_action_taken_bb": false,
-    "chant_action_taken_fb": false,
-    "storycard_exported_bb": false,
-    "storycard_exported_fb": false,
-    "user_respect_taps_sent_bb": 0,
-    "user_respect_taps_sent_fb": 0,
-    "games_bb": 1,
-    "games_fb": 0,
-    "seat_bb": "Section 114, Row 3, Seat 12",
-    "seat_fb": "Section 115, Row 18, Seat 10",
-    "hash_bb": "0xROOKIE-sec114-8f7a2",
-    "hash_fb": "0xROOKIE-sec115-8f7a2",
-    "synergy_score_bb": 85,
-    "synergy_score_fb": 0,
-    "synergy_claimed_bb": true,
-    "synergy_claimed_fb": false
+    }
   },
   "mvance@thunderrow.org": {
     "email": "mvance@thunderrow.org",
@@ -83,12 +123,12 @@
     "bb_level": "Both (NCAA D1 & NBA)",
     "fb_level": "Both (NCAA D1 & NFL)",
     "teams_bb": [
-      "Texas Longhorns",
-      "San Antonio Spurs"
+      "Duke Blue Devils",
+      "Boston Celtics"
     ],
     "teams_fb": [
-      "Texas Longhorns",
-      "Dallas Cowboys"
+      "Michigan Wolverines",
+      "Green Bay Packers"
     ],
     "role": "Student Section Director",
     "tier": "Section Director (Tier 4)",
@@ -135,14 +175,14 @@
     "bb_level": "Both (NCAA D1 & NBA)",
     "fb_level": "Both (NCAA D1 & NFL)",
     "teams_bb": [
-      "Texas Longhorns",
-      "San Antonio Spurs"
+      "Duke Blue Devils",
+      "Boston Celtics"
     ],
     "teams_fb": [
-      "Texas Longhorns",
-      "Dallas Cowboys"
+      "Michigan Wolverines",
+      "Green Bay Packers"
     ],
-    "role": "10-Year Stadium Veteran",
+    "role": "10-Year Season Ticket Holder",
     "tier": "Stadium Veteran (Tier 5)",
     "games": 62,
     "career_db": "6,850 dB",

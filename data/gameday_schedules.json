@@ -14,8 +14,8 @@
         "is_home": true,
         "venue": "Cameron Indoor Stadium (Durham, NC)",
         "section": "Section 114 (Cameron Crazies Thunder Row)",
-        "game_time": "Monday, Nov 2, 2026 • 6:30 PM EST",
-        "score_state": "Season Opener Countdown • 4 Days to Tipoff • Cameron Crazies Primed",
+        "game_time": "Monday, Nov 2, 2026 \u2022 6:30 PM EST",
+        "score_state": "Season Opener Countdown \u2022 4 Days to Tipoff \u2022 Cameron Crazies Primed",
         "situation_code": "BB-01",
         "situation_desc": "Season Opener Tipoff & Cameron Crazies Acoustic Surge",
         "network": "ACC Network / ESPN",
@@ -25,20 +25,83 @@
         "matchup": "Duke Blue Devils vs. Coastal Carolina Chanticleers",
         "opponent": "Coastal Carolina Chanticleers",
         "venue": "Cameron Indoor Stadium (Durham, NC)",
-        "date": "Thursday, Nov 5, 2026 • 8:00 PM EST",
+        "date": "Thursday, Nov 5, 2026 \u2022 8:00 PM EST",
         "network": "ACC Network"
       },
       "recent_games": "Oct 25: at #17 Kansas (W 90-84); Oct 20: vs. #8 Tennessee (W 103-64); Oct 8: vs. Belmont (W 102-62)",
       "full_schedule": [
-        {"date": "Oct 8, 2026", "opponent": "vs. Belmont (Exhibition)", "venue": "Cameron Indoor Stadium", "result": "W 102-62", "tv": "ACCN", "status": "Final"},
-        {"date": "Oct 20, 2026", "opponent": "vs. #8 Tennessee (Exhibition)", "venue": "Cameron Indoor Stadium", "result": "W 103-64", "tv": "ACCN", "status": "Final"},
-        {"date": "Oct 25, 2026", "opponent": "at #17 Kansas (Exhibition)", "venue": "Allen Fieldhouse (Lawrence, KS)", "result": "W 90-84", "tv": "ESPN", "status": "Final"},
-        {"date": "Nov 2, 2026", "opponent": "vs. Army West Point (Season Opener)", "venue": "Cameron Indoor Stadium", "result": "6:30 PM EST", "tv": "ACC Network / ESPN", "status": "Next Game"},
-        {"date": "Nov 5, 2026", "opponent": "vs. Coastal Carolina", "venue": "Cameron Indoor Stadium", "result": "8:00 PM EST", "tv": "ACC Network", "status": "Upcoming"},
-        {"date": "Nov 10, 2026", "opponent": "vs. Michigan State (Champions Classic)", "venue": "United Center (Chicago, IL)", "result": "7:00 PM EST", "tv": "ESPN", "status": "Upcoming"},
-        {"date": "Nov 13, 2026", "opponent": "vs. SIU Edwardsville", "venue": "Cameron Indoor Stadium", "result": "8:00 PM EST", "tv": "ACC Network", "status": "Upcoming"},
-        {"date": "Nov 17, 2026", "opponent": "vs. Illinois", "venue": "Cameron Indoor Stadium", "result": "7:00 PM EST", "tv": "ESPN", "status": "Upcoming"},
-        {"date": "Nov 25, 2026", "opponent": "vs. UConn (Hall of Fame Series)", "venue": "T-Mobile Arena (Las Vegas, NV)", "result": "7:00 PM EST", "tv": "Prime Video", "status": "Upcoming"}
+        {
+          "date": "Oct 8, 2026",
+          "opponent": "vs. Belmont (Exhibition)",
+          "venue": "Cameron Indoor Stadium",
+          "result": "W 102-62",
+          "tv": "ACCN",
+          "status": "Final"
+        },
+        {
+          "date": "Oct 20, 2026",
+          "opponent": "vs. #8 Tennessee (Exhibition)",
+          "venue": "Cameron Indoor Stadium",
+          "result": "W 103-64",
+          "tv": "ACCN",
+          "status": "Final"
+        },
+        {
+          "date": "Oct 25, 2026",
+          "opponent": "at #17 Kansas (Exhibition)",
+          "venue": "Allen Fieldhouse (Lawrence, KS)",
+          "result": "W 90-84",
+          "tv": "ESPN",
+          "status": "Final"
+        },
+        {
+          "date": "Nov 2, 2026",
+          "opponent": "vs. Army West Point (Season Opener)",
+          "venue": "Cameron Indoor Stadium",
+          "result": "6:30 PM EST",
+          "tv": "ACC Network / ESPN",
+          "status": "Next Game"
+        },
+        {
+          "date": "Nov 5, 2026",
+          "opponent": "vs. Coastal Carolina",
+          "venue": "Cameron Indoor Stadium",
+          "result": "8:00 PM EST",
+          "tv": "ACC Network",
+          "status": "Upcoming"
+        },
+        {
+          "date": "Nov 10, 2026",
+          "opponent": "vs. Michigan State (Champions Classic)",
+          "venue": "United Center (Chicago, IL)",
+          "result": "7:00 PM EST",
+          "tv": "ESPN",
+          "status": "Upcoming"
+        },
+        {
+          "date": "Nov 13, 2026",
+          "opponent": "vs. SIU Edwardsville",
+          "venue": "Cameron Indoor Stadium",
+          "result": "8:00 PM EST",
+          "tv": "ACC Network",
+          "status": "Upcoming"
+        },
+        {
+          "date": "Nov 17, 2026",
+          "opponent": "vs. Illinois",
+          "venue": "Cameron Indoor Stadium",
+          "result": "7:00 PM EST",
+          "tv": "ESPN",
+          "status": "Upcoming"
+        },
+        {
+          "date": "Nov 25, 2026",
+          "opponent": "vs. UConn (Hall of Fame Series)",
+          "venue": "T-Mobile Arena (Las Vegas, NV)",
+          "result": "7:00 PM EST",
+          "tv": "Prime Video",
+          "status": "Upcoming"
+        }
       ]
     },
     "Boston Celtics": {
@@ -47,39 +110,102 @@
       "level": "Pro Basketball (NBA)",
       "conference_league": "NBA Eastern Conference",
       "home_venue": "TD Garden (Section 114)",
-      "record": "3-1",
+      "record": "4-1 (Eastern Conference)",
       "is_game_today": false,
       "active_game": {
-        "matchup": "Boston Celtics vs. Chicago Bulls",
-        "opponent": "Chicago Bulls",
+        "matchup": "Boston Celtics vs. Golden State Warriors",
+        "opponent": "Golden State Warriors",
         "is_home": true,
         "venue": "TD Garden (Boston, MA)",
-        "section": "Section 114 (Balcony Row)",
-        "game_time": "Friday, Oct 30, 2026 • 6:30 PM EDT",
-        "score_state": "Next Game Tomorrow • Friday 6:30 PM EDT • TD Garden",
-        "situation_code": "BB-02",
-        "situation_desc": "Clutch 4th Quarter Defense Stop (Free Throw Focus)",
-        "network": "NBC Sports Boston / NBA League Pass",
-        "status": "UPCOMING (Tomorrow, Oct 30)"
+        "section": "Section 114 (Thunder Row)",
+        "game_time": "Wednesday, Nov 4, 2026 \u2022 7:30 PM EST",
+        "score_state": "NBA Week 2 \u2022 Wednesday 7:30 PM EST",
+        "situation_code": "BB-01",
+        "situation_desc": "4th Quarter Clutch Defensive Possession",
+        "network": "ESPN / NBC Sports Boston",
+        "status": "UPCOMING (Wednesday, Nov 4)"
       },
       "upcoming_game": {
-        "matchup": "Boston Celtics at Orlando Magic",
-        "opponent": "Orlando Magic",
-        "venue": "Kia Center (Orlando, FL)",
-        "date": "Sunday, Nov 1, 2026 • 2:30 PM EST",
+        "matchup": "Boston Celtics at Brooklyn Nets",
+        "opponent": "Brooklyn Nets",
+        "venue": "Barclays Center (Brooklyn, NY)",
+        "date": "Friday, Nov 6, 2026 \u2022 7:00 PM EST",
         "network": "NBC Sports Boston"
       },
-      "recent_games": "Oct 27: vs. Brooklyn (W 125-124 OT); Oct 26: vs. Chicago (W 134-99); Oct 23: vs. New York (W 107-103); Oct 20: @ Detroit (L 113-121)",
+      "recent_games": "Oct 30, 2026: vs. Chicago Bulls (W 118-104); Oct 28: vs. Milwaukee (W 119-108); Oct 26: at Detroit (W 124-118)",
       "full_schedule": [
-        {"date": "Tue, Oct 20, 2026", "opponent": "at Detroit Pistons", "venue": "Little Caesars Arena", "result": "L 113-121", "tv": "NBCSB", "status": "Final"},
-        {"date": "Fri, Oct 23, 2026", "opponent": "vs. New York Knicks", "venue": "TD Garden (Boston)", "result": "W 107-103", "tv": "NBCSB / ESPN", "status": "Final"},
-        {"date": "Mon, Oct 26, 2026", "opponent": "vs. Chicago Bulls", "venue": "TD Garden (Boston)", "result": "W 134-99", "tv": "NBCSB", "status": "Final"},
-        {"date": "Tue, Oct 27, 2026", "opponent": "vs. Brooklyn Nets", "venue": "TD Garden (Boston)", "result": "W 125-124 (OT)", "tv": "NBCSB", "status": "Final"},
-        {"date": "Fri, Oct 30, 2026", "opponent": "vs. Chicago Bulls", "venue": "TD Garden (Boston)", "result": "6:30 PM EDT", "tv": "NBC Sports Boston / League Pass", "status": "Next Game"},
-        {"date": "Sun, Nov 1, 2026", "opponent": "at Orlando Magic", "venue": "Kia Center (Orlando)", "result": "2:30 PM EST", "tv": "NBCSB", "status": "Upcoming"},
-        {"date": "Mon, Nov 2, 2026", "opponent": "vs. Houston Rockets", "venue": "TD Garden (Boston)", "result": "7:30 PM EST", "tv": "NBCSB", "status": "Upcoming"},
-        {"date": "Wed, Nov 4, 2026", "opponent": "vs. Milwaukee Bucks", "venue": "TD Garden (Boston)", "result": "6:30 PM EST", "tv": "ESPN / NBCSB", "status": "Upcoming"},
-        {"date": "Fri, Nov 6, 2026", "opponent": "at Charlotte Hornets", "venue": "Spectrum Center", "result": "6:00 PM EST", "tv": "NBCSB", "status": "Upcoming"}
+        {
+          "date": "Tue, Oct 20, 2026",
+          "opponent": "at Detroit Pistons",
+          "venue": "Little Caesars Arena",
+          "result": "L 113-121",
+          "tv": "NBCSB",
+          "status": "Final"
+        },
+        {
+          "date": "Fri, Oct 23, 2026",
+          "opponent": "vs. New York Knicks",
+          "venue": "TD Garden (Boston)",
+          "result": "W 107-103",
+          "tv": "NBCSB / ESPN",
+          "status": "Final"
+        },
+        {
+          "date": "Mon, Oct 26, 2026",
+          "opponent": "vs. Chicago Bulls",
+          "venue": "TD Garden (Boston)",
+          "result": "W 134-99",
+          "tv": "NBCSB",
+          "status": "Final"
+        },
+        {
+          "date": "Tue, Oct 27, 2026",
+          "opponent": "vs. Brooklyn Nets",
+          "venue": "TD Garden (Boston)",
+          "result": "W 125-124 (OT)",
+          "tv": "NBCSB",
+          "status": "Final"
+        },
+        {
+          "date": "Fri, Oct 30, 2026",
+          "opponent": "vs. Chicago Bulls",
+          "venue": "TD Garden (Boston)",
+          "result": "W 118-104",
+          "tv": "NBC Sports Boston / League Pass",
+          "status": "Final"
+        },
+        {
+          "date": "Sun, Nov 1, 2026",
+          "opponent": "at Orlando Magic",
+          "venue": "Kia Center (Orlando)",
+          "result": "2:30 PM EST",
+          "tv": "NBCSB",
+          "status": "Upcoming"
+        },
+        {
+          "date": "Mon, Nov 2, 2026",
+          "opponent": "vs. Houston Rockets",
+          "venue": "TD Garden (Boston)",
+          "result": "7:30 PM EST",
+          "tv": "NBCSB",
+          "status": "Upcoming"
+        },
+        {
+          "date": "Wed, Nov 4, 2026",
+          "opponent": "vs. Milwaukee Bucks",
+          "venue": "TD Garden (Boston)",
+          "result": "6:30 PM EST",
+          "tv": "ESPN / NBCSB",
+          "status": "Next Game"
+        },
+        {
+          "date": "Fri, Nov 6, 2026",
+          "opponent": "at Charlotte Hornets",
+          "venue": "Spectrum Center",
+          "result": "6:00 PM EST",
+          "tv": "NBCSB",
+          "status": "Upcoming"
+        }
       ]
     },
     "Texas Longhorns": {
@@ -96,8 +222,8 @@
         "is_home": true,
         "venue": "Moody Center (Austin, TX)",
         "section": "Section 114 (Thunder Row)",
-        "game_time": "Monday, Nov 2, 2026 • 8:00 PM CT",
-        "score_state": "Regular Season Opener Tipoff • Moody Center Ready",
+        "game_time": "Monday, Nov 2, 2026 \u2022 8:00 PM CT",
+        "score_state": "Regular Season Opener Tipoff \u2022 Moody Center Ready",
         "situation_code": "BB-01",
         "situation_desc": "Pre-Game Hype & Baseline Tipoff Focus",
         "network": "SEC Network / Longhorn Radio Network",
@@ -107,16 +233,51 @@
         "matchup": "Texas Longhorns vs. Gardner-Webb Runnin' Bulldogs",
         "opponent": "Gardner-Webb Runnin' Bulldogs",
         "venue": "Moody Center (Austin, TX)",
-        "date": "Thursday, Nov 5, 2026 • 7:00 PM CT",
+        "date": "Thursday, Nov 5, 2026 \u2022 7:00 PM CT",
         "network": "SEC Network+"
       },
       "recent_games": "Oct 25, 2026: at #13/14 St. John's (L 74-87, Madison Square Garden Exhibition)",
       "full_schedule": [
-        {"date": "Oct 25, 2026", "opponent": "at #13/14 St. John's (Exhibition)", "venue": "Madison Square Garden", "result": "L 74-87", "tv": "MSG / ESPN+", "status": "Final"},
-        {"date": "Nov 2, 2026", "opponent": "vs. Chicago State (Season Opener)", "venue": "Moody Center (Austin)", "result": "8:00 PM CT", "tv": "SEC Network", "status": "Next Game"},
-        {"date": "Nov 5, 2026", "opponent": "vs. Gardner-Webb", "venue": "Moody Center (Austin)", "result": "7:00 PM CT", "tv": "SEC Network+", "status": "Upcoming"},
-        {"date": "Nov 9, 2026", "opponent": "vs. Grambling State", "venue": "Moody Center (Austin)", "result": "6:00 PM CT", "tv": "SEC Network", "status": "Upcoming"},
-        {"date": "Nov 15, 2026", "opponent": "vs. Baylor (San Antonio Showdown)", "venue": "Frost Bank Center (San Antonio)", "result": "2:00 PM CT", "tv": "ESPN", "status": "Upcoming"}
+        {
+          "date": "Oct 25, 2026",
+          "opponent": "at #13/14 St. John's (Exhibition)",
+          "venue": "Madison Square Garden",
+          "result": "L 74-87",
+          "tv": "MSG / ESPN+",
+          "status": "Final"
+        },
+        {
+          "date": "Nov 2, 2026",
+          "opponent": "vs. Chicago State (Season Opener)",
+          "venue": "Moody Center (Austin)",
+          "result": "8:00 PM CT",
+          "tv": "SEC Network",
+          "status": "Next Game"
+        },
+        {
+          "date": "Nov 5, 2026",
+          "opponent": "vs. Gardner-Webb",
+          "venue": "Moody Center (Austin)",
+          "result": "7:00 PM CT",
+          "tv": "SEC Network+",
+          "status": "Upcoming"
+        },
+        {
+          "date": "Nov 9, 2026",
+          "opponent": "vs. Grambling State",
+          "venue": "Moody Center (Austin)",
+          "result": "6:00 PM CT",
+          "tv": "SEC Network",
+          "status": "Upcoming"
+        },
+        {
+          "date": "Nov 15, 2026",
+          "opponent": "vs. Baylor (San Antonio Showdown)",
+          "venue": "Frost Bank Center (San Antonio)",
+          "result": "2:00 PM CT",
+          "tv": "ESPN",
+          "status": "Upcoming"
+        }
       ]
     },
     "San Antonio Spurs": {
@@ -125,35 +286,70 @@
       "level": "Pro Basketball (NBA)",
       "conference_league": "NBA Western Conference",
       "home_venue": "Frost Bank Center (Section 114)",
-      "record": "1-1",
+      "record": "3-2 (Western Conference)",
       "is_game_today": false,
       "active_game": {
-        "matchup": "San Antonio Spurs vs. Minnesota Timberwolves",
-        "opponent": "Minnesota Timberwolves",
-        "is_home": true,
-        "venue": "Frost Bank Center (San Antonio, TX)",
-        "section": "Section 114 (Spurs Fandom Row)",
-        "game_time": "Saturday, Oct 31, 2026 • 7:00 PM CDT",
-        "score_state": "Next Active Game • Saturday 7:00 PM CDT • Frost Bank Center",
-        "situation_code": "BB-02",
-        "situation_desc": "Clutch Defensive Stop / In-Arena Decibel Surge",
-        "network": "Bally Sports SW / NBA League Pass",
-        "status": "UPCOMING (Saturday, Oct 31)"
+        "matchup": "San Antonio Spurs at LA Clippers",
+        "opponent": "LA Clippers",
+        "is_home": false,
+        "venue": "Intuit Dome (Inglewood, CA)",
+        "section": "Visiting Silver & Black Pod",
+        "game_time": "Tuesday, Nov 3, 2026 \u2022 9:30 PM CT",
+        "score_state": "NBA Week 2 \u2022 Tuesday 9:30 PM CT",
+        "situation_code": "BB-01",
+        "situation_desc": "4th Quarter Clutch Defensive Stop",
+        "network": "Bally Sports Southwest / NBA League Pass",
+        "status": "UPCOMING (Tomorrow, Nov 3)"
       },
       "upcoming_game": {
-        "matchup": "San Antonio Spurs vs. Golden State Warriors",
-        "opponent": "Golden State Warriors",
-        "venue": "Frost Bank Center (San Antonio, TX)",
-        "date": "Friday, Nov 13, 2026 • 7:00 PM CST",
-        "network": "NBA TV / Bally Sports SW"
+        "matchup": "San Antonio Spurs at Houston Rockets",
+        "opponent": "Houston Rockets",
+        "venue": "Toyota Center (Houston, TX)",
+        "date": "Wednesday, Nov 4, 2026 \u2022 7:00 PM CT",
+        "network": "Bally Sports Southwest"
       },
-      "recent_games": "Oct 23, 2026: vs. Houston Rockets (W 109-106); Oct 20, 2026: vs. Oklahoma City Thunder (L 104-112)",
+      "recent_games": "Oct 31, 2026: vs. Minnesota Timberwolves (W 113-103); Oct 28: vs. Houston (W 109-106); Oct 26: vs. Houston (L 101-106)",
       "full_schedule": [
-        {"date": "Tue, Oct 20, 2026", "opponent": "vs. Oklahoma City Thunder", "venue": "Frost Bank Center", "result": "L 104-112", "tv": "BSSW / NBA TV", "status": "Final"},
-        {"date": "Fri, Oct 23, 2026", "opponent": "vs. Houston Rockets", "venue": "Frost Bank Center", "result": "W 109-106", "tv": "BSSW", "status": "Final"},
-        {"date": "Sat, Oct 31, 2026", "opponent": "vs. Minnesota Timberwolves", "venue": "Frost Bank Center", "result": "7:00 PM CDT", "tv": "Bally Sports SW / League Pass", "status": "Next Game"},
-        {"date": "Fri, Nov 13, 2026", "opponent": "vs. Golden State Warriors", "venue": "Frost Bank Center", "result": "7:00 PM CST", "tv": "NBA TV", "status": "Upcoming"},
-        {"date": "Tue, Nov 17, 2026", "opponent": "vs. Detroit Pistons", "venue": "Frost Bank Center", "result": "7:00 PM CST", "tv": "BSSW", "status": "Upcoming"}
+        {
+          "date": "Tue, Oct 20, 2026",
+          "opponent": "vs. Oklahoma City Thunder",
+          "venue": "Frost Bank Center",
+          "result": "L 104-112",
+          "tv": "BSSW / NBA TV",
+          "status": "Final"
+        },
+        {
+          "date": "Fri, Oct 23, 2026",
+          "opponent": "vs. Houston Rockets",
+          "venue": "Frost Bank Center",
+          "result": "W 109-106",
+          "tv": "BSSW",
+          "status": "Final"
+        },
+        {
+          "date": "Sat, Oct 31, 2026",
+          "opponent": "vs. Minnesota Timberwolves",
+          "venue": "Frost Bank Center",
+          "result": "W 113-103",
+          "tv": "Bally Sports SW / League Pass",
+          "status": "Final"
+        },
+        {
+          "date": "Fri, Nov 13, 2026",
+          "opponent": "vs. Golden State Warriors",
+          "venue": "Frost Bank Center",
+          "result": "7:00 PM CST",
+          "tv": "NBA TV",
+          "status": "Upcoming"
+        },
+        {
+          "date": "Tue, Nov 17, 2026",
+          "opponent": "vs. Detroit Pistons",
+          "venue": "Frost Bank Center",
+          "result": "7:00 PM CST",
+          "tv": "BSSW",
+          "status": "Upcoming"
+        }
       ]
     },
     "UConn Huskies": {
@@ -170,7 +366,7 @@
         "is_home": true,
         "venue": "PeoplesBank Arena (Hartford, CT)",
         "section": "Section 114 (Husky Crazies)",
-        "game_time": "Monday, Nov 2, 2026 • 9:00 PM EST",
+        "game_time": "Monday, Nov 2, 2026 \u2022 9:00 PM EST",
         "score_state": "Championship Banner Raising & Season Opener Tipoff",
         "situation_code": "BB-01",
         "situation_desc": "Pre-Game Banner Celebration & Baseline Tipoff",
@@ -181,18 +377,67 @@
         "matchup": "UConn Huskies vs. Michigan Wolverines (Hall of Fame Series)",
         "opponent": "Michigan Wolverines",
         "venue": "TD Garden (Boston, MA)",
-        "date": "Friday, Nov 6, 2026 • 8:00 PM EST",
+        "date": "Friday, Nov 6, 2026 \u2022 8:00 PM EST",
         "network": "TNT / truTV / Max"
       },
       "recent_games": "Oct 27: vs. Purdue (W 76-53); Oct 20: at Michigan State (W 78-70); Oct 13: vs. Syracuse (W 72-52)",
       "full_schedule": [
-        {"date": "Oct 13, 2026", "opponent": "vs. Syracuse (Exhibition)", "venue": "Mohegan Sun Arena", "result": "W 72-52", "tv": "UConn+", "status": "Final"},
-        {"date": "Oct 20, 2026", "opponent": "at Michigan State (Exhibition)", "venue": "Breslin Center", "result": "W 78-70", "tv": "B1G+", "status": "Final"},
-        {"date": "Oct 27, 2026", "opponent": "vs. Purdue (Exhibition)", "venue": "PeoplesBank Arena (Hartford)", "result": "W 76-53", "tv": "UConn+", "status": "Final"},
-        {"date": "Nov 2, 2026", "opponent": "vs. Gardner-Webb (Season Opener)", "venue": "PeoplesBank Arena (Hartford)", "result": "9:00 PM EST", "tv": "Peacock / NBCSN", "status": "Next Game"},
-        {"date": "Nov 6, 2026", "opponent": "vs. Michigan (Hall of Fame Series)", "venue": "TD Garden (Boston)", "result": "8:00 PM EST", "tv": "TNT / Max", "status": "Upcoming"},
-        {"date": "Nov 9, 2026", "opponent": "vs. Wagner", "venue": "Gampel Pavilion (Storrs)", "result": "7:00 PM EST", "tv": "truTV", "status": "Upcoming"},
-        {"date": "Nov 25, 2026", "opponent": "vs. Duke", "venue": "T-Mobile Arena (Las Vegas)", "result": "7:00 PM EST", "tv": "Prime Video", "status": "Upcoming"}
+        {
+          "date": "Oct 13, 2026",
+          "opponent": "vs. Syracuse (Exhibition)",
+          "venue": "Mohegan Sun Arena",
+          "result": "W 72-52",
+          "tv": "UConn+",
+          "status": "Final"
+        },
+        {
+          "date": "Oct 20, 2026",
+          "opponent": "at Michigan State (Exhibition)",
+          "venue": "Breslin Center",
+          "result": "W 78-70",
+          "tv": "B1G+",
+          "status": "Final"
+        },
+        {
+          "date": "Oct 27, 2026",
+          "opponent": "vs. Purdue (Exhibition)",
+          "venue": "PeoplesBank Arena (Hartford)",
+          "result": "W 76-53",
+          "tv": "UConn+",
+          "status": "Final"
+        },
+        {
+          "date": "Nov 2, 2026",
+          "opponent": "vs. Gardner-Webb (Season Opener)",
+          "venue": "PeoplesBank Arena (Hartford)",
+          "result": "9:00 PM EST",
+          "tv": "Peacock / NBCSN",
+          "status": "Next Game"
+        },
+        {
+          "date": "Nov 6, 2026",
+          "opponent": "vs. Michigan (Hall of Fame Series)",
+          "venue": "TD Garden (Boston)",
+          "result": "8:00 PM EST",
+          "tv": "TNT / Max",
+          "status": "Upcoming"
+        },
+        {
+          "date": "Nov 9, 2026",
+          "opponent": "vs. Wagner",
+          "venue": "Gampel Pavilion (Storrs)",
+          "result": "7:00 PM EST",
+          "tv": "truTV",
+          "status": "Upcoming"
+        },
+        {
+          "date": "Nov 25, 2026",
+          "opponent": "vs. Duke",
+          "venue": "T-Mobile Arena (Las Vegas)",
+          "result": "7:00 PM EST",
+          "tv": "Prime Video",
+          "status": "Upcoming"
+        }
       ]
     }
   },
@@ -203,42 +448,126 @@
       "level": "College Football (NCAA FBS)",
       "conference_league": "Big Ten",
       "home_venue": "Michigan Stadium (Section 115)",
-      "record": "4-3 (1-3 Big Ten)",
+      "record": "5-3 (2-3 Big Ten)",
       "is_game_today": false,
       "active_game": {
-        "matchup": "Michigan Wolverines at Rutgers Scarlet Knights",
-        "opponent": "Rutgers Scarlet Knights",
-        "is_home": false,
-        "venue": "SHI Stadium (Piscataway, NJ)",
-        "section": "Visiting Fan Section (Section 115 Loyalists)",
-        "game_time": "Saturday, Oct 31, 2026 • 12:30 PM EST",
-        "score_state": "Gameday Week 9 • Saturday 12:30 PM EST",
-        "situation_code": "FB-02",
-        "situation_desc": "4th Down Defensive Stand / Clutch 48-Yard Field Goal Snap",
-        "network": "Big Ten Network (BTN) / Learfield Michigan Sports Network",
-        "status": "UPCOMING (Saturday, Oct 31)"
-      },
-      "upcoming_game": {
         "matchup": "Michigan Wolverines vs. Michigan State Spartans (Paul Bunyan Trophy)",
         "opponent": "Michigan State Spartans",
+        "is_home": true,
         "venue": "Michigan Stadium (Ann Arbor, MI)",
-        "date": "Saturday, Nov 7, 2026 • TBA",
-        "network": "FOX / Big Ten Network"
+        "section": "Student Section / End Zone Loyals (Section 115)",
+        "game_time": "Saturday, Nov 7, 2026 \u2022 3:30 PM EST",
+        "score_state": "Gameday Week 10 \u2022 Saturday 3:30 PM EST",
+        "situation_code": "FB-02",
+        "situation_desc": "4th Down Defensive Stand / Clutch 48-Yard Field Goal Snap",
+        "network": "FOX / Learfield Michigan Sports Network",
+        "status": "UPCOMING (Saturday, Nov 7)"
       },
-      "recent_games": "Oct 24, 2026: vs. #6 Indiana (L 6-13 OT); Oct 17, 2026: vs. Penn State (W 21-18, Homecoming); Oct 3: at Minnesota (L 14-20)",
+      "upcoming_game": {
+        "matchup": "Michigan Wolverines at #1 Oregon Ducks",
+        "opponent": "#1 Oregon Ducks",
+        "venue": "Autzen Stadium (Eugene, OR)",
+        "date": "Saturday, Nov 14, 2026 \u2022 7:30 PM EST",
+        "network": "NBC / Peacock"
+      },
+      "recent_games": "Oct 31, 2026: at Rutgers (W 24-23, Clutch FG Stop); Oct 24: vs. #6 Indiana (L 6-13 OT); Oct 17: vs. Penn State (W 21-18)",
       "full_schedule": [
-        {"date": "Sep 5, 2026", "opponent": "vs. Western Michigan", "venue": "Michigan Stadium (Ann Arbor)", "result": "W 13-12", "tv": "NBC", "status": "Final"},
-        {"date": "Sep 12, 2026", "opponent": "vs. #11 Oklahoma", "venue": "Michigan Stadium (Ann Arbor)", "result": "W 17-10", "tv": "FOX", "status": "Final"},
-        {"date": "Sep 19, 2026", "opponent": "vs. UTEP", "venue": "Michigan Stadium (Ann Arbor)", "result": "W 52-17", "tv": "Big Ten Network", "status": "Final"},
-        {"date": "Sep 26, 2026", "opponent": "vs. #17 Iowa", "venue": "Michigan Stadium (Ann Arbor)", "result": "L 19-20", "tv": "CBS", "status": "Final"},
-        {"date": "Oct 3, 2026", "opponent": "at Minnesota", "venue": "Huntington Bank Stadium (Minneapolis)", "result": "L 14-20", "tv": "FOX", "status": "Final"},
-        {"date": "Oct 17, 2026", "opponent": "vs. Penn State (Homecoming)", "venue": "Michigan Stadium (Ann Arbor)", "result": "W 21-18", "tv": "CBS", "status": "Final"},
-        {"date": "Oct 24, 2026", "opponent": "vs. #6 Indiana", "venue": "Michigan Stadium (Ann Arbor)", "result": "L 6-13 (OT)", "tv": "FOX", "status": "Final"},
-        {"date": "Oct 31, 2026", "opponent": "at Rutgers Scarlet Knights", "venue": "SHI Stadium (Piscataway, NJ)", "result": "12:30 PM EST", "tv": "Big Ten Network", "status": "Next Game"},
-        {"date": "Nov 7, 2026", "opponent": "vs. Michigan State (Paul Bunyan Trophy)", "venue": "Michigan Stadium (Ann Arbor)", "result": "TBA", "tv": "FOX / BTN", "status": "Upcoming"},
-        {"date": "Nov 14, 2026", "opponent": "at Oregon", "venue": "Autzen Stadium (Eugene, OR)", "result": "TBA", "tv": "TBA", "status": "Upcoming"},
-        {"date": "Nov 21, 2026", "opponent": "vs. UCLA (Senior Day)", "venue": "Michigan Stadium (Ann Arbor)", "result": "TBA", "tv": "TBA", "status": "Upcoming"},
-        {"date": "Nov 28, 2026", "opponent": "at Ohio State (The Game)", "venue": "Ohio Stadium (Columbus, OH)", "result": "Noon EST", "tv": "FOX", "status": "Upcoming"}
+        {
+          "date": "Sep 5, 2026",
+          "opponent": "vs. Western Michigan",
+          "venue": "Michigan Stadium (Ann Arbor)",
+          "result": "W 13-12",
+          "tv": "NBC",
+          "status": "Final"
+        },
+        {
+          "date": "Sep 12, 2026",
+          "opponent": "vs. #11 Oklahoma",
+          "venue": "Michigan Stadium (Ann Arbor)",
+          "result": "W 17-10",
+          "tv": "FOX",
+          "status": "Final"
+        },
+        {
+          "date": "Sep 19, 2026",
+          "opponent": "vs. UTEP",
+          "venue": "Michigan Stadium (Ann Arbor)",
+          "result": "W 52-17",
+          "tv": "Big Ten Network",
+          "status": "Final"
+        },
+        {
+          "date": "Sep 26, 2026",
+          "opponent": "vs. #17 Iowa",
+          "venue": "Michigan Stadium (Ann Arbor)",
+          "result": "L 19-20",
+          "tv": "CBS",
+          "status": "Final"
+        },
+        {
+          "date": "Oct 3, 2026",
+          "opponent": "at Minnesota",
+          "venue": "Huntington Bank Stadium (Minneapolis)",
+          "result": "L 14-20",
+          "tv": "FOX",
+          "status": "Final"
+        },
+        {
+          "date": "Oct 17, 2026",
+          "opponent": "vs. Penn State (Homecoming)",
+          "venue": "Michigan Stadium (Ann Arbor)",
+          "result": "W 21-18",
+          "tv": "CBS",
+          "status": "Final"
+        },
+        {
+          "date": "Oct 24, 2026",
+          "opponent": "vs. #6 Indiana",
+          "venue": "Michigan Stadium (Ann Arbor)",
+          "result": "L 6-13 (OT)",
+          "tv": "FOX",
+          "status": "Final"
+        },
+        {
+          "date": "Oct 31, 2026",
+          "opponent": "at Rutgers Scarlet Knights",
+          "venue": "SHI Stadium (Piscataway, NJ)",
+          "result": "W 24-23",
+          "tv": "Big Ten Network",
+          "status": "Final"
+        },
+        {
+          "date": "Nov 7, 2026",
+          "opponent": "vs. Michigan State (Paul Bunyan Trophy)",
+          "venue": "Michigan Stadium (Ann Arbor)",
+          "result": "3:30 PM EST",
+          "tv": "FOX / BTN",
+          "status": "Next Game"
+        },
+        {
+          "date": "Nov 14, 2026",
+          "opponent": "at Oregon",
+          "venue": "Autzen Stadium (Eugene, OR)",
+          "result": "TBA",
+          "tv": "TBA",
+          "status": "Upcoming"
+        },
+        {
+          "date": "Nov 21, 2026",
+          "opponent": "vs. UCLA (Senior Day)",
+          "venue": "Michigan Stadium (Ann Arbor)",
+          "result": "TBA",
+          "tv": "TBA",
+          "status": "Upcoming"
+        },
+        {
+          "date": "Nov 28, 2026",
+          "opponent": "at Ohio State (The Game)",
+          "venue": "Ohio Stadium (Columbus, OH)",
+          "result": "Noon EST",
+          "tv": "FOX",
+          "status": "Upcoming"
+        }
       ]
     },
     "Green Bay Packers": {
@@ -247,42 +576,126 @@
       "level": "Pro Football (NFL)",
       "conference_league": "NFC North",
       "home_venue": "Lambeau Field (Section 115)",
-      "record": "4-3",
-      "is_game_today": true,
+      "record": "6-2 (NFC North)",
+      "is_game_today": false,
       "active_game": {
-        "matchup": "Green Bay Packers vs. Carolina Panthers",
-        "opponent": "Carolina Panthers",
-        "is_home": true,
-        "venue": "Lambeau Field (Green Bay, WI)",
-        "section": "Section 115 (End Zone Loyals)",
-        "game_time": "Tonight • Thursday, Oct 29, 2026 • 7:15 PM CDT (Week 8)",
-        "score_state": "Tonight • Thursday Night Football 7:15 PM CDT",
+        "matchup": "Green Bay Packers at Minnesota Vikings",
+        "opponent": "Minnesota Vikings",
+        "is_home": false,
+        "venue": "U.S. Bank Stadium (Minneapolis, MN)",
+        "section": "Visiting Section 115 Loyalists",
+        "game_time": "Sunday, Nov 8, 2026 \u2022 12:00 PM CST",
+        "score_state": "NFL Week 9 \u2022 Sunday 12:00 PM CST",
         "situation_code": "FB-02",
-        "situation_desc": "Goal Line Defense / Clutch Field Goal Stand",
-        "network": "PRIME VIDEO (TNF) / Packers Radio Network",
-        "status": "ACTIVE GAMEDAY TONIGHT"
+        "situation_desc": "4th Down Goal-Line Defense Stand",
+        "network": "FOX / Packers Radio Network",
+        "status": "UPCOMING (Sunday, Nov 8)"
       },
       "upcoming_game": {
-        "matchup": "Green Bay Packers at New England Patriots",
-        "opponent": "New England Patriots",
-        "venue": "Gillette Stadium (Foxborough, MA)",
-        "date": "Sunday, Nov 8, 2026 • 3:25 PM CST",
-        "network": "FOX / Packers Radio Network"
+        "matchup": "Green Bay Packers vs. Chicago Bears (Rivalry Game)",
+        "opponent": "Chicago Bears",
+        "venue": "Lambeau Field (Green Bay, WI)",
+        "date": "Sunday, Nov 15, 2026 \u2022 12:00 PM CST",
+        "network": "FOX"
       },
-      "recent_games": "Week 7 (Oct 25): at Detroit Lions (L 17-20); Week 6 (Oct 18): vs. Dallas Cowboys (W 23-13); Week 5 (Oct 11): vs. Chicago Bears (W 31-7)",
+      "recent_games": "Oct 29, 2026: vs. Carolina Panthers (W 27-17); Oct 25: vs. Houston (W 24-22); Oct 20: vs. Arizona (W 34-13)",
       "full_schedule": [
-        {"date": "Sun, Sep 13, 2026", "opponent": "at Minnesota Vikings", "venue": "U.S. Bank Stadium", "result": "L 22-39", "tv": "FOX", "status": "Final"},
-        {"date": "Sun, Sep 20, 2026", "opponent": "at New York Jets", "venue": "MetLife Stadium", "result": "W 20-17 (OT)", "tv": "FOX", "status": "Final"},
-        {"date": "Thu, Sep 24, 2026", "opponent": "vs. Atlanta Falcons", "venue": "Lambeau Field", "result": "L 14-35", "tv": "Prime Video", "status": "Final"},
-        {"date": "Sun, Oct 4, 2026", "opponent": "at Tampa Bay Buccaneers", "venue": "Raymond James Stadium", "result": "W 17-14", "tv": "FOX", "status": "Final"},
-        {"date": "Sun, Oct 11, 2026", "opponent": "vs. Chicago Bears", "venue": "Lambeau Field", "result": "W 31-7", "tv": "FOX", "status": "Final"},
-        {"date": "Sun, Oct 18, 2026", "opponent": "vs. Dallas Cowboys", "venue": "Lambeau Field", "result": "W 23-13", "tv": "FOX", "status": "Final"},
-        {"date": "Sun, Oct 25, 2026", "opponent": "at Detroit Lions", "venue": "Ford Field", "result": "L 17-20", "tv": "FOX", "status": "Final"},
-        {"date": "Thu, Oct 29, 2026", "opponent": "vs. Carolina Panthers (TNF)", "venue": "Lambeau Field", "result": "7:15 PM CDT", "tv": "Prime Video", "status": "Tonight"},
-        {"date": "Sun, Nov 8, 2026", "opponent": "at New England Patriots", "venue": "Gillette Stadium", "result": "3:25 PM CST", "tv": "FOX", "status": "Upcoming"},
-        {"date": "Sun, Nov 15, 2026", "opponent": "vs. Minnesota Vikings", "venue": "Lambeau Field", "result": "12:00 PM CST", "tv": "FOX", "status": "Upcoming"},
-        {"date": "Sun, Nov 22, 2026", "opponent": "BYE WEEK", "venue": "---", "result": "BYE", "tv": "---", "status": "Upcoming"},
-        {"date": "Wed, Nov 25, 2026", "opponent": "at Los Angeles Rams (Thanksgiving Eve)", "venue": "SoFi Stadium", "result": "7:00 PM CST", "tv": "Netflix", "status": "Upcoming"}
+        {
+          "date": "Sun, Sep 13, 2026",
+          "opponent": "at Minnesota Vikings",
+          "venue": "U.S. Bank Stadium",
+          "result": "L 22-39",
+          "tv": "FOX",
+          "status": "Final"
+        },
+        {
+          "date": "Sun, Sep 20, 2026",
+          "opponent": "at New York Jets",
+          "venue": "MetLife Stadium",
+          "result": "W 20-17 (OT)",
+          "tv": "FOX",
+          "status": "Final"
+        },
+        {
+          "date": "Thu, Sep 24, 2026",
+          "opponent": "vs. Atlanta Falcons",
+          "venue": "Lambeau Field",
+          "result": "L 14-35",
+          "tv": "Prime Video",
+          "status": "Final"
+        },
+        {
+          "date": "Sun, Oct 4, 2026",
+          "opponent": "at Tampa Bay Buccaneers",
+          "venue": "Raymond James Stadium",
+          "result": "W 17-14",
+          "tv": "FOX",
+          "status": "Final"
+        },
+        {
+          "date": "Sun, Oct 11, 2026",
+          "opponent": "vs. Chicago Bears",
+          "venue": "Lambeau Field",
+          "result": "W 31-7",
+          "tv": "FOX",
+          "status": "Final"
+        },
+        {
+          "date": "Sun, Oct 18, 2026",
+          "opponent": "vs. Dallas Cowboys",
+          "venue": "Lambeau Field",
+          "result": "W 23-13",
+          "tv": "FOX",
+          "status": "Final"
+        },
+        {
+          "date": "Sun, Oct 25, 2026",
+          "opponent": "at Detroit Lions",
+          "venue": "Ford Field",
+          "result": "L 17-20",
+          "tv": "FOX",
+          "status": "Final"
+        },
+        {
+          "date": "Thu, Oct 29, 2026",
+          "opponent": "vs. Carolina Panthers (TNF)",
+          "venue": "Lambeau Field",
+          "result": "W 27-17",
+          "tv": "Prime Video",
+          "status": "Final"
+        },
+        {
+          "date": "Sun, Nov 8, 2026",
+          "opponent": "at New England Patriots",
+          "venue": "Gillette Stadium",
+          "result": "3:25 PM CST",
+          "tv": "FOX",
+          "status": "Next Game"
+        },
+        {
+          "date": "Sun, Nov 15, 2026",
+          "opponent": "vs. Minnesota Vikings",
+          "venue": "Lambeau Field",
+          "result": "12:00 PM CST",
+          "tv": "FOX",
+          "status": "Upcoming"
+        },
+        {
+          "date": "Sun, Nov 22, 2026",
+          "opponent": "BYE WEEK",
+          "venue": "---",
+          "result": "BYE",
+          "tv": "---",
+          "status": "Upcoming"
+        },
+        {
+          "date": "Wed, Nov 25, 2026",
+          "opponent": "at Los Angeles Rams (Thanksgiving Eve)",
+          "venue": "SoFi Stadium",
+          "result": "7:00 PM CST",
+          "tv": "Netflix",
+          "status": "Upcoming"
+        }
       ]
     },
     "Texas Longhorns": {
@@ -290,43 +703,127 @@
       "sport": "Football",
       "level": "College Football (NCAA FBS)",
       "conference_league": "SEC",
-      "home_venue": "Darrell K Royal–Texas Memorial Stadium (Section 115)",
-      "record": "5-2",
+      "home_venue": "Darrell K Royal\u2013Texas Memorial Stadium (Section 115)",
+      "record": "7-1 (SEC Contender)",
       "is_game_today": false,
       "active_game": {
-        "matchup": "Texas Longhorns vs. Mississippi State Bulldogs",
-        "opponent": "Mississippi State Bulldogs",
-        "is_home": true,
-        "venue": "Darrell K Royal–Texas Memorial Stadium (Austin, TX)",
-        "section": "Section 115 (End Zone Loyals)",
-        "game_time": "Saturday, Oct 31, 2026 • 6:30 PM CT",
-        "score_state": "Gameday Week 9 • Saturday 6:30 PM CT",
+        "matchup": "Texas Longhorns at Florida Gators",
+        "opponent": "Florida Gators",
+        "is_home": false,
+        "venue": "Ben Hill Griffin Stadium (Gainesville, FL)",
+        "section": "Visiting Longhorns Section",
+        "game_time": "Saturday, Nov 7, 2026 \u2022 11:00 AM CT",
+        "score_state": "SEC Week 10 \u2022 Saturday 11:00 AM CT",
         "situation_code": "FB-02",
-        "situation_desc": "Clutch Red Zone Stop / Goal Line Stand",
-        "network": "SEC Network / ESPN",
-        "status": "UPCOMING (Saturday, Oct 31)"
+        "situation_desc": "Red Zone 4th Down Stop",
+        "network": "ABC / Longhorn Network",
+        "status": "UPCOMING (Saturday, Nov 7)"
       },
       "upcoming_game": {
-        "matchup": "Texas Longhorns at Missouri Tigers",
-        "opponent": "Missouri Tigers",
-        "venue": "Faurot Field at Memorial Stadium (Columbia, MO)",
-        "date": "Saturday, Nov 7, 2026 • 11:00 AM CT",
-        "network": "SEC Network / ABC"
+        "matchup": "Texas Longhorns at Arkansas Razorbacks",
+        "opponent": "Arkansas Razorbacks",
+        "venue": "Donald W. Reynolds Stadium (Fayetteville, AR)",
+        "date": "Saturday, Nov 14, 2026 \u2022 11:00 AM CT",
+        "network": "ABC / ESPN"
       },
-      "recent_games": "Oct 24, 2026: vs. #7 Ole Miss (W 34-27); Oct 17, 2026: vs. Florida (L 24-27); Oct 10: vs. Oklahoma (L 24-27)",
+      "recent_games": "Oct 31, 2026: vs. Mississippi State (W 35-13); Oct 19: vs. Georgia (L 15-30); Oct 12: vs. Oklahoma (W 34-3)",
       "full_schedule": [
-        {"date": "Sep 5, 2026", "opponent": "vs. Texas State", "venue": "DKR-Texas Memorial Stadium", "result": "W 59-7", "tv": "SEC Network", "status": "Final"},
-        {"date": "Sep 12, 2026", "opponent": "vs. #1/1 Ohio State", "venue": "DKR-Texas Memorial Stadium", "result": "W 24-23", "tv": "FOX", "status": "Final"},
-        {"date": "Sep 19, 2026", "opponent": "vs. UTSA", "venue": "DKR-Texas Memorial Stadium", "result": "W 30-6", "tv": "SEC Network", "status": "Final"},
-        {"date": "Sep 26, 2026", "opponent": "at #14/13 Tennessee", "venue": "Neyland Stadium (Knoxville)", "result": "W 20-17", "tv": "ABC", "status": "Final"},
-        {"date": "Oct 10, 2026", "opponent": "vs. Oklahoma (Red River Rivalry)", "venue": "Cotton Bowl (Dallas)", "result": "L 24-27", "tv": "ABC", "status": "Final"},
-        {"date": "Oct 17, 2026", "opponent": "vs. Florida", "venue": "DKR-Texas Memorial Stadium", "result": "L 24-27", "tv": "ESPN", "status": "Final"},
-        {"date": "Oct 24, 2026", "opponent": "vs. #7/7 Ole Miss", "venue": "DKR-Texas Memorial Stadium", "result": "W 34-27", "tv": "ABC", "status": "Final"},
-        {"date": "Oct 31, 2026", "opponent": "vs. Mississippi State", "venue": "DKR-Texas Memorial Stadium", "result": "6:30 PM CT", "tv": "SEC Network", "status": "Next Game"},
-        {"date": "Nov 7, 2026", "opponent": "at Missouri", "venue": "Faurot Field (Columbia, MO)", "result": "11:00 AM CT", "tv": "SEC Network", "status": "Upcoming"},
-        {"date": "Nov 14, 2026", "opponent": "at LSU", "venue": "Tiger Stadium (Baton Rouge)", "result": "TBA", "tv": "ABC / ESPN", "status": "Upcoming"},
-        {"date": "Nov 21, 2026", "opponent": "vs. Arkansas", "venue": "DKR-Texas Memorial Stadium", "result": "TBA", "tv": "TBA", "status": "Upcoming"},
-        {"date": "Nov 27, 2026", "opponent": "at Texas A&M (Lone Star Showdown)", "venue": "Kyle Field (College Station)", "result": "TBA", "tv": "ABC", "status": "Upcoming"}
+        {
+          "date": "Sep 5, 2026",
+          "opponent": "vs. Texas State",
+          "venue": "DKR-Texas Memorial Stadium",
+          "result": "W 59-7",
+          "tv": "SEC Network",
+          "status": "Final"
+        },
+        {
+          "date": "Sep 12, 2026",
+          "opponent": "vs. #1/1 Ohio State",
+          "venue": "DKR-Texas Memorial Stadium",
+          "result": "W 24-23",
+          "tv": "FOX",
+          "status": "Final"
+        },
+        {
+          "date": "Sep 19, 2026",
+          "opponent": "vs. UTSA",
+          "venue": "DKR-Texas Memorial Stadium",
+          "result": "W 30-6",
+          "tv": "SEC Network",
+          "status": "Final"
+        },
+        {
+          "date": "Sep 26, 2026",
+          "opponent": "at #14/13 Tennessee",
+          "venue": "Neyland Stadium (Knoxville)",
+          "result": "W 20-17",
+          "tv": "ABC",
+          "status": "Final"
+        },
+        {
+          "date": "Oct 10, 2026",
+          "opponent": "vs. Oklahoma (Red River Rivalry)",
+          "venue": "Cotton Bowl (Dallas)",
+          "result": "L 24-27",
+          "tv": "ABC",
+          "status": "Final"
+        },
+        {
+          "date": "Oct 17, 2026",
+          "opponent": "vs. Florida",
+          "venue": "DKR-Texas Memorial Stadium",
+          "result": "L 24-27",
+          "tv": "ESPN",
+          "status": "Final"
+        },
+        {
+          "date": "Oct 24, 2026",
+          "opponent": "vs. #7/7 Ole Miss",
+          "venue": "DKR-Texas Memorial Stadium",
+          "result": "W 34-27",
+          "tv": "ABC",
+          "status": "Final"
+        },
+        {
+          "date": "Oct 31, 2026",
+          "opponent": "vs. Mississippi State",
+          "venue": "DKR-Texas Memorial Stadium",
+          "result": "W 35-13",
+          "tv": "SEC Network",
+          "status": "Final"
+        },
+        {
+          "date": "Nov 7, 2026",
+          "opponent": "at Missouri",
+          "venue": "Faurot Field (Columbia, MO)",
+          "result": "11:00 AM CT",
+          "tv": "SEC Network",
+          "status": "Next Game"
+        },
+        {
+          "date": "Nov 14, 2026",
+          "opponent": "at LSU",
+          "venue": "Tiger Stadium (Baton Rouge)",
+          "result": "TBA",
+          "tv": "ABC / ESPN",
+          "status": "Upcoming"
+        },
+        {
+          "date": "Nov 21, 2026",
+          "opponent": "vs. Arkansas",
+          "venue": "DKR-Texas Memorial Stadium",
+          "result": "TBA",
+          "tv": "TBA",
+          "status": "Upcoming"
+        },
+        {
+          "date": "Nov 27, 2026",
+          "opponent": "at Texas A&M (Lone Star Showdown)",
+          "venue": "Kyle Field (College Station)",
+          "result": "TBA",
+          "tv": "ABC",
+          "status": "Upcoming"
+        }
       ]
     },
     "Dallas Cowboys": {
@@ -335,40 +832,110 @@
       "level": "Pro Football (NFL)",
       "conference_league": "NFC East",
       "home_venue": "AT&T Stadium (Section 115)",
-      "record": "3-4",
+      "record": "5-3 (NFC East)",
       "is_game_today": false,
       "active_game": {
-        "matchup": "Dallas Cowboys vs. Arizona Cardinals",
-        "opponent": "Arizona Cardinals",
-        "is_home": true,
-        "venue": "AT&T Stadium (Arlington, TX)",
-        "section": "Section 115 (End Zone Loyals)",
-        "game_time": "Sunday, Nov 1, 2026 • 12:00 PM CST (1:00 PM EST)",
-        "score_state": "Week 8 Gameday • Sunday 12:00 PM CST",
+        "matchup": "Dallas Cowboys at Atlanta Falcons",
+        "opponent": "Atlanta Falcons",
+        "is_home": false,
+        "venue": "Mercedes-Benz Stadium (Atlanta, GA)",
+        "section": "Visiting Section 115 Star Section",
+        "game_time": "Sunday, Nov 8, 2026 \u2022 12:00 PM CST",
+        "score_state": "NFL Week 9 \u2022 Sunday 12:00 PM CST",
         "situation_code": "FB-02",
-        "situation_desc": "Clutch 4th Down Stop / 48-Yard Field Goal Snap",
-        "network": "FOX / 105.3 The Fan",
-        "status": "UPCOMING (Sunday, Nov 1)"
+        "situation_desc": "4th Quarter 2-Minute Drill Defensive Stop",
+        "network": "FOX / Cowboys Radio Network",
+        "status": "UPCOMING (Sunday, Nov 8)"
       },
       "upcoming_game": {
-        "matchup": "Dallas Cowboys at Indianapolis Colts",
-        "opponent": "Indianapolis Colts",
-        "venue": "Lucas Oil Stadium (Indianapolis, IN)",
-        "date": "Sunday, Nov 8, 2026 • 12:00 PM CST",
-        "network": "FOX / 105.3 The Fan"
+        "matchup": "Dallas Cowboys vs. Philadelphia Eagles",
+        "opponent": "Philadelphia Eagles",
+        "venue": "AT&T Stadium (Arlington, TX)",
+        "date": "Sunday, Nov 15, 2026 \u2022 3:25 PM CST",
+        "network": "CBS"
       },
-      "recent_games": "Week 7 (Mon Oct 26): at Philadelphia Eagles (W 38-21); Week 6 (Sun Oct 18): at Green Bay Packers (L 13-23); Week 5 (Thu Oct 08): vs. Tampa Bay Buccaneers (L 16-24)",
+      "recent_games": "Nov 1, 2026: vs. Arizona Cardinals (W 28-21); Oct 27: at San Francisco (L 24-30); Oct 13: vs. Detroit (L 9-47)",
       "full_schedule": [
-        {"date": "Sun, Sep 13, 2026", "opponent": "at New York Giants", "venue": "MetLife Stadium", "result": "L 20-28", "tv": "FOX", "status": "Final"},
-        {"date": "Sun, Sep 20, 2026", "opponent": "vs. Washington Commanders", "venue": "AT&T Stadium", "result": "W 37-20", "tv": "FOX", "status": "Final"},
-        {"date": "Sun, Sep 27, 2026", "opponent": "vs. Baltimore Ravens (Brazil)", "venue": "Maracana Stadium", "result": "L 31-34", "tv": "FOX", "status": "Final"},
-        {"date": "Sun, Oct 4, 2026", "opponent": "at Houston Texans", "venue": "Reliant Stadium", "result": "W 34-30", "tv": "FOX", "status": "Final"},
-        {"date": "Thu, Oct 8, 2026", "opponent": "vs. Tampa Bay Buccaneers", "venue": "AT&T Stadium", "result": "L 16-24", "tv": "Prime Video", "status": "Final"},
-        {"date": "Sun, Oct 18, 2026", "opponent": "at Green Bay Packers", "venue": "Lambeau Field", "result": "L 13-23", "tv": "FOX", "status": "Final"},
-        {"date": "Mon, Oct 26, 2026", "opponent": "at Philadelphia Eagles", "venue": "Lincoln Financial Field", "result": "W 38-21", "tv": "ESPN", "status": "Final"},
-        {"date": "Sun, Nov 1, 2026", "opponent": "vs. Arizona Cardinals", "venue": "AT&T Stadium", "result": "12:00 PM CST", "tv": "FOX", "status": "Next Game"},
-        {"date": "Sun, Nov 8, 2026", "opponent": "at Indianapolis Colts", "venue": "Lucas Oil Stadium", "result": "12:00 PM CST", "tv": "FOX", "status": "Upcoming"},
-        {"date": "Sun, Nov 15, 2026", "opponent": "vs. San Francisco 49ers", "venue": "AT&T Stadium", "result": "3:25 PM CST", "tv": "FOX", "status": "Upcoming"}
+        {
+          "date": "Sun, Sep 13, 2026",
+          "opponent": "at New York Giants",
+          "venue": "MetLife Stadium",
+          "result": "L 20-28",
+          "tv": "FOX",
+          "status": "Final"
+        },
+        {
+          "date": "Sun, Sep 20, 2026",
+          "opponent": "vs. Washington Commanders",
+          "venue": "AT&T Stadium",
+          "result": "W 37-20",
+          "tv": "FOX",
+          "status": "Final"
+        },
+        {
+          "date": "Sun, Sep 27, 2026",
+          "opponent": "vs. Baltimore Ravens (Brazil)",
+          "venue": "Maracana Stadium",
+          "result": "L 31-34",
+          "tv": "FOX",
+          "status": "Final"
+        },
+        {
+          "date": "Sun, Oct 4, 2026",
+          "opponent": "at Houston Texans",
+          "venue": "Reliant Stadium",
+          "result": "W 34-30",
+          "tv": "FOX",
+          "status": "Final"
+        },
+        {
+          "date": "Thu, Oct 8, 2026",
+          "opponent": "vs. Tampa Bay Buccaneers",
+          "venue": "AT&T Stadium",
+          "result": "L 16-24",
+          "tv": "Prime Video",
+          "status": "Final"
+        },
+        {
+          "date": "Sun, Oct 18, 2026",
+          "opponent": "at Green Bay Packers",
+          "venue": "Lambeau Field",
+          "result": "L 13-23",
+          "tv": "FOX",
+          "status": "Final"
+        },
+        {
+          "date": "Mon, Oct 26, 2026",
+          "opponent": "at Philadelphia Eagles",
+          "venue": "Lincoln Financial Field",
+          "result": "W 38-21",
+          "tv": "ESPN",
+          "status": "Final"
+        },
+        {
+          "date": "Sun, Nov 1, 2026",
+          "opponent": "vs. Arizona Cardinals",
+          "venue": "AT&T Stadium",
+          "result": "W 28-21",
+          "tv": "FOX",
+          "status": "Final"
+        },
+        {
+          "date": "Sun, Nov 8, 2026",
+          "opponent": "at Indianapolis Colts",
+          "venue": "Lucas Oil Stadium",
+          "result": "12:00 PM CST",
+          "tv": "FOX",
+          "status": "Next Game"
+        },
+        {
+          "date": "Sun, Nov 15, 2026",
+          "opponent": "vs. San Francisco 49ers",
+          "venue": "AT&T Stadium",
+          "result": "W 28-21",
+          "tv": "FOX",
+          "status": "Final"
+        }
       ]
     }
   }
