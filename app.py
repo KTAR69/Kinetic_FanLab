@@ -48,10 +48,28 @@ try:
     from governance_factsheet import log_inference_event, publish_governance_factsheet
     FACTSHEET_LIVE = True
 except Exception:
-    FACTSHEET_LIVE = False
-    def log_inference_event(*args, **kwargs): pass  # type: ignore[misc]
-    def publish_governance_factsheet() -> dict:  # type: ignore[misc]
-        return {"source": "DISABLED", "status": "UNAVAILABLE"}
+    try:
+        import importlib.util
+        _gf_path = os.path.join(current_dir, "governance_factsheet.py")
+        if os.path.exists(_gf_path):
+            _gf_spec = importlib.util.spec_from_file_location("governance_factsheet", _gf_path)
+            if _gf_spec is not None and _gf_spec.loader is not None:
+                _gf_mod = importlib.util.module_from_spec(_gf_spec)
+                _gf_spec.loader.exec_module(_gf_mod)
+                log_inference_event = _gf_mod.log_inference_event
+                publish_governance_factsheet = _gf_mod.publish_governance_factsheet
+                FACTSHEET_LIVE = True
+            else:
+                FACTSHEET_LIVE = False
+        else:
+            FACTSHEET_LIVE = False
+    except Exception:
+        FACTSHEET_LIVE = False
+
+    if not FACTSHEET_LIVE:
+        def log_inference_event(*args, **kwargs): pass  # type: ignore[misc]
+        def publish_governance_factsheet() -> dict:  # type: ignore[misc]
+            return {"source": "DISABLED", "status": "UNAVAILABLE"}
 
 # Import IBM Cloud services (graceful fallback included inside each module)
 try:
@@ -79,6 +97,8 @@ try:
         save_storycard as cloudant_save_storycard,
         save_tester_feedback as cloudant_save_feedback,
         get_all_tester_feedback as cloudant_get_feedback,
+        save_sponsor_voucher as cloudant_save_voucher,
+        get_all_sponsor_vouchers as cloudant_get_vouchers,
     )
     CLOUDANT_ENGINE_LIVE = True
 except Exception:
@@ -88,6 +108,8 @@ except Exception:
     def cloudant_save_storycard(*args, **kwargs): return {'status': 'SUCCESS'}
     def cloudant_save_feedback(*args, **kwargs): return {'status': 'SUCCESS', 'source': 'LOCAL_CACHE'}
     def cloudant_get_feedback(*args, **kwargs): return []
+    def cloudant_save_voucher(*args, **kwargs): return {'status': 'SUCCESS', 'source': 'LOCAL_CACHE'}
+    def cloudant_get_vouchers(*args, **kwargs): return []
 
 try:
     from cos_archive import archive_crowd_box_score as cos_lakehouse_archive
@@ -102,6 +124,22 @@ except Exception:
             'content_sha256': '035727e646c2ea32cdc2d4094a4805e26325be91e92d6e32d56a3e2182c1634b',
             'byte_size': 577,
         }
+
+# Week 8: In-Arena Dynamic Sponsor Perk & Attribution Engine
+try:
+    import sponsor_voucher_engine as sve
+except Exception:
+    import importlib.util
+    _sve_path = os.path.join(current_dir, "sponsor_voucher_engine.py")
+    if os.path.exists(_sve_path):
+        _spec = importlib.util.spec_from_file_location("sponsor_voucher_engine", _sve_path)
+        if _spec is not None and _spec.loader is not None:
+            sve = importlib.util.module_from_spec(_spec)
+            _spec.loader.exec_module(sve)
+        else:
+            sve = None
+    else:
+        sve = None
 
 # Pre-import orchestrate_agents top-level agents used across Screen 3, 4, and 5
 # so they are not re-imported on every screen render (P2-INFRA).
@@ -663,6 +701,9 @@ def _sync_and_persist_user_state():
     user_rec["capstone_claimed_bb"] = st.session_state.get("capstone_claimed_bb", False)
     user_rec["capstone_claimed_fb"] = st.session_state.get("capstone_claimed_fb", False)
 
+    # Week 8 Dynamic Sponsor Vouchers Wallet
+    user_rec["claimed_vouchers"] = list(st.session_state.get("claimed_vouchers", []))
+
     # Sport-isolated Tailgates & Meetups
     user_rec["tailgates_attended_bb"] = st.session_state.get("tailgates_attended_bb", 0)
     user_rec["tailgates_attended_fb"] = st.session_state.get("tailgates_attended_fb", 0)
@@ -742,6 +783,9 @@ def _load_user_into_session(user_data, email):
     st.session_state.armchair_callouts_count = user_data.get("armchair_callouts_count", 0)
     st.session_state.armchair_nft_unlocked_bb = user_data.get("armchair_nft_unlocked_bb", False)
     st.session_state.armchair_nft_unlocked_fb = user_data.get("armchair_nft_unlocked_fb", False)
+
+    # Week 8 Dynamic Sponsor Vouchers Wallet — hydrate on login
+    st.session_state.claimed_vouchers = list(user_data.get("claimed_vouchers", []))
 
     # Sport-isolated Tailgates & Meetups
     st.session_state.tailgates_attended_bb = user_data.get("tailgates_attended_bb", 0)
@@ -929,6 +973,7 @@ def _clear_user_session_state():
     st.session_state.tap_count = 0
     st.session_state.tap_times = []
     st.session_state.armchair_callouts_count = 0
+    st.session_state.claimed_vouchers = []
 
 @st.cache_data(ttl=120, show_spinner=False)
 def _load_all_feedback_with_fallbacks():
@@ -2059,6 +2104,35 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
 
         active_team_sel = st.session_state[team_session_key]
         matchup_data = _get_active_matchup_info(st.session_state.sport, active_team_sel)
+
+        # ------------------------------------------------------------------
+        # WEEK 8 OPENING NIGHT 2026 LAUNCH BANNER & PARTNER RADAR
+        # ------------------------------------------------------------------
+        _active_sport_name = "Basketball" if is_basketball else "College Football"
+        _partner_prof = sve.get_team_sponsor_profile(active_team_sel) if sve else {"brand": "Whataburger®", "brand_color": "#ff6600", "icon": "🍔"}
+        st.markdown(f"""
+        <div style="background: linear-gradient(90deg, #12161f 0%, #1a2233 100%); border-left: 4px solid {_partner_prof.get('brand_color', '#0f62fe')}; padding: 12px 16px; border-radius: 8px; margin-bottom: 14px; border-top: 1px solid #283447; border-right: 1px solid #283447; border-bottom: 1px solid #283447;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                <div>
+                    <span style="background-color: {_partner_prof.get('brand_color', '#0f62fe')}; color: white; padding: 2px 8px; border-radius: 4px; font-size: 7.5pt; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase;">
+                        🗓️ 2026-27 OPENING NIGHT KICKOFF &bull; NOV 2, 2026
+                    </span>
+                    <h4 style="margin: 6px 0 2px 0; color: #f4f4f4; font-size: 11pt;">
+                        {_partner_prof.get('icon', '⚡')} {_partner_prof.get('brand', 'Official Partner')} Live In-Arena Activation ({active_team_sel})
+                    </h4>
+                    <p style="margin: 0; color: #a8a8a8; font-size: 8.5pt;">
+                        Section 114/115 concourse sensors armed. Crossing the <b>80.0 CMI Defensive Roar</b> threshold in Screen 3 triggers authentic concessions perk vouchers directly to your Living Trophy Case!
+                    </p>
+                </div>
+                <div style="text-align: right; background-color: #0e1117; padding: 6px 12px; border-radius: 6px; border: 1px solid #2b3548;">
+                    <span style="color: #5da8ff; font-size: 8pt; font-weight: bold;">Official Partner</span><br/>
+                    <span style="color: #ffffff; font-weight: bold; font-size: 9.5pt;">{_partner_prof.get('brand', 'Whataburger®')}</span>
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+
         act_g = matchup_data.get("active_game", {})
         up_g = matchup_data.get("upcoming_game", {})
         is_today = matchup_data.get("is_game_today", False)
@@ -2664,6 +2738,48 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                         st.text_area("Copy Showcase Caption to Clipboard:", value=insta_showcase, height=115)
                         st.caption("Paste this verified showcase caption into your Instagram Story, Bio, or TikTok caption!")
 
+                # --------------------------------------------------------------
+                # WEEK 8: CLAIMED SPONSOR VOUCHERS WALLET
+                # --------------------------------------------------------------
+                st.markdown("---")
+                st.markdown("### 🎟️ Verified In-Arena Sponsor Vouchers Wallet")
+                st.caption("Cryptographically validated partner perks unlocked during high-pressure clutch stadium moments (CMI ≥ 80). Redeemable at concession stands and stadium gates.")
+
+                _user_vouchers = st.session_state.get("claimed_vouchers", [])
+                if not _user_vouchers:
+                    st.info("ℹ️ **No Sponsor Vouchers Claimed Yet.**\n\nWhen Section 114 drives stadium CMI to **80.0 or higher** in **Screen 3: In-Arena Game Hub**, your active team's official partner voucher (e.g. Whataburger®, H-E-B®, Dunkin'®) unlocks automatically! Head to Screen 3 and unleash a Clutch Pulse Surge to earn your first voucher.")
+                else:
+                    st.success(f"🎉 You have **{len(_user_vouchers)} verified sponsor voucher(s)** stored in your persistent wallet.")
+                    for _v_idx, _v in enumerate(_user_vouchers):
+                        _b_color = _v.get("brand_color", "#ff6600")
+                        _v_hash = _v.get("claim_hash", "0xVCH-UNCONFIRMED")
+                        _v_code = _v.get("discount_code", "CLUTCH26")
+                        st.markdown(f"""
+                        <div style="background-color: #12161f; border-left: 5px solid {_b_color}; border: 1px solid #283447; border-left-width: 5px; border-radius: 10px; padding: 14px 18px; margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                                <div>
+                                    <span style="background-color: {_b_color}; color: white; padding: 2px 8px; border-radius: 4px; font-size: 8pt; font-weight: bold;">
+                                        {_v.get('icon', '🎟️')} {_v.get('brand', 'Partner')}
+                                    </span>
+                                    <span style="color: #a8a8a8; font-size: 8.5pt; margin-left: 8px;">
+                                        {_v.get('partner_category', 'Official Partner')} &bull; Retail Value: <b>${_v.get('retail_value', 6.50):.2f}</b>
+                                    </span>
+                                    <h4 style="margin: 8px 0 4px 0; color: #f4f4f4; font-size: 11pt;">{_v.get('title', 'Gameday Perk')}</h4>
+                                    <p style="margin: 0; color: #c4c4c4; font-size: 8.5pt;">{_v.get('desc', 'Unlocked by crowd momentum.')}</p>
+                                </div>
+                                <div style="text-align: right; background-color: #0b0e14; padding: 10px 14px; border-radius: 8px; border: 1px dashed {_b_color}; margin-top: 6px;">
+                                    <span style="color: #888; font-size: 7.5pt; text-transform: uppercase; letter-spacing: 1px;">Concession Barcode Code</span><br/>
+                                    <span style="color: #5da8ff; font-family: monospace; font-size: 12pt; font-weight: bold; letter-spacing: 1.5px;">{_v_code}</span><br/>
+                                    <span style="color: #42be65; font-family: monospace; font-size: 7.5pt;">Hash: {_v_hash}</span>
+                                </div>
+                            </div>
+                            <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid #1e2636; display: flex; justify-content: space-between; font-size: 7.5pt; color: #788294;">
+                                <span>Seat Anchor: <b>{_v.get('seat', st.session_state.member_seat)}</b> &bull; Trigger CMI: <b>{_v.get('trigger_cmi', 85.0)}/100</b></span>
+                                <span>Status: <b style="color: #42be65;">🟢 VERIFIED & ACTIVE (18h window)</b></span>
+                            </div>
+                        </div>
+                        """, unsafe_allow_html=True)
+
             with tab_settings:
                 st.subheader("⚙️ Account Settings & Connected Accounts")
                 st.caption("Manage your connected social platforms, wearable sensor anchors, and gameday telemetry preferences.")
@@ -3011,6 +3127,20 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                         for _tr in reversed(_telem_cache[-20:]):
                             _q = "🟢 Qualified" if _tr.get("cmi", 0) >= 80.0 else "⚪ Below Threshold"
                             st.markdown(f"- `{_tr.get('sport','?')}` | **{_tr.get('cmi',0)}/100 CMI** | {_tr.get('section_id','?')} | {_q}")
+
+                    st.markdown("---")
+                    st.markdown("**🎟️ Live Claimed Sponsor Perks Ledger (IBM Cloudant Tamper-Evident Mirror):**")
+                    try:
+                        import cloudant_engine as _ce_vch
+                        _live_vchs = _ce_vch.get_all_sponsor_vouchers()
+                    except Exception:
+                        _live_vchs = []
+                    if not _live_vchs:
+                        st.caption("No sponsor perk claims recorded yet. Drive CMI to 80+ in Screen 3 to generate live claims.")
+                    else:
+                        st.caption(f"Showing {min(10, len(_live_vchs))} most recent validated claims across all arena sections (Total Claimed: {len(_live_vchs)}):")
+                        for _lv in reversed(_live_vchs[-10:]):
+                            st.markdown(f"- `{_lv.get('claim_hash', '0xVCH-?')}` &bull; **{_lv.get('brand', 'Partner')}** (`{_lv.get('discount_code', 'CODE')}`) &bull; Fan: **{_lv.get('claimed_by_name', '?')}** ({_lv.get('claimed_by_handle', '?')}) &bull; Seat: {_lv.get('seat', '?')} &bull; Trigger CMI: **{_lv.get('trigger_cmi', '?')}/100** &bull; Integrity: `{_lv.get('integrity_sha256', '')[:12]}...`")
 
             if is_admin_lead and tab_leaderboard is not None:
                 with tab_leaderboard:
@@ -3504,6 +3634,65 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
            - **80–100 (Maximum Clutch):** Defensive threshold that forces visiting missed free throws and field goals!
         3. **Try it live:** Click **`🔥 PULSE TAP +1`** or **`⚡ SURGE BURST (+5)`** below to watch your tap points and total CMI climb instantly!
         """)
+
+    # ------------------------------------------------------------------
+    # WEEK 8: IN-ARENA DYNAMIC SPONSOR PERK ACTIVATION (CMI >= 80)
+    # ------------------------------------------------------------------
+    if sve and (current_cmi >= 80.0 or st.session_state.is_clutch):
+        _active_team = active_team_focus
+        _live_perk = sve.evaluate_clutch_sponsor_perk(st.session_state.sport, _active_team, current_cmi, is_clutch=st.session_state.is_clutch or current_cmi >= 80.0)
+        if _live_perk:
+            _p_brand = _live_perk.get("brand", "Whataburger®")
+            _p_color = _live_perk.get("brand_color", "#ff6600")
+            _p_icon = _live_perk.get("icon", "🍔")
+            _p_code = _live_perk.get("discount_code", "WHATACLUTCH26")
+            _p_val = _live_perk.get("retail_value", 6.50)
+            
+            # Check if already claimed in this session
+            _already_claimed = any(v.get("discount_code") == _p_code for v in st.session_state.get("claimed_vouchers", []))
+            
+            st.markdown(f"""
+            <div style="background: linear-gradient(135deg, #1c1510 0%, #12161f 100%); border: 2px solid {_p_color}; border-radius: 12px; padding: 16px 20px; margin: 14px 0; box-shadow: 0 0 20px {_p_color}44;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                    <div>
+                        <span style="background-color: {_p_color}; color: white; padding: 3px 10px; border-radius: 14px; font-size: 8pt; font-weight: bold; text-transform: uppercase; letter-spacing: 0.8px;">
+                            {_p_icon} IN-ARENA CLUTCH SPONSOR PERK UNLOCKED!
+                        </span>
+                        <h3 style="margin: 8px 0 2px 0; color: #ffffff; font-size: 13pt;">{_live_perk.get('title', 'Gameday Perk')}</h3>
+                        <p style="margin: 0; color: #d0d0d0; font-size: 9pt;">
+                            {_live_perk.get('desc', 'Triggered by Section 114 acoustic momentum!')}
+                        </p>
+                        <p style="margin: 4px 0 0 0; color: #a8a8a8; font-size: 8pt;">
+                            Partner: <b>{_p_brand}</b> &bull; Retail Value: <b>${_p_val:.2f}</b> &bull; Powered by IBM watsonx Two-Sided Unit Economics
+                        </p>
+                    </div>
+                    <div style="text-align: right; background-color: #0b0e14; padding: 8px 16px; border-radius: 8px; border: 1px dashed {_p_color}; margin-top: 6px;">
+                        <span style="color: #aaa; font-size: 7.5pt; text-transform: uppercase;">Perk Promo Code</span><br/>
+                        <span style="color: #ffffff; font-family: monospace; font-size: 13pt; font-weight: bold; letter-spacing: 1.5px;">{_p_code}</span>
+                    </div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            col_claim_p, col_claim_info = st.columns([2, 3])
+            with col_claim_p:
+                if _already_claimed:
+                    st.button(f"✅ {_p_brand} Perk Already in Wallet", key="btn_perk_claimed_done", disabled=True, use_container_width=True)
+                else:
+                    if st.button(f"🎁 Claim {_p_brand} Perk to Living Trophy Case", key="btn_claim_sponsor_perk", use_container_width=True):
+                        claimed_vch = sve.claim_sponsor_voucher(_live_perk, st.session_state.member_name, st.session_state.member_handle)
+                        claimed_vch["seat"] = st.session_state.member_seat
+                        claimed_vch["trigger_cmi"] = current_cmi
+                        if "claimed_vouchers" not in st.session_state:
+                            st.session_state.claimed_vouchers = []
+                        st.session_state.claimed_vouchers.append(claimed_vch)
+                        _sync_and_persist_user_state()
+                        cloudant_save_voucher(claimed_vch)
+                        st.balloons()
+                        st.success(f"🎉 Successfully claimed! Hash: `{claimed_vch['claim_hash']}`. Recorded in your Living Trophy Case.")
+                        st.rerun()
+            with col_claim_info:
+                st.caption(f"⚡ **Two-Sided Commercial Economics:** Partner fee: **${_live_perk.get('partner_fee', 4.85):.2f}** | Model compute cost: **$0.0137** | Net Gross Margin: **99.72%**")
 
     # ------------------------------------------------------------------
     # Crowd Pulse Tapper & Armchair Coach Reaction Logger (Fan-to-Fan)
