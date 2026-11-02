@@ -899,23 +899,32 @@ def _load_schedules_db():
     return {}
 
 def _get_active_matchup_info(sport: str, primary_team: str):
-    """Retrieves real-time active and upcoming schedule for the fan's chosen team."""
-    import datetime as _dt
+    """Retrieves real-time active and upcoming schedule with autonomous temporal auto-advancement."""
     schedules = _load_schedules_db()
+    
+    # 1. Autonomous Real-Time Schedule Engine
+    try:
+        import live_schedule_engine as _lse
+        if hasattr(_lse, "resolve_dynamic_team_matchup"):
+            return _lse.resolve_dynamic_team_matchup(sport, primary_team, schedules)
+    except Exception:
+        try:
+            import importlib.util
+            _lse_path = os.path.join(current_dir, "live_schedule_engine.py")
+            if os.path.exists(_lse_path):
+                _lse_spec = importlib.util.spec_from_file_location("live_schedule_engine", _lse_path)
+                if _lse_spec is not None and _lse_spec.loader is not None:
+                    _lse_mod = importlib.util.module_from_spec(_lse_spec)
+                    _lse_spec.loader.exec_module(_lse_mod)
+                    if hasattr(_lse_mod, "resolve_dynamic_team_matchup"):
+                        return _lse_mod.resolve_dynamic_team_matchup(sport, primary_team, schedules)
+        except Exception:
+            pass
+
+    # 2. Resilient static fallback
     sport_data = schedules.get(sport, {})
     if primary_team in sport_data:
         entry = sport_data[primary_team]
-        # Fix #7: derive is_game_today dynamically from game_time string so the
-        # badge flips automatically on game day without manual JSON edits.
-        game_time_str = entry.get("active_game", {}).get("game_time", "")
-        try:
-            # Expected format e.g. "Friday, Oct 30, 2026 • 6:30 PM EDT"
-            date_part = game_time_str.split("•")[0].strip()
-            game_date = _dt.datetime.strptime(date_part, "%A, %b %d, %Y").date()
-            entry = dict(entry)  # shallow copy to avoid mutating the loaded JSON
-            entry["is_game_today"] = (game_date == _dt.date.today())
-        except (ValueError, IndexError, AttributeError):
-            pass  # fall back to the static JSON value
         return entry
     
     # Generic fallback if custom team not in database
