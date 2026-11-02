@@ -3,7 +3,7 @@ Kinetic FanLab — Autonomous Real-Time Schedule & Sports Feed Engine
 Week 8 Innovation Module (live_schedule_engine.py)
 
 Eliminates manual schedule maintenance through a 3-tier autonomous architecture:
-1. Live Public Sports Feed Ingestion (ESPN / NCAA REST APIs) with 5-min TTL cache.
+1. Live Public Sports Feed Ingestion (ESPN / NCAA open REST APIs) with 5-min caching.
 2. Autonomous Temporal State Engine: Chronologically auto-advances completed games to FINAL,
    rolls the upcoming matchup into active_game, and recalculates W-L records on the fly.
 3. Air-Gapped Stadium Resilience: Deterministic offline fallback guaranteeing 100% uptime.
@@ -13,6 +13,8 @@ import os
 import json
 import time
 import datetime as dt
+import urllib.request
+import urllib.error
 from typing import Dict, Any, List, Optional, Tuple
 
 _BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -28,14 +30,40 @@ TEAM_CODE_MAP: Dict[str, Dict[str, Any]] = {
     "Dallas Cowboys": {"sport": "football", "league": "nfl", "espn_id": "6", "conf": "NFC East"},
 }
 
+_LIVE_CACHE: Dict[str, Tuple[float, Dict[str, Any]]] = {}
+
+def fetch_live_scores_espn(sport: str, primary_team: str, timeout_sec: float = 1.5) -> Optional[Dict[str, Any]]:
+    """
+    Attempts to pull real-time live score, quarter, and clock from ESPN's open public REST endpoint.
+    Cached for 300 seconds. Returns None if offline or rate-limited to trigger Tier-2 fallback.
+    """
+    team_info = TEAM_CODE_MAP.get(primary_team)
+    if not team_info:
+        return None
+
+    cache_key = f"{sport}:{primary_team}"
+    now_ts = time.time()
+    if cache_key in _LIVE_CACHE:
+        cached_ts, cached_data = _LIVE_CACHE[cache_key]
+        if now_ts - cached_ts < 300:
+            return cached_data
+
+    url = f"https://site.api.espn.com/apis/site/v2/sports/{team_info['sport']}/{team_info['league']}/teams/{team_info['espn_id']}/schedule"
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "KineticFanLab/2.8 (IBM-SkillsBuild)"})
+        with urllib.request.urlopen(req, timeout=timeout_sec) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            _LIVE_CACHE[cache_key] = (now_ts, data)
+            return data
+    except Exception:
+        return None
+
 def parse_game_date(date_str: str) -> Optional[dt.date]:
     """Parses various gameday date strings into a standard dt.date object."""
     if not date_str:
         return None
-    # Strip any weekday prefixes or extra times
     cleaned = date_str.split("•")[0].split("-")[0].strip()
     if "," in cleaned and len(cleaned.split(",")) > 2:
-        # e.g., "Saturday, Oct 31, 2026"
         cleaned = ",".join(cleaned.split(",")[1:]).strip()
     
     formats = ["%b %d, %Y", "%B %d, %Y", "%Y-%m-%d", "%m/%d/%Y"]
@@ -60,7 +88,6 @@ def resolve_dynamic_team_matchup(
     """
     sport_data = schedules_db.get(sport, {})
     if primary_team not in sport_data:
-        # Return generic fallback if team not in database
         is_bb = (sport == "Basketball")
         return {
             "team": primary_team,
@@ -118,7 +145,6 @@ def resolve_dynamic_team_matchup(
             continue
 
         if g_date < current_date:
-            # Game is in the past -> must be FINAL
             g["status"] = "Final"
             res_str = g.get("result", "")
             if res_str.startswith("W"):
@@ -149,7 +175,6 @@ def resolve_dynamic_team_matchup(
         if len(future_games) > 1:
             subsequent_sched_item = future_games[1]
     elif completed_games:
-        # Off-season / post-season
         active_sched_item = completed_games[-1]
 
     # 2. Build live active_game object
@@ -162,7 +187,7 @@ def resolve_dynamic_team_matchup(
             opp_clean = raw_opp[3:].strip()
         else:
             opp_clean = raw_opp
-        is_home = not active_sched_item.get("opponent", "").strip().startswith("at")
+
         sec_name = "Section 114 (Thunder Row)" if sport == "Basketball" else "Section 115 (End Zone Loyals)"
         if not is_home:
             sec_name = f"Visiting Section ({sec_name})"
@@ -197,7 +222,7 @@ def resolve_dynamic_team_matchup(
             sub_opp_clean = raw_sub[3:].strip()
         else:
             sub_opp_clean = raw_sub
-        sub_is_home = not subsequent_sched_item.get("opponent", "").strip().startswith("at")
+
         team_entry["upcoming_game"] = {
             "matchup": f"{primary_team} {'vs.' if sub_is_home else 'at'} {sub_opp_clean}",
             "opponent": sub_opp_clean,
