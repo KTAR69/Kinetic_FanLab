@@ -1433,6 +1433,7 @@ def _set_active_sport(new_sport: str):
     st.session_state.user_respect_taps_sent = st.session_state.get(f"user_respect_taps_sent_{'bb' if is_bb else 'fb'}", 0)
     st.session_state.synergy_score = st.session_state.get(f"synergy_score_{'bb' if is_bb else 'fb'}", 0)
     st.session_state.synergy_claimed = st.session_state.get(f"synergy_claimed_{'bb' if is_bb else 'fb'}", False)
+    st.session_state._clutch_toast_shown = False
     # P1-2: sport-isolate squad chat history so BB replies don't bleed into FB sessions
     sport_key = "bb" if is_bb else "fb"
     st.session_state.squad_chat_history = st.session_state.get(f"squad_chat_history_{sport_key}", [])
@@ -1536,16 +1537,24 @@ if _debug_param == "health":
     st.markdown("### 🧪 On-Demand Canonical CMI Fixture Verification")
     if st.button("▶ Run Canonical CMI Verification Suite (BB-01, BB-02, FB-01, FB-02)", key="btn_run_cmi_verify"):
         fixtures_to_test = [
-            ("BB-01: Baseline Free Throw 1", 79.2, 94.0, 2.8, 0.55, 33.6, "Baseline"),
-            ("BB-02: Clutch Free Throw 2", 106.4, 138.0, 12.4, 0.88, 88.5, "Maximum Clutch"),
-            ("FB-01: 2nd Down Routine Huddle", 81.5, 98.0, 3.2, 0.58, 38.2, "Baseline"),
-            ("FB-02: 48-Yard Field Goal Snap", 112.8, 148.0, 14.1, 0.94, 95.8, "Maximum Clutch")
+            ("BB-01: Basketball Baseline (Free Throw 1)", 82.0, 98.0, 2.5, 0.55, 37.8, "Baseline"),
+            ("BB-02: Basketball Clutch Free Throw 2", 106.5, 136.0, 12.2, 0.85, 81.9, "Maximum Clutch"),
+            ("FB-01: Football 2nd Down Routine Huddle", 78.5, 105.0, 3.0, 0.60, 39.0, "Baseline"),
+            ("FB-02: Football 48-Yard FG Snap (Clutch)", 111.8, 148.0, 14.0, 0.92, 92.0, "Maximum Clutch")
         ]
+        all_passed = True
         for f_name, f_db, f_hr, f_taps, f_vu, f_exp_cmi, f_tier in fixtures_to_test:
             calc_c = calc_momentum_index(f_db, f_hr, f_taps, f_vu)
             t_name = get_tier(calc_c)
-            st.write(f"✅ **{f_name}** &rarr; Computed CMI: `{calc_c}` ({t_name}) | Target: `{f_exp_cmi}`")
-        st.success("All 4 Canonical Fixtures verified against watsonx CMI contract!")
+            passed = (calc_c == f_exp_cmi)
+            if not passed:
+                all_passed = False
+            icon = "✅" if passed else "❌"
+            st.write(f"{icon} **{f_name}** &rarr; Computed CMI: `{calc_c}` ({t_name}) | Expected: `{f_exp_cmi}`")
+        if all_passed:
+            st.success("All 4 Canonical Fixtures verified contract-exact against AGENTS.md benchmarks!")
+        else:
+            st.error("Canonical fixture discrepancy detected!")
     st.stop()
 
 # Item 5: IBM App ID — handle OAuth2 callback at the very top of every run
@@ -3781,13 +3790,10 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
         """)
 
     # Trigger one-time celebratory toast & balloons when CMI first crosses the 80.0 Maximum Clutch threshold
-    if current_cmi >= 80.0:
-        if not st.session_state.get("_clutch_toast_shown", False):
-            st.toast("🔴 MAXIMUM CLUTCH ACTIVATED — Sponsor Perk Unlocked!", icon="⚡")
-            st.balloons()
-            st.session_state._clutch_toast_shown = True
-    else:
-        st.session_state._clutch_toast_shown = False
+    if current_cmi >= 80.0 and not st.session_state.get("_clutch_toast_shown", False):
+        st.toast("🔴 MAXIMUM CLUTCH ACTIVATED — Sponsor Perk Unlocked!", icon="⚡")
+        st.balloons()
+        st.session_state._clutch_toast_shown = True
 
     # ------------------------------------------------------------------
     # WEEK 8: IN-ARENA DYNAMIC SPONSOR PERK ACTIVATION (CMI >= 80)
@@ -4293,7 +4299,10 @@ elif screen == "📊 Screen 4: Narrative Delta & Story Card":
             _sync_and_persist_user_state()
 
         import urllib.parse
-        proof_url = f"https://kineticfanlab.com/proof/{st.session_state.sport.lower()}/{int(current_cmi)}?fan={st.session_state.member_handle}&hash={st.session_state.member_hash[:8]}"
+        _app_base = "https://kineticfanlab.streamlit.app"
+        _fan_token = st.query_params.get("member", st.session_state.get("member_hash", "guest"))
+        _proof_digest = hashlib.sha256(f"{st.session_state.member_handle}:{current_cmi}:{actual_surge}".encode()).hexdigest()[:12]
+        proof_url = f"{_app_base}/?member={_fan_token}&proof={_proof_digest}&sport={st.session_state.sport.lower()}"
         tweet_msg = f"Verified in-arena crowd impact: +{actual_surge} PTS momentum surge in {st.session_state.sport}! Locked in with my section on Kinetic FanLab. 🔥 #KineticFanLab #IBM"
         encoded_tweet = urllib.parse.quote(tweet_msg)
         encoded_url = urllib.parse.quote(proof_url)

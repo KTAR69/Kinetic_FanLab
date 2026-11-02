@@ -416,6 +416,8 @@ class CloudantEngineClient:
                 cloud_success = False
 
         # 2. Atomic update to memory cache, queue, and persistent disk under lock
+        # IMPORTANT: self.client.post_document() is called ABOVE (lines 411-416), OUTSIDE this lock.
+        # Do NOT move network I/O inside this with _lock: block — it would block all concurrent sessions.
         with _lock:
             cache = self._read_cache()
             if "sponsor_vouchers" not in cache:

@@ -203,7 +203,7 @@ def resolve_dynamic_team_matchup(
         time_or_res = active_sched_item.get("result", active_sched_item.get("time", "TBA"))
         
         if not future_games and not today_games and completed_games:
-            status_tag = f"SEASON COMPLETE &bull; Last: {game_date_str}"
+            status_tag = f"SEASON COMPLETE • Last: {game_date_str}"
         elif is_game_today:
             status_tag = "ACTIVE GAMEDAY TONIGHT"
         else:

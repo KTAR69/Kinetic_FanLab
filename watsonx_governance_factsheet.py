@@ -43,6 +43,13 @@ REGISTERED_MODELS: Dict[str, Dict[str, Any]] = {
         "intended_use": "Threshold-based voucher entitlement (CMI >= 80) and cryptographic claim issuance.",
         "economic_margin": "99.72% ($4.85 partner fee vs $0.0137 compute)",
         "fairness_threshold": 1.00
+    },
+    "ibm/granite-4-h-small": {
+        "role": "NPC Chat Replies, Vocal Urgency Scoring & Screen 5 Agent Dispatch",
+        "intended_use": "Low-latency fan-facing sports inference at <250ms SLA.",
+        "training_baseline": "IBM Granite Instruct Lightweight Model Baseline",
+        "guardrails": ["IBM Granite HAP Filter", "Adversarial Prompt Injection Shield"],
+        "fairness_threshold": 0.98
     }
 }
 
@@ -79,6 +86,8 @@ def log_inference_event(
     }
     
     _INFERENCE_LOGS.append(entry)
+    if len(_INFERENCE_LOGS) > 1000:
+        _INFERENCE_LOGS.pop(0)
     
     # Persist to disk with rolling 1000-entry cap
     try:
