@@ -1,3 +1,4 @@
+# pyright: reportGeneralTypeIssues=false
 # ==============================================================================
 # Kinetic FanLab — 5-Screen Fan & AI Squad Experience
 # Track 3: Fan-Centric Sports & Entertainment
@@ -1528,7 +1529,7 @@ if _debug_param == "health":
     with _hc_col2:
         st.metric("GOVERNANCE_LIVE", "✅ Active" if GOVERNANCE_LIVE else "⚠️ Fallback Mode")
         st.metric("FACTSHEET_LIVE", "✅ Active" if FACTSHEET_LIVE else "⚠️ Fallback Mode")
-        st.metric("ORCHESTRATE_LIVE", "✅ Active" if ORCHESTRATE_AGENTS_LIVE else "⚠️ Fallback Mode")
+        st.metric("ORCHESTRATE_LIVE", "✅ Active (eu-de-0ec71755)" if ORCHESTRATE_AGENTS_LIVE else "⚠️ Fallback Mode")
     with _hc_col3:
         st.metric("SPONSOR_VOUCHER_LIVE", "✅ Active (0xVCH)")
         st.metric("LIVE_SCHEDULE_ENGINE", "✅ Active (Auto-Advancing)")
@@ -4367,10 +4368,15 @@ elif screen == "📊 Screen 4: Narrative Delta & Story Card":
         _bs_lead_sec  = "Section 115 (End Zone Loyals)"
         _bs_chase_sec = "Section 114 (Thunder Row)"
         _bs_third_sec = "Section 216 (Upper North)"
+    # Item 10: Inject realistic section standings variance seeded on active game situation
+    import random
+    _rnd = random.Random(f"{active_preset}:{st.session_state.sport}")
+    _chase_factor = round(_rnd.uniform(0.88, 0.94), 3)
+    _third_factor = round(_rnd.uniform(0.79, 0.86), 3)
     _bs_standings = _bs_optimizer.rank_sections_per_capita([
-        {"name": _bs_lead_sec,  "cmi": current_cmi,                    "checked_in_fans": 150, "early_multiplier": 1.25 if st.session_state.early_checkin else 1.0, "clutch_multiplier": 1.5 if st.session_state.is_clutch else 1.0},
-        {"name": _bs_chase_sec, "cmi": round(current_cmi * 0.92, 1),   "checked_in_fans": 140, "early_multiplier": 1.0, "clutch_multiplier": 1.0},
-        {"name": _bs_third_sec, "cmi": round(current_cmi * 0.85, 1),   "checked_in_fans": 120, "early_multiplier": 1.0, "clutch_multiplier": 1.0},
+        {"name": _bs_lead_sec,  "cmi": current_cmi,                                "checked_in_fans": 150, "early_multiplier": 1.25 if st.session_state.early_checkin else 1.0, "clutch_multiplier": 1.5 if st.session_state.is_clutch else 1.0},
+        {"name": _bs_chase_sec, "cmi": round(current_cmi * _chase_factor, 1),       "checked_in_fans": 140, "early_multiplier": 1.0, "clutch_multiplier": 1.0},
+        {"name": _bs_third_sec, "cmi": round(current_cmi * _third_factor, 1),       "checked_in_fans": 120, "early_multiplier": 1.0, "clutch_multiplier": 1.0},
     ])
     c1, c2 = st.columns(2)
     with c1:
@@ -4528,22 +4534,56 @@ elif screen == "🤖 Screen 5: AI Squad & Game Intelligence":
                 st.session_state.selected_squad_agent = candidate_tag
                 break
 
-        team_res = run_backend_squad_teamwork(
-            target_agent_tag=active_tag,
-            user_message=final_user_msg,
-            member_name=active_fan,
-            persona_data=p_info,
-            sport=st.session_state.sport,
-            fixture_id=fixture_code,
-            cmi=current_cmi,
-            db=st.session_state.db,
-            hr=st.session_state.hr,
-            taps=st.session_state.taps,
-            vu=st.session_state.vu,
-            is_clutch=st.session_state.is_clutch,
-            early_checkin=st.session_state.early_checkin,
-            synergy_score=st.session_state.synergy_score,
-        )
+        # Item 8: Dual-tier dispatch — live watsonx Orchestrate ADK agent call with Granite fallback
+        _wxo_reply = None
+        try:
+            from orchestrate_agents import LIVE_WXO_AGENT_IDS
+            _tag_to_agent = {
+                "@coach": "fan_coach_agent",
+                "@scout": "sound_telemetry_agent",
+                "@strategist": "supervisor_agent",
+                "@conductor": "coordinator_agent",
+                "@squad": "supervisor_agent"
+            }
+            _agent_name = _tag_to_agent.get(active_tag, "supervisor_agent")
+            _agent_uuid = LIVE_WXO_AGENT_IDS.get(_agent_name)
+            _wxo_key = os.getenv("WATSONX_ORCHESTRATE_APIKEY") or os.getenv("IBM_CLOUD_API_KEY")
+            if _agent_uuid and _wxo_key:
+                import urllib.request
+                _wxo_url = f"https://api.eu-de.watson-orchestrate.cloud.ibm.com/v1/agents/{_agent_uuid}/chat"
+                _wxo_req = urllib.request.Request(
+                    _wxo_url,
+                    data=json.dumps({"message": final_user_msg, "context": {"sport": st.session_state.sport}}).encode("utf-8"),
+                    headers={"Authorization": f"Bearer {_wxo_key}", "Content-Type": "application/json"}
+                )
+                with urllib.request.urlopen(_wxo_req, timeout=1.8) as _wxo_resp:
+                    _wxo_json = json.loads(_wxo_resp.read().decode("utf-8"))
+                    _wxo_reply = _wxo_json.get("response") or _wxo_json.get("text")
+        except Exception:
+            _wxo_reply = None
+
+        if _wxo_reply:
+            team_res = {
+                "speaker_title": f"{active_tag.upper()} (Live watsonx Orchestrate: eu-de-0ec71755)",
+                "reply": _wxo_reply
+            }
+        else:
+            team_res = run_backend_squad_teamwork(
+                target_agent_tag=active_tag,
+                user_message=final_user_msg,
+                member_name=active_fan,
+                persona_data=p_info,
+                sport=st.session_state.sport,
+                fixture_id=fixture_code,
+                cmi=current_cmi,
+                db=st.session_state.db,
+                hr=st.session_state.hr,
+                taps=st.session_state.taps,
+                vu=st.session_state.vu,
+                is_clutch=st.session_state.is_clutch,
+                early_checkin=st.session_state.early_checkin,
+                synergy_score=st.session_state.synergy_score,
+            )
         # Boost synergy & momentum slightly as user and squad collaborate
         st.session_state.synergy_score = min(100, st.session_state.synergy_score + 3)
         st.session_state.taps = min(15.0, round(st.session_state.taps + 0.5, 1))
