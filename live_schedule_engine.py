@@ -15,6 +15,7 @@ import time
 import datetime as dt
 import urllib.request
 import urllib.error
+import threading
 from typing import Dict, Any, List, Optional, Tuple
 
 _BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -30,6 +31,7 @@ TEAM_CODE_MAP: Dict[str, Dict[str, Any]] = {
     "Dallas Cowboys": {"sport": "football", "league": "nfl", "espn_id": "6", "conf": "NFC East"},
 }
 
+_LIVE_CACHE_LOCK = threading.Lock()
 _LIVE_CACHE: Dict[str, Tuple[float, Dict[str, Any]]] = {}
 
 def fetch_live_scores_espn(sport: str, primary_team: str, timeout_sec: float = 1.5) -> Optional[Dict[str, Any]]:
@@ -43,17 +45,19 @@ def fetch_live_scores_espn(sport: str, primary_team: str, timeout_sec: float = 1
 
     cache_key = f"{sport}:{primary_team}"
     now_ts = time.time()
-    if cache_key in _LIVE_CACHE:
-        cached_ts, cached_data = _LIVE_CACHE[cache_key]
-        if now_ts - cached_ts < 300:
-            return cached_data
+    with _LIVE_CACHE_LOCK:
+        if cache_key in _LIVE_CACHE:
+            cached_ts, cached_data = _LIVE_CACHE[cache_key]
+            if now_ts - cached_ts < 300:
+                return cached_data
 
     url = f"https://site.api.espn.com/apis/site/v2/sports/{team_info['sport']}/{team_info['league']}/teams/{team_info['espn_id']}/schedule"
     try:
         req = urllib.request.Request(url, headers={"User-Agent": "KineticFanLab/2.8 (IBM-SkillsBuild)"})
         with urllib.request.urlopen(req, timeout=timeout_sec) as resp:
             data = json.loads(resp.read().decode("utf-8"))
-            _LIVE_CACHE[cache_key] = (now_ts, data)
+            with _LIVE_CACHE_LOCK:
+                _LIVE_CACHE[cache_key] = (now_ts, data)
             return data
     except Exception:
         return None
@@ -66,7 +70,10 @@ def parse_game_date(date_str: str) -> Optional[dt.date]:
     if "," in cleaned and len(cleaned.split(",")) > 2:
         cleaned = ",".join(cleaned.split(",")[1:]).strip()
     
-    formats = ["%b %d, %Y", "%B %d, %Y", "%Y-%m-%d", "%m/%d/%Y"]
+    formats = [
+        "%b %d, %Y", "%B %d, %Y", "%Y-%m-%d", "%m/%d/%Y",
+        "%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%dT%H:%M:%S"
+    ]
     for fmt in formats:
         try:
             return dt.datetime.strptime(cleaned, fmt).date()
@@ -195,7 +202,13 @@ def resolve_dynamic_team_matchup(
         game_date_str = active_sched_item.get("date", "")
         time_or_res = active_sched_item.get("result", active_sched_item.get("time", "TBA"))
         
-        status_tag = "ACTIVE GAMEDAY TONIGHT" if is_game_today else f"UPCOMING ({game_date_str})"
+        if not future_games and not today_games and completed_games:
+            status_tag = f"SEASON COMPLETE • Last: {game_date_str}"
+        elif is_game_today:
+            status_tag = "ACTIVE GAMEDAY TONIGHT"
+        else:
+            status_tag = f"UPCOMING ({game_date_str})"
+            
         matchup_title = f"{primary_team} {'vs.' if is_home else 'at'} {opp_clean}"
 
         team_entry["active_game"] = {

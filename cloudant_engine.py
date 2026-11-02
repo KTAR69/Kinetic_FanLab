@@ -47,40 +47,41 @@ class CloudantEngineClient:
         """Flushes any offline-queued operations to live IBM Cloudant when reconnected."""
         if not self.is_connected or not self.client:
             return
-        cache = self._read_cache()
-        queue = cache.get("uncommitted_queue", [])
-        if not queue:
-            return
-        
-        remaining = []
-        for item in queue:
-            try:
-                op = item.get("op")
-                doc_id = item.get("id")
-                doc_to_post = None
-                if op == "save_passport":
-                    for p in cache.get("fan_passports", {}).values():
-                        if p.get("_id") == doc_id:
-                            doc_to_post = p
-                            break
-                elif op == "save_feedback":
-                    for fb in cache.get("tester_feedback", []):
-                        if fb.get("_id") == doc_id:
-                            doc_to_post = fb
-                            break
-                elif op == "save_voucher":
-                    for vch in cache.get("sponsor_vouchers", []):
-                        if vch.get("_id") == doc_id:
-                            doc_to_post = vch
-                            break
-                
-                if doc_to_post:
-                    self.client.post_document(db=DB_NAME, document=doc_to_post)
-            except Exception:
-                remaining.append(item)
-        
-        cache["uncommitted_queue"] = remaining
-        self._write_cache(cache)
+        with _lock:
+            cache = self._read_cache()
+            queue = cache.get("uncommitted_queue", [])
+            if not queue:
+                return
+            
+            remaining = []
+            for item in queue:
+                try:
+                    op = item.get("op")
+                    doc_id = item.get("id")
+                    doc_to_post = None
+                    if op == "save_passport":
+                        for p in cache.get("fan_passports", {}).values():
+                            if p.get("_id") == doc_id:
+                                doc_to_post = p
+                                break
+                    elif op == "save_feedback":
+                        for fb in cache.get("tester_feedback", []):
+                            if fb.get("_id") == doc_id:
+                                doc_to_post = fb
+                                break
+                    elif op == "save_voucher":
+                        for vch in cache.get("sponsor_vouchers", []):
+                            if vch.get("_id") == doc_id:
+                                doc_to_post = vch
+                                break
+                    
+                    if doc_to_post:
+                        self.client.post_document(db=DB_NAME, document=doc_to_post)
+                except Exception:
+                    remaining.append(item)
+            
+            cache["uncommitted_queue"] = remaining
+            self._write_cache(cache)
 
     def _init_connection(self):
         if not CLOUDANT_URL or not CLOUDANT_APIKEY:
@@ -126,6 +127,7 @@ class CloudantEngineClient:
                     "cmi_telemetry": [],
                     "storycards": [],
                     "tester_feedback": [],
+                    "sponsor_vouchers": [],
                     "uncommitted_queue": []
                 }
 
@@ -163,10 +165,18 @@ class CloudantEngineClient:
             "updated_at": time.time()
         }
 
-        cache = self._read_cache()
-        cache["fan_passports"][member_hash] = doc
-        cache["uncommitted_queue"].append({"op": "save_passport", "id": doc_id, "timestamp": time.time()})
-        self._write_cache(cache)
+        with _lock:
+            cache = self._read_cache()
+            cache["fan_passports"][member_hash] = doc
+            cache["uncommitted_queue"].append({"op": "save_passport", "id": doc_id, "timestamp": time.time()})
+            self._write_cache(cache)
+
+        if self.is_connected and self.client:
+            try:
+                self.client.post_document(db=DB_NAME, document=doc).get_result()
+                return {"status": "SUCCESS", "source": "CLOUDANT_LIVE"}
+            except Exception:
+                pass
 
         return {"status": "SUCCESS", "doc_id": doc_id, "source": "LOCAL_CACHE"}
 
@@ -201,11 +211,12 @@ class CloudantEngineClient:
             "timestamp": time.time()
         }
 
-        cache = self._read_cache()
-        cache["cmi_telemetry"].append(doc)
-        if len(cache["cmi_telemetry"]) > 200:
-            cache["cmi_telemetry"] = cache["cmi_telemetry"][-200:]
-        self._write_cache(cache)
+        with _lock:
+            cache = self._read_cache()
+            cache["cmi_telemetry"].append(doc)
+            if len(cache["cmi_telemetry"]) > 200:
+                cache["cmi_telemetry"] = cache["cmi_telemetry"][-200:]
+            self._write_cache(cache)
 
         return {"status": "SUCCESS", "doc_id": doc_id, "cmi": cmi}
 
@@ -235,9 +246,10 @@ class CloudantEngineClient:
             "timestamp": time.time()
         }
 
-        cache = self._read_cache()
-        cache["storycards"].append(doc)
-        self._write_cache(cache)
+        with _lock:
+            cache = self._read_cache()
+            cache["storycards"].append(doc)
+            self._write_cache(cache)
 
         return {"status": "SUCCESS", "doc_id": doc_id, "headline": headline}
 
@@ -275,30 +287,26 @@ class CloudantEngineClient:
             "formatted_time": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         }
 
-        # 1. Update in-memory & CACHE_FILE
-        cache = self._read_cache()
-        if "tester_feedback" not in cache:
-            cache["tester_feedback"] = []
-        cache["tester_feedback"].append(doc)
-        cache["uncommitted_queue"].append({"op": "save_feedback", "id": doc_id, "timestamp": time.time()})
-        self._write_cache(cache)
+        with _lock:
+            cache = self._read_cache()
+            cache["tester_feedback"].append(doc)
+            cache["uncommitted_queue"].append({"op": "save_feedback", "id": doc_id, "timestamp": time.time()})
+            self._write_cache(cache)
 
-        # 2. Persist to FEEDBACK_FILE (data/member_feedback.json)
-        try:
-            os.makedirs(os.path.dirname(FEEDBACK_FILE), exist_ok=True)
-            existing_fb = []
-            if os.path.exists(FEEDBACK_FILE):
-                with open(FEEDBACK_FILE, "r", encoding="utf-8") as f:
-                    existing_fb = json.load(f)
-            if not isinstance(existing_fb, list):
+            try:
+                os.makedirs(os.path.dirname(FEEDBACK_FILE), exist_ok=True)
                 existing_fb = []
-            existing_fb.append(doc)
-            with open(FEEDBACK_FILE, "w", encoding="utf-8") as f:
-                json.dump(existing_fb, f, indent=2)
-        except Exception as _fe:
-            print(f"[save_tester_feedback] warning saving to FEEDBACK_FILE: {_fe}")
+                if os.path.exists(FEEDBACK_FILE):
+                    with open(FEEDBACK_FILE, "r", encoding="utf-8") as f:
+                        existing_fb = json.load(f)
+                if not isinstance(existing_fb, list):
+                    existing_fb = []
+                existing_fb.append(doc)
+                with open(FEEDBACK_FILE, "w", encoding="utf-8") as f:
+                    json.dump(existing_fb, f, indent=2)
+            except Exception as _fe:
+                print(f"[save_tester_feedback] warning saving to FEEDBACK_FILE: {_fe}")
 
-        # 3. Commit to live IBM Cloudant if connected
         if self.is_connected and self.client:
             try:
                 self.client.post_document(db=DB_NAME, document=doc).get_result()
@@ -313,7 +321,6 @@ class CloudantEngineClient:
         records = []
         seen_ids = set()
 
-        # 1. Read from persistent FEEDBACK_FILE (data/member_feedback.json)
         if os.path.exists(FEEDBACK_FILE):
             try:
                 with open(FEEDBACK_FILE, "r", encoding="utf-8") as f:
@@ -326,20 +333,18 @@ class CloudantEngineClient:
             except Exception:
                 pass
 
-        # 2. Read from CACHE_FILE (cloudant_engine_cache.json)
         cache = self._read_cache()
         for d in cache.get("tester_feedback", []):
             if isinstance(d, dict) and d.get("_id") and d["_id"] not in seen_ids:
                 seen_ids.add(d["_id"])
                 records.append(d)
 
-        # 3. Query live IBM Cloudant if available
         if self.is_connected and self.client:
             try:
                 cloud_res = self.client.post_find(
                     db=DB_NAME,
                     selector={"type": "tester_feedback"},
-                    limit=100
+                    limit=500
                 ).get_result()
                 for d in cloud_res.get("docs", []):
                     if isinstance(d, dict) and d.get("_id") and d["_id"] not in seen_ids:
@@ -377,7 +382,6 @@ class CloudantEngineClient:
             "integrity_sha256": hashlib.sha256(salt.encode("utf-8")).hexdigest()
         }
 
-        # 1. Post to live Cloudant if connected
         cloud_success = False
         cloud_res = None
         if self.is_connected and self.client:
@@ -387,7 +391,6 @@ class CloudantEngineClient:
             except Exception:
                 cloud_success = False
 
-        # 2. Atomic update to memory cache, queue, and persistent disk under lock
         with _lock:
             cache = self._read_cache()
             if "sponsor_vouchers" not in cache:
@@ -411,7 +414,6 @@ class CloudantEngineClient:
 
             self._write_cache(cache)
 
-            # Write to persistent disk data/claimed_vouchers.json
             vch_disk_path = os.path.join(_BASE_DIR, "data", "claimed_vouchers.json")
             try:
                 os.makedirs(os.path.dirname(vch_disk_path), exist_ok=True)
@@ -473,7 +475,7 @@ class CloudantEngineClient:
                 cloud_res = self.client.post_find(
                     db=DB_NAME,
                     selector={"type": "sponsor_voucher"},
-                    limit=100
+                    limit=500
                 ).get_result()
                 for d in cloud_res.get("docs", []):
                     if isinstance(d, dict) and d.get("claim_hash") and d["claim_hash"] not in seen_hashes:

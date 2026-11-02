@@ -2,7 +2,7 @@
 Kinetic FanLab — In-Arena Dynamic Sponsor Perk & Attribution Engine
 Week 8 Innovation Module (sponsor_voucher_engine.py)
 """
-import time, hashlib
+import time, hashlib, uuid
 from typing import Dict, Any, List, Optional
 
 SPONSOR_REGISTRY: Dict[str, Dict[str, Any]] = {
@@ -50,26 +50,26 @@ SPONSOR_REGISTRY: Dict[str, Dict[str, Any]] = {
     },
     "Michigan Wolverines": {
         "brand": "Culver's®", "brand_color": "#005696", "icon": "🍦",
-        "title": "Big House Double ButterBurger & Custard Voucher",
-        "desc": "Unlocked by Section 115 4th-down roar! Complimentary gameday ButterBurger.",
-        "discount_code": "MICHBUTTERBURGER", "retail_value": 7.50, "partner_fee": 4.85,
-        "partner_category": "Official Midwest Comfort Food Partner"
+        "title": "Big House Clutch ButterBurger & Frozen Custard Voucher",
+        "desc": "Unlocked by Section 115 End Zone defense stand! Free single scoop custard voucher.",
+        "discount_code": "MICHBUTTERBURGER", "retail_value": 6.75, "partner_fee": 4.85,
+        "partner_category": "Official Concourse Comfort Food Partner"
     },
     "Green Bay Packers": {
         "brand": "Culver's®", "brand_color": "#005696", "icon": "🧀",
-        "title": "Lambeau 12th Man Curds & ButterBurger Voucher",
-        "desc": "Earned by Section 115 Thursday Night Football goal-line stand!",
-        "discount_code": "PACKERSCHEESE12", "retail_value": 7.25, "partner_fee": 4.85,
-        "partner_category": "Official Wisconsin Gameday Provisions"
+        "title": "Lambeau Frozen Custard Single Scoop Perk",
+        "desc": "Earned by Section 115 sub-zero goal line stand! Free specialty treat.",
+        "discount_code": "LAMBEAUCULVERS", "retail_value": 5.50, "partner_fee": 4.85,
+        "partner_category": "Official Wisconsin Gameday Fuel Partner"
     }
 }
 
-DEFAULT_TECH_SPONSOR = {
-    "brand": "IBM Cloud & watsonx", "brand_color": "#0f62fe", "icon": "⚡",
-    "title": "VIP Concourse Fast-Track & FanLab Commemorative Pass",
-    "desc": "Unlocked by verified section collective momentum (CMI >= 80)!",
-    "discount_code": "IBMWATSONXFAN", "retail_value": 10.00, "partner_fee": 4.85,
-    "partner_category": "Official Stadium Cloud & AI Technology Platform"
+DEFAULT_TECH_SPONSOR: Dict[str, Any] = {
+    "brand": "IBM Cloud Partner", "brand_color": "#0f62fe", "icon": "⚡",
+    "title": "Concourse FanPass Digital Access Voucher",
+    "desc": "Official Kinetic FanLab in-arena perk voucher.",
+    "discount_code": "IBMFANLAB26", "retail_value": 5.00, "partner_fee": 4.85,
+    "partner_category": "Official Enterprise Technology Partner"
 }
 
 def get_team_sponsor_profile(primary_team: str) -> Dict[str, Any]:
@@ -81,9 +81,10 @@ def evaluate_clutch_sponsor_perk(sport: str, primary_team: str, cmi: float, is_c
         return None
     sp = get_team_sponsor_profile(primary_team)
     ts = int(time.time())
-    ft = "BB" if sport.lower().startswith("b") else "FB"
+    ft = "BB" if sport.lower() == "basketball" else "FB"
     tslug = "".join([c for c in primary_team if c.isalnum()])[:8].upper()
-    vid = f"VCH-{ft}-{tslug}-{ts % 10000:04d}"
+    v_suffix = uuid.uuid4().hex[:6].upper()
+    vid = f"VCH-{ft}-{tslug}-{v_suffix}"
     return {
         "voucher_id": vid, "sport": sport, "primary_team": primary_team,
         "brand": sp["brand"], "brand_color": sp["brand_color"], "icon": sp["icon"],
@@ -126,9 +127,8 @@ def calculate_sponsor_attribution_metrics(claimed_vouchers: List[Dict[str, Any]]
         brand_counts[b] = brand_counts.get(b, 0) + 1
     return {
         "claimed_vouchers_count": count, "direct_pod_revenue": direct_revenue,
-        "conversion_rate_pct": conversion_rate_pct,
+        "conversion_rate_pct": conversion_rate_pct, "projected_stadium_claims": projected_stadium_claims,
         "projected_stadium_revenue": projected_stadium_gross_rev,
-        "projected_stadium_claims": projected_stadium_claims,
-        "net_stadium_margin_pct": net_stadium_margin_pct,
-        "brand_breakdown": brand_counts
+        "stadium_compute_cost": stadium_compute_cost,
+        "net_stadium_margin_pct": net_stadium_margin_pct, "brand_breakdown": brand_counts
     }

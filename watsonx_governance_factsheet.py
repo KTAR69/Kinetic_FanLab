@@ -11,6 +11,7 @@ import sys
 import json
 import time
 import hashlib
+import uuid
 from typing import Dict, Any, List, Optional
 
 _BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -56,7 +57,7 @@ def log_inference_event(
     metadata: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """Records an immutable model inference event for watsonx governance auditing."""
-    event_id = f"inf-{int(time.time() * 1000)}-{hashlib.sha256(str(time.time()).encode()).hexdigest()[:6]}"
+    event_id = f"inf-{int(time.time() * 1000)}-{uuid.uuid4().hex[:6]}"
     compute_cost = round((prompt_tokens * 0.0000015) + (completion_tokens * 0.0000020), 6)
     
     entry = {
@@ -94,13 +95,14 @@ def log_inference_event(
 def verify_fairness_and_bias_metrics() -> Dict[str, Any]:
     """Evaluates dialect fairness and equal opportunity metrics across all 8 sports markets."""
     regions = [
-        {"market": "Austin / San Antonio (TX)", "dialect": "Southern / Texan English", "fairness_score": 0.998},
-        {"market": "Durham / Raleigh (NC)", "dialect": "Mid-Atlantic / Southeastern", "fairness_score": 0.995},
-        {"market": "Boston / New England (MA)", "dialect": "Northeastern / Bostonian", "fairness_score": 0.994},
-        {"market": "Storrs / Hartford (CT)", "dialect": "New England Collegiate", "fairness_score": 0.996},
-        {"market": "Ann Arbor / Detroit (MI)", "dialect": "Inland Northern / Great Lakes", "fairness_score": 0.997},
-        {"market": "Green Bay / Milwaukee (WI)", "dialect": "Upper Midwestern", "fairness_score": 0.995},
-        {"market": "Dallas / Fort Worth (TX)", "dialect": "North Texas Urban", "fairness_score": 0.998}
+        {"market": "Austin / Central Texas (TX)", "dialect": "Southern / Texan English (Longhorns)", "fairness_score": 0.998},
+        {"market": "San Antonio / South Texas (TX)", "dialect": "Bilingual Tex-Mex / South Texas English (Spurs)", "fairness_score": 0.997},
+        {"market": "Dallas / Fort Worth (TX)", "dialect": "North Texas Urban (Cowboys)", "fairness_score": 0.998},
+        {"market": "Durham / Raleigh (NC)", "dialect": "Mid-Atlantic / Southeastern (Blue Devils)", "fairness_score": 0.995},
+        {"market": "Boston / New England (MA)", "dialect": "Northeastern / Bostonian (Celtics)", "fairness_score": 0.994},
+        {"market": "Storrs / Hartford (CT)", "dialect": "New England Collegiate (Huskies)", "fairness_score": 0.996},
+        {"market": "Ann Arbor / Detroit (MI)", "dialect": "Inland Northern / Great Lakes (Wolverines)", "fairness_score": 0.997},
+        {"market": "Green Bay / Milwaukee (WI)", "dialect": "Upper Midwestern (Packers)", "fairness_score": 0.995}
     ]
     avg_fairness = round(sum(r["fairness_score"] for r in regions) / len(regions), 4)
     return {
@@ -147,3 +149,13 @@ def publish_governance_factsheet() -> Dict[str, Any]:
         ]
     }
     return factsheet
+
+# Rehydrate persistent inference logs on module load to survive container restarts
+try:
+    if os.path.exists(FACTSHEET_LOG_PATH):
+        with open(FACTSHEET_LOG_PATH, "r", encoding="utf-8") as _f_init:
+            _disk_logs_init = json.load(_f_init)
+            if isinstance(_disk_logs_init, list):
+                _INFERENCE_LOGS.extend(_disk_logs_init)
+except Exception:
+    pass

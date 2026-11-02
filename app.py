@@ -685,8 +685,8 @@ def _save_fans_db(db):
     except Exception as e:
         print(f"[_save_fans_db] warning: {e}")
 
-def _sync_and_persist_user_state():
-    """Persists all progress and state of the current user into memory and disk."""
+def _sync_and_persist_user_state(force: bool = False):
+    """Persists all progress and state of the current user into memory, disk, and Cloudant with mutation debouncing."""
     if not st.session_state.get("is_logged_in"):
         return
     email = st.session_state.get("member_email", "")
@@ -774,6 +774,12 @@ def _sync_and_persist_user_state():
         "pref_anonymize_biometrics": st.session_state.get("pref_anonymize_biometrics", True),
         "retention": "Gameday Session Only (Zero Cloud Raw Storage)"
     }
+    # Debounce check: avoid expensive disk/Cloudant round trips if user state has not mutated
+    _state_hash = hashlib.sha256(json.dumps(user_rec, sort_keys=True).encode("utf-8")).hexdigest()
+    if st.session_state.get("_last_synced_state_hash") == _state_hash and not force:
+        return
+    st.session_state._last_synced_state_hash = _state_hash
+
     _save_fans_db(st.session_state.registered_fans_db)
 
     # Mirror persistent passport to IBM Cloudant NoSQL
@@ -799,7 +805,8 @@ def _load_user_into_session(user_data, email):
     st.session_state.just_signed_up = False
     st.session_state.member_email = email
     try:
-        st.query_params['member'] = email
+        _fan_tok = f"kfl_{hashlib.sha256((email + 'kfl_salt_2026').encode()).hexdigest()[:12]}"
+        st.query_params['member'] = _fan_tok
     except Exception:
         pass
     st.session_state.member_name = user_data.get("name", "Rookie Fan")
@@ -1472,14 +1479,26 @@ fixture_options = [
 # Item 8: Health check — render diagnostic panel when ?debug=health is in the URL
 _debug_param = st.query_params.get("debug", "")
 
-# Auto-restore persistent fan session across browser reloads
+# Auto-restore persistent fan session across browser reloads with zero PII exposure
 if not st.session_state.get("is_logged_in"):
     _param_member = st.query_params.get("member") or st.query_params.get("fan")
     if _param_member:
-        _fans_db = _load_fans_db()
-        if _param_member in _fans_db:
-            _load_user_into_session(_fans_db[_param_member], _param_member)
-            _ensure_member_in_persona_db()
+        try:
+            _fans_db = _load_fans_db()
+            _resolved_email = None
+            if _param_member in _fans_db:
+                _resolved_email = _param_member
+            else:
+                for _cand_email in _fans_db:
+                    _cand_tok = f"kfl_{hashlib.sha256((_cand_email + 'kfl_salt_2026').encode()).hexdigest()[:12]}"
+                    if _param_member == _cand_tok:
+                        _resolved_email = _cand_email
+                        break
+            if _resolved_email and _resolved_email in _fans_db:
+                _load_user_into_session(_fans_db[_resolved_email], _resolved_email)
+                _ensure_member_in_persona_db()
+        except Exception:
+            pass
 if _debug_param == "health":
     st.title("⚡ Kinetic FanLab — Deployment Health Check")
     st.caption("Internal diagnostic page. Remove `?debug=health` from the URL to return to the app.")
