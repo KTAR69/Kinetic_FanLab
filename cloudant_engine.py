@@ -38,7 +38,8 @@ class CloudantEngineClient:
     def __init__(self):
         self.client = None
         self.is_connected = False
-        self._mem_cache = None
+        self._mem_cache: Optional[Dict[str, Any]] = None
+        self._mem_vouchers: Optional[List[Dict[str, Any]]] = None
         self._init_connection()
         self._init_local_cache()
         if self.is_connected:
@@ -133,7 +134,7 @@ class CloudantEngineClient:
 
     def _read_cache(self) -> Dict[str, Any]:
         with _lock:
-            if getattr(self, "_mem_cache", None) is not None:
+            if self._mem_cache is not None:
                 return self._mem_cache
             try:
                 with open(CACHE_FILE, "r", encoding="utf-8") as f:
@@ -447,7 +448,7 @@ class CloudantEngineClient:
             vch_disk_path = os.path.join(_BASE_DIR, "data", "claimed_vouchers.json")
             try:
                 os.makedirs(os.path.dirname(vch_disk_path), exist_ok=True)
-                if getattr(self, "_mem_vouchers", None) is None:
+                if self._mem_vouchers is None:
                     v_list = []
                     if os.path.exists(vch_disk_path):
                         try:
@@ -486,7 +487,7 @@ class CloudantEngineClient:
         seen_hashes = set()
 
         with _lock:
-            if getattr(self, "_mem_vouchers", None) is not None:
+            if self._mem_vouchers is not None:
                 for d in self._mem_vouchers:
                     if isinstance(d, dict) and d.get("claim_hash") and d["claim_hash"] not in seen_hashes:
                         seen_hashes.add(d["claim_hash"])
