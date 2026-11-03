@@ -2873,7 +2873,11 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
 
                 if st.session_state.get("share_trophy_clicked"):
                     import urllib.parse
-                    trophy_url = f"https://kineticfanlab.com/trophy/{st.session_state.sport.lower()}/{st.session_state.member_hash[:8]}?fan={st.session_state.member_handle}"
+                    _trophy_app_base = "https://kineticfanlab.streamlit.app"
+                    trophy_url = (
+                        f"{_trophy_app_base}/?fan={st.query_params.get('member', 'guest')}"
+                        f"&proof={hashlib.sha256(f'{st.session_state.member_handle}:{st.session_state.member_hash[:8]}'.encode()).hexdigest()[:12]}"
+                    )
                     tweet_text = f"Check out my verified NFT Trophy Showcase & 365-Day Fan Passport on Kinetic FanLab! 🏆 Tier: {st.session_state.member_tier} in {p_info['sec']}. #KineticFanLab #IBM #Web3Sports"
                     enc_tweet = urllib.parse.quote(tweet_text)
                     enc_url = urllib.parse.quote(trophy_url)
