@@ -912,7 +912,7 @@ def _load_user_into_session(user_data, email):
     st.session_state.teams_bb = list(user_data.get("teams_bb", ["Duke Blue Devils", "Boston Celtics"]))
     st.session_state.teams_fb = list(user_data.get("teams_fb", ["Michigan Wolverines", "Green Bay Packers"]))
 
-    unlocked_curr = st.session_state.unlocked_mentors_bb if is_bb else st.session_state.unlocked_mentors_fb
+    unlocked_curr = st.session_state.get("unlocked_mentors_bb", ["Marcus Vance"]) if is_bb else st.session_state.get("unlocked_mentors_fb", ["Sarah Jenkins"])
     lead_guide = "Marcus Vance" if is_bb else "Sarah Jenkins"
     st.session_state.active_npc_guide = lead_guide if lead_guide in unlocked_curr else unlocked_curr[0]
 
@@ -1836,7 +1836,26 @@ if "tap_count" not in st.session_state: st.session_state.tap_count = 0
 if "tap_times" not in st.session_state: st.session_state.tap_times = []
 if "early_checkin" not in st.session_state: st.session_state.early_checkin = False
 if "synergy_score" not in st.session_state: st.session_state.synergy_score = 92
+if "synergy_score_bb" not in st.session_state: st.session_state.synergy_score_bb = 92
+if "synergy_score_fb" not in st.session_state: st.session_state.synergy_score_fb = 88
 if "synergy_claimed" not in st.session_state: st.session_state.synergy_claimed = False
+if "synergy_claimed_bb" not in st.session_state: st.session_state.synergy_claimed_bb = False
+if "synergy_claimed_fb" not in st.session_state: st.session_state.synergy_claimed_fb = False
+if "games_bb" not in st.session_state: st.session_state.games_bb = 5
+if "games_fb" not in st.session_state: st.session_state.games_fb = 4
+if "seat_bb" not in st.session_state: st.session_state.seat_bb = "Section 114, Row 3, Seat 12"
+if "seat_fb" not in st.session_state: st.session_state.seat_fb = "Section 115, Row 18, Seat 10"
+if "armchair_callouts_count" not in st.session_state: st.session_state.armchair_callouts_count = 0
+if "armchair_nft_unlocked_bb" not in st.session_state: st.session_state.armchair_nft_unlocked_bb = False
+if "armchair_nft_unlocked_fb" not in st.session_state: st.session_state.armchair_nft_unlocked_fb = False
+if "just_unlocked_armchair_nft" not in st.session_state: st.session_state.just_unlocked_armchair_nft = False
+if "claimed_vouchers" not in st.session_state: st.session_state.claimed_vouchers = []
+if "submitted_feedback_list" not in st.session_state: st.session_state.submitted_feedback_list = []
+if "show_bottom_feedback" not in st.session_state: st.session_state.show_bottom_feedback = False
+if "feedback_confirmed_doc" not in st.session_state: st.session_state.feedback_confirmed_doc = None
+if "wearable_paired" not in st.session_state: st.session_state.wearable_paired = False
+if "_clutch_toast_shown" not in st.session_state: st.session_state._clutch_toast_shown = False
+if "_last_synced_state_hash" not in st.session_state: st.session_state._last_synced_state_hash = ""
 if "selected_squad_agent" not in st.session_state: st.session_state.selected_squad_agent = "@strategist"
 if "squad_chat_history" not in st.session_state: st.session_state.squad_chat_history = []
 if "squad_chat_history_bb" not in st.session_state: st.session_state.squad_chat_history_bb = []
@@ -2571,7 +2590,7 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
             # ------------------------------------------------------------------
             # SECTION MENTORS & PROGRESSIVE UNLOCKS (ONLY Section Leader at Inception)
             # ------------------------------------------------------------------
-            unlocked_list = st.session_state.unlocked_mentors_bb if is_basketball else st.session_state.unlocked_mentors_fb
+            unlocked_list = st.session_state.get("unlocked_mentors_bb", ["Marcus Vance"]) if is_basketball else st.session_state.get("unlocked_mentors_fb", ["Sarah Jenkins"])
             unlock_eval = npc_mentors.evaluate_npc_unlocks(
                 sport=st.session_state.sport,
                 current_unlocked=unlocked_list,
@@ -2649,7 +2668,7 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
             """, unsafe_allow_html=True)
 
             # Capstone NFT Unlock Banner when All 4 Mentors are Engaged
-            capstone_claimed = st.session_state.capstone_claimed_bb if is_basketball else st.session_state.capstone_claimed_fb
+            capstone_claimed = st.session_state.get("capstone_claimed_bb", False) if is_basketball else st.session_state.get("capstone_claimed_fb", False)
             capstone_nft = npc_mentors.get_capstone_nft_badge(st.session_state.sport)
             if unlock_eval["capstone_ready"]:
                 st.markdown(f"""
@@ -2782,7 +2801,7 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
 
                 st.markdown("---")
                 st.subheader("🏅 Unlocked Dynamic Accolades (NFT Badges)")
-                capstone_is_claimed = st.session_state.capstone_claimed_bb if is_basketball else st.session_state.capstone_claimed_fb
+                capstone_is_claimed = st.session_state.get("capstone_claimed_bb", False) if is_basketball else st.session_state.get("capstone_claimed_fb", False)
                 if capstone_is_claimed:
                     cap_badge = npc_mentors.get_capstone_nft_badge(st.session_state.sport)
                     st.markdown(f"""
@@ -3625,7 +3644,7 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
     # Early Check-in with Immediate State Update
     with st.expander(f"🎟️ Pre-Game Roll Call: Early Seat Check-In ({st.session_state.sport})", expanded=True):
         st.write(f"Fans who reach their seats 30 minutes before **{start_term}** unlock a **1.25x 1st-Quarter Multiplier**.")
-        is_checked_in = st.session_state.early_checkin_bb if is_basketball else st.session_state.early_checkin_fb
+        is_checked_in = st.session_state.get("early_checkin_bb", False) if is_basketball else st.session_state.get("early_checkin_fb", False)
         st.session_state.early_checkin = is_checked_in
         
         if not is_checked_in:
@@ -4005,10 +4024,10 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
     # Section Co-Op Synergy & Live Section Leaderboard
     # ------------------------------------------------------------------
     st.markdown("---")
-    has_contributed_telemetry = (st.session_state.tap_count >= 1 or len(st.session_state.fan_notes) > 1)
-    is_synced = st.session_state.synergy_claimed_bb if is_basketball else st.session_state.synergy_claimed_fb
+    has_contributed_telemetry = (st.session_state.get("tap_count", 0) >= 1 or len(st.session_state.get("fan_notes", [])) > 1)
+    is_synced = st.session_state.get("synergy_claimed_bb", False) if is_basketball else st.session_state.get("synergy_claimed_fb", False)
     st.session_state.synergy_claimed = is_synced
-    curr_synergy = st.session_state.synergy_score_bb if is_basketball else st.session_state.synergy_score_fb
+    curr_synergy = st.session_state.get("synergy_score_bb", 0) if is_basketball else st.session_state.get("synergy_score_fb", 0)
     st.session_state.synergy_score = curr_synergy
     
     syn_col1, syn_col2 = st.columns([2, 1])
@@ -4026,9 +4045,9 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
                     base_sync = 65
                     tap_bonus = min(20, st.session_state.tap_count * 2)
                     checkin_bonus = 10 if st.session_state.early_checkin else 0
-                    capstone_bonus = 5 if (st.session_state.capstone_claimed_bb if is_basketball else st.session_state.capstone_claimed_fb) else 0
+                    capstone_bonus = 5 if (st.session_state.get("capstone_claimed_bb", False) if is_basketball else st.session_state.get("capstone_claimed_fb", False)) else 0
                     # Fix #5: reward Screen 2 meetup RSVPs in the synergy score (up to +10 pts)
-                    rsvp_count = (st.session_state.tailgates_attended_bb if is_basketball else st.session_state.tailgates_attended_fb)
+                    rsvp_count = (st.session_state.get("tailgates_attended_bb", 0) if is_basketball else st.session_state.get("tailgates_attended_fb", 0))
                     rsvp_bonus = min(10, rsvp_count * 5)
                     calc_syn = min(100, base_sync + tap_bonus + checkin_bonus + capstone_bonus + rsvp_bonus)
                     
@@ -4108,7 +4127,7 @@ elif screen == "🏟️ Screen 3: In-Arena Game Hub & Trigger":
                 early_checkin=st.session_state.early_checkin,
                 synergy_score=st.session_state.synergy_score,
             )
-        _active_chat = st.session_state.sidebar_chat_bb if is_basketball else st.session_state.sidebar_chat_fb
+        _active_chat = st.session_state.get("sidebar_chat_bb", []) if is_basketball else st.session_state.get("sidebar_chat_fb", [])
         _active_chat.append({"sender": "⚔️ Strategist (Rival Challenge)", "handle": "@strategist", "msg": _rival_res["reply"], "time": "Just now"})
         while len(_active_chat) > 25: _active_chat.pop(0)
         st.success(f"⚔️ **Challenge issued to {_rival_sec}!** Strategist plan posted to Live Section Chat.")
