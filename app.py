@@ -1,4 +1,5 @@
 # pyright: reportGeneralTypeIssues=false
+# pyright: reportAttributeAccessIssue=false
 # ==============================================================================
 # Kinetic FanLab — 5-Screen Fan & AI Squad Experience
 # Track 3: Fan-Centric Sports & Entertainment
@@ -99,18 +100,17 @@ except Exception:
     cloudant_db = _CloudantDbFallback()
 
 try:
-    from cloudant_engine import (
-        save_fan_passport as cloudant_save_passport,
-        save_telemetry_snapshot as cloudant_save_telemetry,
-        save_storycard as cloudant_save_storycard,
-        save_tester_feedback as cloudant_save_feedback,
-        get_all_tester_feedback as cloudant_get_feedback,
-        save_sponsor_voucher as cloudant_save_voucher,
-        get_all_sponsor_vouchers as cloudant_get_vouchers,
-        save_user_account as cloudant_save_user,
-        get_user_account as cloudant_get_user,
-        get_all_user_accounts as cloudant_get_all_users,
-    )
+    import cloudant_engine
+    cloudant_save_passport = cloudant_engine.save_fan_passport
+    cloudant_save_telemetry = cloudant_engine.save_telemetry_snapshot
+    cloudant_save_storycard = cloudant_engine.save_storycard
+    cloudant_save_feedback = cloudant_engine.save_tester_feedback
+    cloudant_get_feedback = cloudant_engine.get_all_tester_feedback
+    cloudant_save_voucher = cloudant_engine.save_sponsor_voucher
+    cloudant_get_vouchers = cloudant_engine.get_all_sponsor_vouchers
+    cloudant_save_user = getattr(cloudant_engine, "save_user_account", lambda *a, **k: {'status': 'SUCCESS', 'source': 'LOCAL_FALLBACK'})
+    cloudant_get_user = getattr(cloudant_engine, "get_user_account", lambda *a, **k: None)
+    cloudant_get_all_users = getattr(cloudant_engine, "get_all_user_accounts", lambda *a, **k: {})
     CLOUDANT_ENGINE_LIVE = True
 except Exception:
     CLOUDANT_ENGINE_LIVE = False

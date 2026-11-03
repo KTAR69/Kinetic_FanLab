@@ -691,11 +691,26 @@ def save_sponsor_voucher(*args, **kwargs):
 def get_all_sponsor_vouchers(*args, **kwargs):
     return _engine_instance.get_all_sponsor_vouchers(*args, **kwargs)
 
-def save_user_account(*args, **kwargs):
-    return _engine_instance.save_user_account(*args, **kwargs)
+def save_user_account(user_data: Dict[str, Any]) -> Dict[str, Any]:
+    return _engine_instance.save_user_account(user_data)
 
-def get_user_account(*args, **kwargs):
-    return _engine_instance.get_user_account(*args, **kwargs)
+def get_user_account(email: str) -> Optional[Dict[str, Any]]:
+    return _engine_instance.get_user_account(email)
 
-def get_all_user_accounts(*args, **kwargs):
-    return _engine_instance.get_all_user_accounts(*args, **kwargs)
+def get_all_user_accounts() -> Dict[str, Any]:
+    return _engine_instance.get_all_user_accounts()
+
+__all__ = [
+    "CloudantEngineClient",
+    "save_fan_passport",
+    "save_telemetry_snapshot",
+    "save_storycard",
+    "get_recent_storycards",
+    "save_tester_feedback",
+    "get_all_tester_feedback",
+    "save_sponsor_voucher",
+    "get_all_sponsor_vouchers",
+    "save_user_account",
+    "get_user_account",
+    "get_all_user_accounts",
+]
