@@ -272,10 +272,10 @@
       "level": "NBA Professional Basketball",
       "conference_league": "NBA Eastern Conference",
       "home_venue": "TD Garden (Boston) (Section 114)",
-      "record": "5-2 (NBA Eastern Conference)",
+      "record": "5-2 (Eastern Conference)",
       "full_schedule": [
         {
-          "date": "Oct 20, 2026",
+          "date": "Tue, Oct 20, 2026",
           "opponent": "at Detroit Pistons",
           "venue": "Little Caesars Arena",
           "result": "L 113-121",
@@ -283,47 +283,47 @@
           "status": "Final"
         },
         {
-          "date": "Oct 23, 2026",
+          "date": "Fri, Oct 23, 2026",
           "opponent": "vs. New York Knicks",
-          "venue": "TD Garden",
+          "venue": "TD Garden (Boston)",
           "result": "W 107-103",
           "tv": "Prime Video",
           "status": "Final"
         },
         {
-          "date": "Oct 26, 2026",
+          "date": "Mon, Oct 26, 2026",
           "opponent": "vs. Chicago Bulls",
-          "venue": "TD Garden",
+          "venue": "TD Garden (Boston)",
           "result": "W 134-99",
           "tv": "NBA League Pass",
           "status": "Final"
         },
         {
-          "date": "Oct 27, 2026",
+          "date": "Tue, Oct 27, 2026",
           "opponent": "vs. Brooklyn Nets",
-          "venue": "TD Garden",
-          "result": "W 125-124",
+          "venue": "TD Garden (Boston)",
+          "result": "W 125-124 (OT)",
           "tv": "NBA League Pass",
           "status": "Final"
         },
         {
-          "date": "Oct 30, 2026",
+          "date": "Fri, Oct 30, 2026",
           "opponent": "vs. Chicago Bulls",
-          "venue": "TD Garden",
+          "venue": "TD Garden (Boston)",
           "result": "W 125-111",
           "tv": "NBA League Pass",
           "status": "Final"
         },
         {
-          "date": "Nov 01, 2026",
+          "date": "Sun, Nov 1, 2026",
           "opponent": "at Orlando Magic",
-          "venue": "Kia Center",
+          "venue": "Kia Center (Orlando)",
           "result": "W 108-97",
           "tv": "NBA League Pass",
           "status": "Final"
         },
         {
-          "date": "Nov 03, 2026",
+          "date": "Mon, Nov 2, 2026",
           "opponent": "at Houston Rockets",
           "venue": "Toyota Center (Houston)",
           "result": "L 93-109",
@@ -331,587 +331,19 @@
           "status": "Final"
         },
         {
-          "date": "Nov 05, 2026",
+          "date": "Wed, Nov 4, 2026",
           "opponent": "vs. Milwaukee Bucks",
-          "venue": "TD Garden",
-          "result": "11/4 - 7:30 PM EST",
-          "tv": "MyMi",
-          "status": "Upcoming"
+          "venue": "TD Garden (Boston)",
+          "result": "6:30 PM EST",
+          "tv": "ESPN / NBCSB",
+          "status": "Next Game"
         },
         {
-          "date": "Nov 07, 2026",
+          "date": "Fri, Nov 6, 2026",
           "opponent": "at Charlotte Hornets",
           "venue": "Spectrum Center",
-          "result": "11/6 - 7:00 PM EST",
-          "tv": "National Broadcast",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Nov 09, 2026",
-          "opponent": "at Milwaukee Bucks",
-          "venue": "Fiserv Forum",
-          "result": "11/8 - 8:00 PM EST",
-          "tv": "MyMi",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Nov 11, 2026",
-          "opponent": "at Philadelphia 76ers",
-          "venue": "Xfinity Mobile Arena",
-          "result": "11/10 - 8:00 PM EST",
-          "tv": "NBC",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Nov 12, 2026",
-          "opponent": "at Toronto Raptors",
-          "venue": "Scotiabank Arena",
-          "result": "11/11 - 7:00 PM EST",
-          "tv": "National Broadcast",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Nov 15, 2026",
-          "opponent": "vs. Dallas Mavericks",
-          "venue": "TD Garden",
-          "result": "11/15 - 6:00 PM EST",
-          "tv": "KFAA-TV",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Nov 17, 2026",
-          "opponent": "vs. Orlando Magic",
-          "venue": "TD Garden",
-          "result": "11/16 - 7:00 PM EST",
-          "tv": "NBCSN",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Nov 19, 2026",
-          "opponent": "at Denver Nuggets",
-          "venue": "Ball Arena",
-          "result": "11/18 - 9:00 PM EST",
-          "tv": "National Broadcast",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Nov 22, 2026",
-          "opponent": "at Sacramento Kings",
-          "venue": "Golden 1 Center",
-          "result": "11/21 - 10:00 PM EST",
-          "tv": "NBA TV",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Nov 23, 2026",
-          "opponent": "at Golden State Warriors",
-          "venue": "Chase Center",
-          "result": "11/22 - 8:30 PM EST",
-          "tv": "National Broadcast",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Nov 25, 2026",
-          "opponent": "at Washington Wizards",
-          "venue": "Capital One Arena",
-          "result": "11/24 - 8:00 PM EST",
-          "tv": "NBC",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Nov 28, 2026",
-          "opponent": "vs. Atlanta Hawks",
-          "venue": "TD Garden",
-          "result": "11/27 - 8:00 PM EST",
-          "tv": "National Broadcast",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Nov 29, 2026",
-          "opponent": "at San Antonio Spurs",
-          "venue": "Frost Bank Center",
-          "result": "11/29 - 4:00 PM EST",
-          "tv": "NBA TV",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Dec 01, 2026",
-          "opponent": "at Dallas Mavericks",
-          "venue": "American Airlines Center",
-          "result": "11/30 - 8:00 PM EST",
-          "tv": "KFAA-TV",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Dec 03, 2026",
-          "opponent": "vs. Charlotte Hornets",
-          "venue": "TD Garden",
-          "result": "12/2 - 7:30 PM EST",
-          "tv": "National Broadcast",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Dec 13, 2026",
-          "opponent": "at Brooklyn Nets",
-          "venue": "Barclays Center",
-          "result": "12/13 - 3:00 PM EST",
-          "tv": "DAZN (YES)",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Dec 15, 2026",
-          "opponent": "vs. Washington Wizards",
-          "venue": "TD Garden",
-          "result": "12/14 - 7:30 PM EST",
-          "tv": "MNMT",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Dec 17, 2026",
-          "opponent": "vs. Washington Wizards",
-          "venue": "TD Garden",
-          "result": "12/16 - 7:00 PM EST",
-          "tv": "ESPN",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Dec 19, 2026",
-          "opponent": "vs. Utah Jazz",
-          "venue": "TD Garden",
-          "result": "12/18 - 7:30 PM EST",
-          "tv": "KJZZ-TV",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Dec 21, 2026",
-          "opponent": "vs. Detroit Pistons",
-          "venue": "TD Garden",
-          "result": "12/20 - 8:00 PM EST",
-          "tv": "National Broadcast",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Dec 24, 2026",
-          "opponent": "vs. Portland Trail Blazers",
-          "venue": "TD Garden",
-          "result": "12/23 - 7:30 PM EST",
-          "tv": "BlazerVision",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Dec 25, 2026",
-          "opponent": "vs. Miami Heat",
-          "venue": "TD Garden",
-          "result": "12/25 - 2:30 PM EST",
-          "tv": "ABC",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Dec 29, 2026",
-          "opponent": "vs. Cleveland Cavaliers",
-          "venue": "TD Garden",
-          "result": "12/28 - 8:00 PM EST",
-          "tv": "NBC",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Dec 31, 2026",
-          "opponent": "at Chicago Bulls",
-          "venue": "United Center",
-          "result": "12/30 - 8:00 PM EST",
-          "tv": "National Broadcast",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Jan 02, 2027",
-          "opponent": "at Utah Jazz",
-          "venue": "Delta Center",
-          "result": "1/1 - 9:30 PM EST",
-          "tv": "KJZZ-TV",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Jan 03, 2027",
-          "opponent": "at Portland Trail Blazers",
-          "venue": "Moda Center",
-          "result": "1/2 - 10:00 PM EST",
-          "tv": "NBA TV",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Jan 05, 2027",
-          "opponent": "at Phoenix Suns",
-          "venue": "Mortgage Matchup Center",
-          "result": "1/4 - 9:00 PM EST",
-          "tv": "Suns Live",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Jan 08, 2027",
-          "opponent": "at Los Angeles Lakers",
-          "venue": "crypto.com Arena",
-          "result": "1/7 - 10:00 PM EST",
-          "tv": "Prime Video",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Jan 10, 2027",
-          "opponent": "at LA Clippers",
-          "venue": "Intuit Dome",
-          "result": "1/9 - 10:30 PM EST",
-          "tv": "ClipperVision",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Jan 12, 2027",
-          "opponent": "vs. Houston Rockets",
-          "venue": "TD Garden",
-          "result": "1/11 - 7:30 PM EST",
-          "tv": "National Broadcast",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Jan 14, 2027",
-          "opponent": "vs. New York Knicks",
-          "venue": "TD Garden",
-          "result": "1/13 - 7:00 PM EST",
-          "tv": "ESPN",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Jan 17, 2027",
-          "opponent": "vs. Brooklyn Nets",
-          "venue": "TD Garden",
-          "result": "1/16 - 7:00 PM EST",
-          "tv": "DAZN (YES)",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Jan 18, 2027",
-          "opponent": "at Washington Wizards",
-          "venue": "Capital One Arena",
-          "result": "1/18 - 3:00 PM EST",
-          "tv": "MNMT",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Jan 21, 2027",
-          "opponent": "vs. Indiana Pacers",
-          "venue": "TD Garden",
-          "result": "1/20 - 7:30 PM EST",
-          "tv": "DAZN IND",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Jan 22, 2027",
-          "opponent": "vs. Philadelphia 76ers",
-          "venue": "TD Garden",
-          "result": "1/21 - 7:30 PM EST",
-          "tv": "Prime Video",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Jan 24, 2027",
-          "opponent": "vs. Charlotte Hornets",
-          "venue": "TD Garden",
-          "result": "1/23 - 7:00 PM EST",
-          "tv": "DAZN CHA",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Jan 26, 2027",
-          "opponent": "vs. Toronto Raptors",
-          "venue": "TD Garden",
-          "result": "1/25 - 7:00 PM EST",
-          "tv": "NBCSN",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Jan 28, 2027",
-          "opponent": "vs. LA Clippers",
-          "venue": "TD Garden",
-          "result": "1/27 - 7:30 PM EST",
-          "tv": "ClipperVision",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Jan 30, 2027",
-          "opponent": "vs. Phoenix Suns",
-          "venue": "TD Garden",
-          "result": "1/29 - 7:30 PM EST",
-          "tv": "Suns Live",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Jan 31, 2027",
-          "opponent": "at Toronto Raptors",
-          "venue": "Scotiabank Arena",
-          "result": "1/31 - 6:00 PM EST",
-          "tv": "National Broadcast",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Feb 03, 2027",
-          "opponent": "vs. Los Angeles Lakers",
-          "venue": "TD Garden",
-          "result": "2/2 - 8:00 PM EST",
-          "tv": "NBC",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Feb 05, 2027",
-          "opponent": "at Charlotte Hornets",
-          "venue": "Spectrum Center",
-          "result": "2/4 - 7:30 PM EST",
-          "tv": "Prime Video",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Feb 06, 2027",
-          "opponent": "at Atlanta Hawks",
-          "venue": "State Farm Arena",
-          "result": "2/5 - 7:00 PM EST",
-          "tv": "National Broadcast",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Feb 08, 2027",
-          "opponent": "at Philadelphia 76ers",
-          "venue": "Xfinity Mobile Arena",
-          "result": "2/7 - 7:00 PM EST",
-          "tv": "NBC",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Feb 10, 2027",
-          "opponent": "vs. Denver Nuggets",
-          "venue": "TD Garden",
-          "result": "2/9 - 7:30 PM EST",
-          "tv": "National Broadcast",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Feb 11, 2027",
-          "opponent": "vs. Golden State Warriors",
-          "venue": "TD Garden",
-          "result": "2/10 - 7:30 PM EST",
-          "tv": "ESPN",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Feb 13, 2027",
-          "opponent": "vs. Minnesota Timberwolves",
-          "venue": "TD Garden",
-          "result": "2/12 - 8:00 PM EST",
-          "tv": "Prime Video",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Feb 14, 2027",
-          "opponent": "vs. Toronto Raptors",
-          "venue": "TD Garden",
-          "result": "2/14 - 1:00 PM EST",
-          "tv": "National Broadcast",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Feb 18, 2027",
-          "opponent": "at Oklahoma City Thunder",
-          "venue": "Paycom Center",
-          "result": "2/17 - 9:30 PM EST",
-          "tv": "ESPN",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Feb 19, 2027",
-          "opponent": "at Memphis Grizzlies",
-          "venue": "FedExForum",
-          "result": "2/18 - 8:00 PM EST",
-          "tv": "DAZN MEM",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Feb 27, 2027",
-          "opponent": "vs. Cleveland Cavaliers",
-          "venue": "TD Garden",
-          "result": "2/26 - 7:30 PM EST",
-          "tv": "ESPN",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Mar 01, 2027",
-          "opponent": "at Minnesota Timberwolves",
-          "venue": "Target Center",
-          "result": "2/28 - 7:00 PM EST",
-          "tv": "NBC",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Mar 03, 2027",
-          "opponent": "at Indiana Pacers",
-          "venue": "Gainbridge Fieldhouse",
-          "result": "3/2 - 7:00 PM EST",
-          "tv": "DAZN IND",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Mar 06, 2027",
-          "opponent": "at Detroit Pistons",
-          "venue": "Little Caesars Arena",
-          "result": "3/5 - 7:00 PM EST",
-          "tv": "ESPN",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Mar 07, 2027",
-          "opponent": "vs. Philadelphia 76ers",
-          "venue": "TD Garden",
-          "result": "3/7 - 1:00 PM EST",
-          "tv": "ABC",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Mar 10, 2027",
-          "opponent": "at Chicago Bulls",
-          "venue": "United Center",
-          "result": "3/9 - 8:00 PM EST",
-          "tv": "National Broadcast",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Mar 12, 2027",
-          "opponent": "vs. Memphis Grizzlies",
-          "venue": "TD Garden",
-          "result": "3/11 - 7:30 PM EST",
-          "tv": "DAZN MEM",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Mar 13, 2027",
-          "opponent": "vs. Oklahoma City Thunder",
-          "venue": "TD Garden",
-          "result": "3/12 - 7:30 PM EST",
-          "tv": "Prime Video",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Mar 14, 2027",
-          "opponent": "at New York Knicks",
-          "venue": "Madison Square Garden",
-          "result": "3/14 - 12:00 PM EDT",
-          "tv": "ABC",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Mar 16, 2027",
-          "opponent": "vs. Sacramento Kings",
-          "venue": "TD Garden",
-          "result": "3/16 - 7:30 PM EDT",
-          "tv": "National Broadcast",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Mar 18, 2027",
-          "opponent": "vs. Orlando Magic",
-          "venue": "TD Garden",
-          "result": "3/18 - 7:30 PM EDT",
-          "tv": "National Broadcast",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Mar 21, 2027",
-          "opponent": "vs. New Orleans Pelicans",
-          "venue": "TD Garden",
-          "result": "3/21 - 3:00 PM EDT",
-          "tv": "GCSEN",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Mar 23, 2027",
-          "opponent": "at Brooklyn Nets",
-          "venue": "Barclays Center",
-          "result": "3/23 - 7:30 PM EDT",
-          "tv": "DAZN (YES)",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Mar 24, 2027",
-          "opponent": "vs. San Antonio Spurs",
-          "venue": "TD Garden",
-          "result": "3/24 - 7:30 PM EDT",
-          "tv": "ESPN",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Mar 28, 2027",
-          "opponent": "at Miami Heat",
-          "venue": "Kaseya Center",
-          "result": "3/27 - 8:00 PM EDT",
-          "tv": "NBA TV",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Mar 28, 2027",
-          "opponent": "at New Orleans Pelicans",
-          "venue": "Smoothie King Center",
-          "result": "3/28 - 7:00 PM EDT",
-          "tv": "GCSEN",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Mar 31, 2027",
-          "opponent": "at Indiana Pacers",
-          "venue": "Gainbridge Fieldhouse",
-          "result": "3/30 - 8:00 PM EDT",
-          "tv": "DAZN IND",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Apr 01, 2027",
-          "opponent": "at Cleveland Cavaliers",
-          "venue": "Rocket Arena",
-          "result": "4/1 - 7:00 PM EDT",
-          "tv": "Prime Video",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Apr 02, 2027",
-          "opponent": "vs. Miami Heat",
-          "venue": "TD Garden",
-          "result": "4/2 - 7:30 PM EDT",
-          "tv": "National Broadcast",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Apr 04, 2027",
-          "opponent": "at New York Knicks",
-          "venue": "Madison Square Garden",
-          "result": "4/4 - 7:30 PM EDT",
-          "tv": "NBC",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Apr 07, 2027",
-          "opponent": "at Orlando Magic",
-          "venue": "Kia Center",
-          "result": "4/7 - 7:00 PM EDT",
-          "tv": "National Broadcast",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Apr 09, 2027",
-          "opponent": "at Atlanta Hawks",
-          "venue": "State Farm Arena",
-          "result": "4/9 - 7:00 PM EDT",
-          "tv": "National Broadcast",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Apr 11, 2027",
-          "opponent": "vs. Milwaukee Bucks",
-          "venue": "TD Garden",
-          "result": "4/11 - 6:00 PM EDT",
-          "tv": "MyMi",
+          "result": "6:00 PM EST",
+          "tv": "NBCSB",
           "status": "Upcoming"
         }
       ]
@@ -925,251 +357,35 @@
       "record": "1-0 (SEC)",
       "full_schedule": [
         {
-          "date": "Nov 03, 2026",
-          "opponent": "vs. Chicago State Cougars",
-          "venue": "Moody Center",
+          "date": "Nov 2, 2026",
+          "opponent": "vs. Chicago State (Season Opener)",
+          "venue": "Moody Center (Austin)",
           "result": "W 109-59",
           "tv": "SEC Network",
           "status": "Final"
         },
         {
-          "date": "Nov 06, 2026",
-          "opponent": "vs. Gardner-Webb Runnin' Bulldogs",
-          "venue": "Moody Center",
-          "result": "11/5 - 8:00 PM EST",
+          "date": "Nov 5, 2026",
+          "opponent": "vs. Gardner-Webb",
+          "venue": "Moody Center (Austin)",
+          "result": "7:00 PM CT",
           "tv": "SECN+",
-          "status": "Upcoming"
+          "status": "Next Game"
         },
         {
-          "date": "Nov 10, 2026",
-          "opponent": "vs. Grambling Tigers",
-          "venue": "Moody Center",
-          "result": "11/9 - 7:00 PM EST",
+          "date": "Nov 9, 2026",
+          "opponent": "vs. Grambling State",
+          "venue": "Moody Center (Austin)",
+          "result": "6:00 PM CT",
           "tv": "SEC Network",
           "status": "Upcoming"
         },
         {
           "date": "Nov 15, 2026",
-          "opponent": "vs. Baylor Bears",
-          "venue": "Frost Bank Center",
-          "result": "11/15 - 3:00 PM EST",
+          "opponent": "vs. Baylor (San Antonio Showdown)",
+          "venue": "Frost Bank Center (San Antonio)",
+          "result": "2:00 PM CT",
           "tv": "ESPN",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Nov 20, 2026",
-          "opponent": "vs. Southern Utah Thunderbirds",
-          "venue": "Moody Center",
-          "result": "11/19 - 8:00 PM EST",
-          "tv": "SECN+",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Nov 22, 2026",
-          "opponent": "vs. Southern Indiana Screaming Eagles",
-          "venue": "Moody Center",
-          "result": "11/22 - 3:00 PM EST",
-          "tv": "SECN+",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Nov 26, 2026",
-          "opponent": "vs. Georgetown Hoyas",
-          "venue": "Jenny Craig Pavilion",
-          "result": "11/26 - 2:30 PM EST",
-          "tv": "FS1",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Dec 02, 2026",
-          "opponent": "at Louisville Cardinals",
-          "venue": "KFC Yum! Center",
-          "result": "12/1 - 9:00 PM EST",
-          "tv": "ESPN2",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Dec 09, 2026",
-          "opponent": "vs. Jackson State Tigers",
-          "venue": "Moody Center",
-          "result": "12/8 - 8:00 PM EST",
-          "tv": "SECN+",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Dec 12, 2026",
-          "opponent": "vs. Miami Hurricanes",
-          "venue": "Toyota Center (Houston)",
-          "result": "12/12 - 5:30 PM EST",
-          "tv": "ESPN",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Dec 17, 2026",
-          "opponent": "vs. Memphis Tigers",
-          "venue": "Moody Center",
-          "result": "12/16 - 9:00 PM EST",
-          "tv": "ESPN2",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Dec 22, 2026",
-          "opponent": "vs. Prairie View A&M Panthers",
-          "venue": "Moody Center",
-          "result": "12/21 - 8:00 PM EST",
-          "tv": "SECN+",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Dec 30, 2026",
-          "opponent": "vs. East Texas A&M Lions",
-          "venue": "Moody Center",
-          "result": "12/29 - 8:00 PM EST",
-          "tv": "SECN+",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Jan 02, 2027",
-          "opponent": "vs. Florida Gators",
-          "venue": "Moody Center",
-          "result": "1/2 - 6:00 PM EST",
-          "tv": "National Broadcast",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Jan 06, 2027",
-          "opponent": "at Georgia Bulldogs",
-          "venue": "Stegeman Coliseum",
-          "result": "1/5 - 9:00 PM EST",
-          "tv": "National Broadcast",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Jan 09, 2027",
-          "opponent": "at Ole Miss Rebels",
-          "venue": "The Sandy and John Black Pavilion at Ole Miss",
-          "result": "1/9 - 12:00 PM EST",
-          "tv": "ESPNU",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Jan 13, 2027",
-          "opponent": "vs. Auburn Tigers",
-          "venue": "Moody Center",
-          "result": "1/12 - 9:00 PM EST",
-          "tv": "National Broadcast",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Jan 16, 2027",
-          "opponent": "vs. Oklahoma Sooners",
-          "venue": "Moody Center",
-          "result": "1/16 - 12:00 PM EST",
-          "tv": "National Broadcast",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Jan 20, 2027",
-          "opponent": "at LSU Tigers",
-          "venue": "Pete Maravich Assembly Center",
-          "result": "1/19 - 9:00 PM EST",
-          "tv": "SEC Network",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Jan 23, 2027",
-          "opponent": "vs. Arkansas Razorbacks",
-          "venue": "Moody Center",
-          "result": "1/23 - 6:00 PM EST",
-          "tv": "National Broadcast",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Jan 28, 2027",
-          "opponent": "at South Carolina Gamecocks",
-          "venue": "Colonial Life Arena",
-          "result": "1/27 - 8:00 PM EST",
-          "tv": "SEC Network",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Jan 30, 2027",
-          "opponent": "vs. Kentucky Wildcats",
-          "venue": "Moody Center",
-          "result": "1/30 - 12:00 PM EST",
-          "tv": "National Broadcast",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Feb 06, 2027",
-          "opponent": "at Florida Gators",
-          "venue": "Stephen C. O'Connell Center",
-          "result": "2/6 - 12:00 PM EST",
-          "tv": "ESPN",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Feb 10, 2027",
-          "opponent": "vs. Alabama Crimson Tide",
-          "venue": "Moody Center",
-          "result": "2/9 - 7:00 PM EST",
-          "tv": "ESPN",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Feb 13, 2027",
-          "opponent": "at Vanderbilt Commodores",
-          "venue": "Memorial Gymnasium (TN)",
-          "result": "2/13 - 2:00 PM EST",
-          "tv": "National Broadcast",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Feb 18, 2027",
-          "opponent": "vs. Texas A&M Aggies",
-          "venue": "Moody Center",
-          "result": "2/17 - 9:00 PM EST",
-          "tv": "National Broadcast",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Feb 21, 2027",
-          "opponent": "at Oklahoma Sooners",
-          "venue": "Lloyd Noble Center",
-          "result": "2/20 - 8:30 PM EST",
-          "tv": "ESPN",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Feb 25, 2027",
-          "opponent": "at Mississippi State Bulldogs",
-          "venue": "Humphrey Coliseum",
-          "result": "2/24 - 7:00 PM EST",
-          "tv": "National Broadcast",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Feb 27, 2027",
-          "opponent": "vs. Tennessee Volunteers",
-          "venue": "Moody Center",
-          "result": "TBD",
-          "tv": "National Broadcast",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Mar 03, 2027",
-          "opponent": "vs. Missouri Tigers",
-          "venue": "Moody Center",
-          "result": "3/2 - 7:00 PM EST",
-          "tv": "National Broadcast",
-          "status": "Upcoming"
-        },
-        {
-          "date": "Mar 07, 2027",
-          "opponent": "at Texas A&M Aggies",
-          "venue": "Reed Arena",
-          "result": "3/6 - 8:00 PM EST",
-          "tv": "SEC Network",
           "status": "Upcoming"
         }
       ]
@@ -2534,7 +1750,7 @@
           "date": "Nov 15, 2026",
           "opponent": "vs. San Francisco 49ers",
           "venue": "AT&T Stadium",
-          "result": "11/15 - 4:25 PM EST",
+          "result": "3:25 PM CST",
           "tv": "Fox",
           "status": "Upcoming"
         },
