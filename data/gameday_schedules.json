@@ -832,7 +832,7 @@
       "level": "Pro Football (NFL)",
       "conference_league": "NFC East",
       "home_venue": "AT&T Stadium (Section 115)",
-      "record": "5-3 (NFC East)",
+      "record": "3-5 (NFC East)",
       "is_game_today": false,
       "active_game": {
         "matchup": "Dallas Cowboys at Atlanta Falcons",
@@ -916,7 +916,7 @@
           "date": "Sun, Nov 1, 2026",
           "opponent": "vs. Arizona Cardinals",
           "venue": "AT&T Stadium",
-          "result": "W 28-21",
+          "result": "L 30-33",
           "tv": "FOX",
           "status": "Final"
         },
@@ -932,9 +932,9 @@
           "date": "Sun, Nov 15, 2026",
           "opponent": "vs. San Francisco 49ers",
           "venue": "AT&T Stadium",
-          "result": "W 28-21",
+          "result": "3:25 PM CST",
           "tv": "FOX",
-          "status": "Final"
+          "status": "Upcoming"
         }
       ]
     }
