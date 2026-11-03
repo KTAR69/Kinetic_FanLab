@@ -194,7 +194,7 @@
           "date": "Wed, Nov 4, 2026",
           "opponent": "vs. Milwaukee Bucks",
           "venue": "TD Garden (Boston)",
-          "result": "6:30 PM EST",
+          "result": "Next Game",
           "tv": "ESPN / NBCSB",
           "status": "Next Game"
         },
@@ -214,7 +214,7 @@
       "level": "College Basketball (NCAA D1)",
       "conference_league": "SEC",
       "home_venue": "Moody Center (Section 114)",
-      "record": "0-0 (Exhibition 0-1)",
+      "record": "1-0 (SEC)",
       "is_game_today": false,
       "active_game": {
         "matchup": "Texas Longhorns vs. Chicago State Cougars (Season Opener)",
@@ -250,9 +250,9 @@
           "date": "Nov 2, 2026",
           "opponent": "vs. Chicago State (Season Opener)",
           "venue": "Moody Center (Austin)",
-          "result": "8:00 PM CT",
+          "result": "W 80-59",
           "tv": "SEC Network",
-          "status": "Next Game"
+          "status": "Final"
         },
         {
           "date": "Nov 5, 2026",
@@ -260,7 +260,7 @@
           "venue": "Moody Center (Austin)",
           "result": "7:00 PM CT",
           "tv": "SEC Network+",
-          "status": "Upcoming"
+          "status": "Next Game"
         },
         {
           "date": "Nov 9, 2026",
@@ -358,7 +358,7 @@
       "level": "College Basketball (NCAA D1)",
       "conference_league": "Big East",
       "home_venue": "PeoplesBank Arena / Gampel Pavilion (Section 114)",
-      "record": "0-0 (Preseason 3-0)",
+      "record": "1-0 (Big East)",
       "is_game_today": false,
       "active_game": {
         "matchup": "UConn Huskies vs. Gardner-Webb Runnin' Bulldogs (Season Opener)",
@@ -410,9 +410,9 @@
           "date": "Nov 2, 2026",
           "opponent": "vs. Gardner-Webb (Season Opener)",
           "venue": "PeoplesBank Arena (Hartford)",
-          "result": "9:00 PM EST",
+          "result": "W 92-56",
           "tv": "Peacock / NBCSN",
-          "status": "Next Game"
+          "status": "Final"
         },
         {
           "date": "Nov 6, 2026",
@@ -420,7 +420,7 @@
           "venue": "TD Garden (Boston)",
           "result": "8:00 PM EST",
           "tv": "TNT / Max",
-          "status": "Upcoming"
+          "status": "Next Game"
         },
         {
           "date": "Nov 9, 2026",
