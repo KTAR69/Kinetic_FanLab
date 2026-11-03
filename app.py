@@ -10,6 +10,16 @@
 # ==============================================================================
 
 import streamlit as st
+
+# Propagate Streamlit Cloud secrets into os.environ for cloudant_engine, watsonx, etc.
+try:
+    if hasattr(st, "secrets"):
+        for _sk, _sv in st.secrets.items():
+            if isinstance(_sv, str) and _sk not in os.environ:
+                os.environ[_sk] = _sv
+except Exception:
+    pass
+
 import json
 import hashlib
 import time
@@ -97,6 +107,9 @@ try:
         get_all_tester_feedback as cloudant_get_feedback,
         save_sponsor_voucher as cloudant_save_voucher,
         get_all_sponsor_vouchers as cloudant_get_vouchers,
+        save_user_account as cloudant_save_user,
+        get_user_account as cloudant_get_user,
+        get_all_user_accounts as cloudant_get_all_users,
     )
     CLOUDANT_ENGINE_LIVE = True
 except Exception:
@@ -108,6 +121,9 @@ except Exception:
     def cloudant_get_feedback(*args, **kwargs): return []
     def cloudant_save_voucher(*args, **kwargs): return {'status': 'SUCCESS', 'source': 'LOCAL_CACHE'}
     def cloudant_get_vouchers(*args, **kwargs): return []
+    def cloudant_save_user(*args, **kwargs): return {'status': 'SUCCESS', 'source': 'LOCAL_FALLBACK'}
+    def cloudant_get_user(*args, **kwargs): return None
+    def cloudant_get_all_users(*args, **kwargs): return {}
 
 try:
     from cos_archive import archive_crowd_box_score as cos_lakehouse_archive
@@ -627,6 +643,56 @@ def _load_fans_db():
             "capstone_claimed_fb": True,
             "claimed_vouchers": []
         },
+        "win@gmail.com": {
+            "email": "win@gmail.com",
+            "password": "password123",
+            "name": "Troy Resendez",
+            "handle": "@owltar",
+            "seat": "Section 114, Row 3, Seat 12",
+            "seat_bb": "Section 114, Row 3, Seat 12",
+            "seat_fb": "Section 115, Row 18, Seat 10",
+            "hash": "0xWIN-sec114-8f7a2",
+            "hash_bb": "0xWIN-sec114-8f7a2",
+            "hash_fb": "0xWIN-sec115-8f7a2",
+            "sport": "Basketball",
+            "bb_level": "Both (NCAA D1 & NBA)",
+            "fb_level": "Both (NCAA D1 & NFL)",
+            "teams_bb": ["Duke Blue Devils", "Boston Celtics", "Texas Longhorns"],
+            "teams_fb": ["Michigan Wolverines", "Green Bay Packers", "Dallas Cowboys"],
+            "role": "Section Director / Verified Lead",
+            "tier": "Section Director (Tier 4)",
+            "games": 5,
+            "games_bb": 5,
+            "games_fb": 4,
+            "career_db": "106.2 dB",
+            "clutch_stops": 3,
+            "unlocked_mentors_bb": ["Marcus Vance", "Jordan Lee", "Elena Rostova", "Devon Miller"],
+            "unlocked_mentors_fb": ["Sarah Jenkins", "Alex Taylor", "Carlos Mendez", "Maya Patel"],
+            "tailgates_attended": 3,
+            "tailgates_attended_bb": 2,
+            "tailgates_attended_fb": 3,
+            "meetup_rsvps": ["Lot B Tailgate Zone", "Concourse Pep Rally"],
+            "meetup_rsvps_bb": ["Concourse Pep Rally"],
+            "meetup_rsvps_fb": ["Lot B Tailgate Zone"],
+            "early_checkin_bb": True,
+            "early_checkin_fb": True,
+            "chant_action_taken_bb": True,
+            "chant_action_taken_fb": True,
+            "storycard_exported_bb": True,
+            "storycard_exported_fb": True,
+            "user_respect_taps_sent_bb": 8,
+            "user_respect_taps_sent_fb": 6,
+            "synergy_score_bb": 92,
+            "synergy_score_fb": 88,
+            "synergy_claimed_bb": True,
+            "synergy_claimed_fb": True,
+            "armchair_callouts_count": 5,
+            "armchair_nft_unlocked_bb": True,
+            "armchair_nft_unlocked_fb": True,
+            "capstone_claimed_bb": True,
+            "capstone_claimed_fb": True,
+            "claimed_vouchers": []
+        },
         "mvance@thunderrow.org": {
             "email": "mvance@thunderrow.org",
             "password": "demo1234",
@@ -662,18 +728,26 @@ def _load_fans_db():
             "unlocked_mentors_fb": ["Sarah Jenkins"]
         }
     }
+    # 1. Merge from local persistent JSON
     if os.path.exists(USERS_DB_FILE):
         try:
             with open(USERS_DB_FILE, "r", encoding="utf-8") as f:
                 saved = json.load(f)
                 if isinstance(saved, dict):
-                    for k, v in defaults.items():
-                        if k not in saved:
-                            saved[k] = v
-                    return saved
+                    for k, v in saved.items():
+                        defaults[k] = v
         except Exception:
             pass
-    _save_fans_db(defaults)
+
+    # 2. Automatically synchronize all registered accounts from IBM Cloudant NoSQL
+    try:
+        cloud_accounts = cloudant_get_all_users()
+        if isinstance(cloud_accounts, dict):
+            for k, v in cloud_accounts.items():
+                defaults[k] = v
+    except Exception as _ce:
+        print(f"[_load_fans_db] Cloudant user sync warning: {_ce}")
+
     return defaults
 
 def _save_fans_db(db):
@@ -800,8 +874,9 @@ def _sync_and_persist_user_state(force: bool = False):
 
     _save_fans_db(st.session_state.registered_fans_db)
 
-    # Mirror persistent passport to IBM Cloudant NoSQL
+    # Mirror persistent passport and complete user record to IBM Cloudant NoSQL
     try:
+        cloudant_save_user(user_rec)
         _m_sec = (user_rec.get("seat_bb") if user_rec.get("sport") == "Basketball" else user_rec.get("seat_fb")) or "Section 114"
         _tier_int = 4 if "Tier 4" in user_rec.get("tier", "") else (2 if "Tier 2" in user_rec.get("tier", "") else (3 if "Tier 3" in user_rec.get("tier", "") else 1))
         cloudant_save_passport(
@@ -1456,6 +1531,25 @@ def _set_active_sport(new_sport: str):
 # --- Sidebar: Ultra-Clean Navigation & Game Situation Switcher ---
 st.sidebar.title("⚡ Kinetic FanLab")
 
+if st.session_state.get("is_logged_in"):
+    _cur_m_name = st.session_state.get("member_name", "Member")
+    _cur_m_hdl = st.session_state.get("member_handle", "@fan")
+    _cur_m_em = st.session_state.get("member_email", "")
+    st.sidebar.markdown(f"""
+    <div style="background-color: #11141c; border: 1px solid #0f62fe; border-radius: 6px; padding: 6px 10px; margin-bottom: 8px;">
+        <span style="color: #42be65; font-size: 7.5pt; font-weight: bold;">● LOGGED IN MEMBER</span><br/>
+        <span style="color: white; font-weight: bold; font-size: 8.5pt;">{_cur_m_name}</span> <span style="color: #777; font-size: 7.5pt;">({_cur_m_hdl})</span><br/>
+        <span style="color: #5da8ff; font-size: 7.5pt;">{_cur_m_em}</span>
+    </div>
+    """, unsafe_allow_html=True)
+else:
+    st.sidebar.markdown("""
+    <div style="background-color: #11141c; border: 1px solid #444; border-radius: 6px; padding: 6px 10px; margin-bottom: 8px;">
+        <span style="color: #f1c21b; font-size: 7.5pt; font-weight: bold;">👤 GUEST SESSION</span><br/>
+        <span style="color: #aaa; font-size: 7.5pt;">Sign in on Screen 1 to persist your progress &amp; NFTs.</span>
+    </div>
+    """, unsafe_allow_html=True)
+
 
 screen = st.sidebar.radio("Navigate:", [
     "👤 Screen 1: Fan Passport & Roster",
@@ -2105,6 +2199,12 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                     }
                     st.session_state.registered_fans_db[clean_email] = user_entry
                     _save_fans_db(st.session_state.registered_fans_db)
+
+                    # Automated persistence directly to IBM Cloudant NoSQL
+                    try:
+                        cloudant_save_user(user_entry)
+                    except Exception as _ue:
+                        print(f"[signup] cloudant_save_user error: {_ue}")
                     st.session_state.member_games = 0
                     st.session_state.member_career_db = "0.0 dB"
                     st.session_state.member_clutch_stops = 0
@@ -2135,6 +2235,15 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                     st.session_state.active_member = st.session_state.member_name
                     st.session_state.respect_dict[st.session_state.member_name] = 1
 
+                    # Set persistent URL query parameter so session survives container restarts / reloads!
+                    try:
+                        clean_tok = f"kfl_{hashlib.sha256((clean_email + 'kfl_salt_2026').encode()).hexdigest()[:12]}"
+                        st.query_params['member'] = clean_tok
+                    except Exception:
+                        pass
+
+                    _sync_and_persist_user_state(force=True)
+
                     # Balloons ONLY for newly signed-up member on inception!
                     st.balloons()
                     st.rerun()
@@ -2161,16 +2270,29 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
 
                 if not clean_email or not clean_pwd:
                     st.error("⚠️ Please enter both your registered email address and password.")
-                elif clean_email not in fans_db:
-                    st.error(f"❌ No registered account found for '{login_email}'. Please sign up as a new member or check your email.")
-                elif fans_db[clean_email].get("password") != clean_pwd:
-                    st.error("❌ Incorrect password. Please verify your credentials.")
                 else:
-                    # Validated login!
-                    user_data = fans_db[clean_email]
-                    _load_user_into_session(user_data, clean_email)
-                    _ensure_member_in_persona_db()
-                    st.rerun()
+                    # AUTOMATED CLOUDANT FALLBACK CHECK:
+                    # If account is not in local session memory, query IBM Cloudant directly!
+                    if clean_email not in fans_db:
+                        try:
+                            cloud_u = cloudant_get_user(clean_email)
+                            if cloud_u:
+                                fans_db[clean_email] = cloud_u
+                                st.session_state.registered_fans_db[clean_email] = cloud_u
+                        except Exception as _cle:
+                            print(f"[login] Cloudant lookup error: {_cle}")
+
+                    if clean_email not in fans_db:
+                        st.error(f"❌ No registered account found for '{login_email}'. Please sign up as a new member or check your email.")
+                    elif fans_db[clean_email].get("password") != clean_pwd:
+                        st.error("❌ Incorrect password. Please verify your credentials.")
+                    else:
+                        # Validated login!
+                        user_data = fans_db[clean_email]
+                        _load_user_into_session(user_data, clean_email)
+                        _ensure_member_in_persona_db()
+                        _sync_and_persist_user_state(force=True)
+                        st.rerun()
 
             st.markdown("---")
             st.markdown("#### ⚡ Quick Demo Persona Log In (Evaluator Mode)")
@@ -2718,8 +2840,8 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
             _fan_role_raw = st.session_state.get("member_role", "")
             _active_email = st.session_state.get("member_email", "").lower().strip()
             is_admin_lead = (
-                _fan_role_raw.lower() == "admin"
-                or _active_email == "fan@gmail.com"
+                _fan_role_raw.lower() in ["admin", "section director / verified lead"]
+                or _active_email in ["fan@gmail.com", "win@gmail.com", "owltar@gmail.com"]
                 or st.session_state.get("member_handle") in ["@owltar", "@troy"]
             )
 
@@ -3147,6 +3269,7 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                             "_id": f"feedback:{fb_t_handle.replace('@', '').lower().strip()}:{int(time.time())}",
                             "type": "tester_feedback",
                             "tester_name": fb_t_name.strip() or "Anonymous Fan",
+                            "tester_email": st.session_state.get("member_email", ""),
                             "tester_handle": fb_t_handle.strip() or "@anonymous",
                             "tester_role": fb_t_role,
                             "cmi_rating": int(fb_t_cmi),
@@ -3183,8 +3306,33 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                             improvement_feedback=fb_t_improve,
                             sport=clean_sport_val
                         )
+                        _load_all_feedback_with_fallbacks.clear()
                         st.balloons()
                         st.success(f"🎉 Thank you for sharing your experience, **{fb_t_name}**! Your feedback has been recorded in IBM Cloudant (`{fb_res.get('doc_id')}`).")
+
+                    st.markdown("---")
+                    st.subheader("📋 Your Recorded Feedback Submissions")
+                    _all_fb_curr = _load_all_feedback_with_fallbacks()
+                    _my_fb = [
+                        _f for _f in _all_fb_curr
+                        if _f.get("tester_email") == st.session_state.get("member_email")
+                        or _f.get("tester_handle") == st.session_state.get("member_handle")
+                        or _f.get("tester_name") == st.session_state.get("member_name")
+                    ]
+                    if _my_fb:
+                        for _m in _my_fb[:5]:
+                            st.markdown(f'''
+                            <div style="background-color: #1a1a1a; border-left: 4px solid #42be65; border-radius: 6px; padding: 10px 14px; margin-bottom: 8px;">
+                                <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                                    <span style="font-weight:bold; color:white; font-size:9pt;">{_m.get('sport', 'General')} Evaluation ({_m.get('cmi_rating', 5)}/5 ⭐)</span>
+                                    <span style="color:#777; font-size:8pt;">{_m.get('formatted_time', 'Recently')} • Record: <code>{_m.get('_id', '')}</code></span>
+                                </div>
+                                <div style="color:#d0d0d0; font-size:8.5pt;"><strong>Favorite:</strong> {_m.get('favorite_feature', 'N/A')}</div>
+                                <div style="color:#a8a8a8; font-size:8.5pt;"><strong>Feedback:</strong> {_m.get('improvement_feedback', 'N/A')}</div>
+                            </div>
+                            ''', unsafe_allow_html=True)
+                    else:
+                        st.info("No feedback submissions recorded for this session yet. Submit the form above to log your validation feedback to IBM Cloudant.")
 
             if is_admin_lead and tab_admin is not None:
                 with tab_admin:
@@ -4795,6 +4943,7 @@ with st.expander("📝 Share Member Feedback & Experience Survey", expanded=st.s
             "_id": f"feedback:{bot_fb_handle.replace('@', '').lower().strip()}:{int(time.time())}",
             "type": "tester_feedback",
             "tester_name": bot_fb_name.strip() or "Anonymous Fan",
+            "tester_email": st.session_state.get("member_email", ""),
             "tester_handle": bot_fb_handle.strip() or "@anonymous",
             "tester_role": bot_fb_role,
             "cmi_rating": int(bot_fb_cmi),
@@ -4831,6 +4980,7 @@ with st.expander("📝 Share Member Feedback & Experience Survey", expanded=st.s
             improvement_feedback=bot_fb_improve,
             sport=clean_sport_tag
         )
+        _load_all_feedback_with_fallbacks.clear()
         st.session_state.show_bottom_feedback = True
         st.session_state.feedback_confirmed_doc = {
             "name": bot_fb_name,

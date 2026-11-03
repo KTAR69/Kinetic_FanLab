@@ -76,6 +76,11 @@ class CloudantEngineClient:
                         if vch.get("_id") == doc_id:
                             docs_map[doc_id] = vch
                             break
+                elif op == "save_user":
+                    for u in cache.get("user_accounts", {}).values():
+                        if u.get("_id") == doc_id:
+                            docs_map[doc_id] = u
+                            break
 
         # Phase 2: Perform network I/O OUTSIDE lock so other threads are never blocked
         remaining = []
@@ -123,6 +128,7 @@ class CloudantEngineClient:
             if not os.path.exists(CACHE_FILE):
                 initial_cache = {
                     "fan_passports": {},
+                    "user_accounts": {},
                     "cmi_telemetry": [],
                     "storycards": [],
                     "tester_feedback": [],
@@ -143,11 +149,14 @@ class CloudantEngineClient:
                         data["tester_feedback"] = []
                     if "sponsor_vouchers" not in data:
                         data["sponsor_vouchers"] = []
+                    if "user_accounts" not in data:
+                        data["user_accounts"] = {}
                     self._mem_cache = data
                     return data
             except Exception:
                 self._mem_cache = {
                     "fan_passports": {},
+                    "user_accounts": {},
                     "cmi_telemetry": [],
                     "storycards": [],
                     "tester_feedback": [],
@@ -163,6 +172,129 @@ class CloudantEngineClient:
                 json.dump(data, f)
 
     # --- DOCUMENT REPOSITORY METHODS ---
+
+    def save_user_account(self, user_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Saves a registered user account to local cache, persistent JSON file, and IBM Cloudant NoSQL."""
+        email = (user_data.get("email") or "").strip().lower()
+        if not email:
+            return {"status": "ERROR", "message": "Email required"}
+
+        doc_id = f"user:{email}"
+        doc = dict(user_data)
+        doc["_id"] = doc_id
+        doc["type"] = "user_account"
+        doc["updated_at"] = time.time()
+
+        # 1. Update in-memory & CACHE_FILE under lock
+        with _lock:
+            cache = self._read_cache()
+            if "user_accounts" not in cache:
+                cache["user_accounts"] = {}
+            cache["user_accounts"][email] = doc
+            cache["uncommitted_queue"].append({"op": "save_user", "id": doc_id, "timestamp": time.time()})
+            self._write_cache(cache)
+
+        # 2. Write to persistent registered_fans.json on disk
+        try:
+            users_file = os.path.join(_BASE_DIR, "data", "registered_fans.json")
+            os.makedirs(os.path.dirname(users_file), exist_ok=True)
+            current_users = {}
+            if os.path.exists(users_file):
+                with open(users_file, "r", encoding="utf-8") as f:
+                    current_users = json.load(f)
+            if not isinstance(current_users, dict):
+                current_users = {}
+            current_users[email] = doc
+            with open(users_file, "w", encoding="utf-8") as f:
+                json.dump(current_users, f, indent=2)
+        except Exception as _ue:
+            print(f"[save_user_account] warning saving to disk: {_ue}")
+
+        # 3. Commit to live IBM Cloudant if connected
+        if self.is_connected and self.client:
+            try:
+                try:
+                    existing = self.client.get_document(db=DB_NAME, doc_id=doc_id).get_result()
+                    if "_rev" in existing:
+                        doc["_rev"] = existing["_rev"]
+                except Exception:
+                    pass
+                self.client.post_document(db=DB_NAME, document=doc).get_result()
+                return {"status": "SUCCESS", "doc_id": doc_id, "source": "CLOUDANT_LIVE"}
+            except Exception as _ce:
+                print(f"[save_user_account] Cloudant live post error: {_ce}")
+
+        return {"status": "SUCCESS", "doc_id": doc_id, "source": "LOCAL_CACHE"}
+
+    def get_user_account(self, email: str) -> Optional[Dict[str, Any]]:
+        """Retrieves a single user account by email across Cloudant live, persistent storage, and cache."""
+        clean_email = email.strip().lower()
+        doc_id = f"user:{clean_email}"
+
+        # 1. Check live IBM Cloudant if connected
+        if self.is_connected and self.client:
+            try:
+                doc = self.client.get_document(db=DB_NAME, doc_id=doc_id).get_result()
+                if doc and isinstance(doc, dict):
+                    return doc
+            except Exception:
+                pass
+
+        # 2. Check persistent disk registered_fans.json
+        users_file = os.path.join(_BASE_DIR, "data", "registered_fans.json")
+        if os.path.exists(users_file):
+            try:
+                with open(users_file, "r", encoding="utf-8") as f:
+                    u_dict = json.load(f)
+                    if isinstance(u_dict, dict) and clean_email in u_dict:
+                        return u_dict[clean_email]
+            except Exception:
+                pass
+
+        # 3. Check CACHE_FILE
+        cache = self._read_cache()
+        if "user_accounts" in cache and clean_email in cache["user_accounts"]:
+            return cache["user_accounts"][clean_email]
+
+        return None
+
+    def get_all_user_accounts(self) -> Dict[str, Any]:
+        """Retrieves all registered user accounts across Cloudant live, persistent storage, and cache."""
+        users_map = {}
+
+        # 1. Read from persistent registered_fans.json on disk
+        users_file = os.path.join(_BASE_DIR, "data", "registered_fans.json")
+        if os.path.exists(users_file):
+            try:
+                with open(users_file, "r", encoding="utf-8") as f:
+                    u_dict = json.load(f)
+                    if isinstance(u_dict, dict):
+                        users_map.update(u_dict)
+            except Exception:
+                pass
+
+        # 2. Read from CACHE_FILE
+        cache = self._read_cache()
+        for email, doc in cache.get("user_accounts", {}).items():
+            if email not in users_map:
+                users_map[email] = doc
+
+        # 3. Query live IBM Cloudant if available
+        if self.is_connected and self.client:
+            try:
+                cloud_res = self.client.post_find(
+                    db=DB_NAME,
+                    selector={"type": "user_account"},
+                    limit=500
+                ).get_result()
+                for doc in cloud_res.get("docs", []):
+                    em = doc.get("email") or doc.get("_id", "").replace("user:", "")
+                    if em:
+                        users_map[em] = doc
+            except Exception:
+                pass
+
+        return users_map
 
     def save_fan_passport(
         self,
@@ -439,10 +571,10 @@ class CloudantEngineClient:
                     "timestamp": time.time()
                 })
             # Rolling cap: prevent unbounded offline queue and voucher cache bloat
-            if len(cache.get("uncommitted_queue", [])) > 500:
-                cache["uncommitted_queue"] = cache["uncommitted_queue"][-500:]
-            if len(cache.get("sponsor_vouchers", [])) > 500:
-                cache["sponsor_vouchers"] = cache["sponsor_vouchers"][-500:]
+            if len(cache.get("uncommitted_queue", [])) > 100:
+                cache["uncommitted_queue"] = cache["uncommitted_queue"][-100:]
+            if len(cache.get("sponsor_vouchers", [])) > 100:
+                cache["sponsor_vouchers"] = cache["sponsor_vouchers"][-100:]
 
             self._write_cache(cache)
 
@@ -463,6 +595,8 @@ class CloudantEngineClient:
                     self._mem_vouchers = v_list
                 self._mem_vouchers = [v for v in self._mem_vouchers if v.get("claim_hash") != v_hash]
                 self._mem_vouchers.append(doc)
+                if len(self._mem_vouchers) > 100:
+                    self._mem_vouchers = self._mem_vouchers[-100:]
                 with open(vch_disk_path, "w", encoding="utf-8") as f:
                     json.dump(self._mem_vouchers, f)
             except Exception:
@@ -556,3 +690,12 @@ def save_sponsor_voucher(*args, **kwargs):
 
 def get_all_sponsor_vouchers(*args, **kwargs):
     return _engine_instance.get_all_sponsor_vouchers(*args, **kwargs)
+
+def save_user_account(*args, **kwargs):
+    return _engine_instance.save_user_account(*args, **kwargs)
+
+def get_user_account(*args, **kwargs):
+    return _engine_instance.get_user_account(*args, **kwargs)
+
+def get_all_user_accounts(*args, **kwargs):
+    return _engine_instance.get_all_user_accounts(*args, **kwargs)
