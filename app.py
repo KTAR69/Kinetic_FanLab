@@ -4865,8 +4865,8 @@ with st.expander("📝 Share Member Feedback & Experience Survey", expanded=st.s
     st.caption("We value your direct input to refine Kinetic FanLab! Your feedback is securely saved to IBM Cloudant.")
     
     # Persistent confirmation banner if feedback was submitted
-    if "feedback_confirmed_doc" in st.session_state:
-        doc_info = st.session_state.feedback_confirmed_doc
+    doc_info = st.session_state.get("feedback_confirmed_doc")
+    if doc_info and isinstance(doc_info, dict):
         st.success(f"""
         🎉 **FEEDBACK CONFIRMED & SYNCED TO IBM CLOUDANT!**
         
@@ -4878,7 +4878,7 @@ with st.expander("📝 Share Member Feedback & Experience Survey", expanded=st.s
         Thank you for submitting your feedback! You can review all live responses anytime in the **Screen 1 Admin Portal**.
         """)
         if st.button("Close / Submit Another Response", key="btn_close_fb_confirmed"):
-            del st.session_state.feedback_confirmed_doc
+            st.session_state.feedback_confirmed_doc = None
             st.session_state.show_bottom_feedback = False
             st.rerun()
 
