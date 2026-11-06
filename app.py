@@ -2840,10 +2840,10 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
             _fan_role_raw = st.session_state.get("member_role", "")
             _active_email = st.session_state.get("member_email", "").lower().strip()
             is_admin_lead = (
-                _fan_role_raw.lower() in ["admin", "section director / verified lead"]
-                or _active_email in ["fan@gmail.com", "win@gmail.com", "owltar@gmail.com"]
-                or st.session_state.get("member_handle") in ["@owltar", "@troy"]
-            )
+    _active_email in ["fan@gmail.com", "owltar@gmail.com"]
+    or st.session_state.get("member_handle") in ["@owltar", "@troy"]
+    or _fan_role_raw.lower() == "admin"
+)
 
             # Tabs for Roster, Trophy Case, Settings, Tester Feedback, and Admin Portal
             tab_admin = None
