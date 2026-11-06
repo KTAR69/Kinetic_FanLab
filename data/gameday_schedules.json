@@ -6,7 +6,7 @@
       "level": "NCAA Division I Men's Basketball",
       "conference_league": "ACC",
       "home_venue": "Cameron Indoor Stadium (Section 114)",
-      "record": "1-0 (ACC)",
+      "record": "2-0 (ACC)",
       "full_schedule": [
         {
           "date": "Nov 02, 2026",
@@ -17,12 +17,12 @@
           "status": "Final"
         },
         {
-          "date": "Nov 06, 2026",
+          "date": "Nov 05, 2026",
           "opponent": "vs. Coastal Carolina Chanticleers",
           "venue": "Cameron Indoor Stadium",
-          "result": "11/5 - 8:00 PM EST",
+          "result": "1W 113-52 | Final",
           "tv": "ACC Network",
-          "status": "Upcoming"
+          "status": "Final"
         },
         {
           "date": "Nov 11, 2026",
