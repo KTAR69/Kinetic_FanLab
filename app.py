@@ -2093,14 +2093,35 @@ def _on_fixture_change():
     if st.session_state.get("sport") != target_sp:
         _set_active_sport(target_sp)
 
-cur_fix_idx = fixture_options.index(st.session_state.active_fixture) if st.session_state.active_fixture in fixture_options else 0
-active_preset = st.sidebar.selectbox(
-    "Live Game Situation:",
-    fixture_options,
-    index=cur_fix_idx,
-    key="active_fixture",
-    on_change=_on_fixture_change
-)
+st.sidebar.markdown("**⚡ Live Game Situation (1-Tap Switch):**")
+f_col1, f_col2 = st.sidebar.columns(2)
+with f_col1:
+    b1_active = ("BB-01" in st.session_state.active_fixture)
+    if st.button("🏀 BB-01 Baseline", key="btn_fix_bb01", type="primary" if b1_active else "secondary", use_container_width=True):
+        st.session_state.active_fixture = fixture_options[0]
+        st.session_state.sport = "Basketball"
+        st.rerun()
+
+    b3_active = ("FB-01" in st.session_state.active_fixture)
+    if st.button("🏈 FB-01 Timeout", key="btn_fix_fb01", type="primary" if b3_active else "secondary", use_container_width=True):
+        st.session_state.active_fixture = fixture_options[2]
+        st.session_state.sport = "Football"
+        st.rerun()
+
+with f_col2:
+    b2_active = ("BB-02" in st.session_state.active_fixture)
+    if st.button("🔥 BB-02 Clutch FT", key="btn_fix_bb02", type="primary" if b2_active else "secondary", use_container_width=True):
+        st.session_state.active_fixture = fixture_options[1]
+        st.session_state.sport = "Basketball"
+        st.rerun()
+
+    b4_active = ("FB-02" in st.session_state.active_fixture)
+    if st.button("⚡ FB-02 48-Yd FG", key="btn_fix_fb02", type="primary" if b4_active else "secondary", use_container_width=True):
+        st.session_state.active_fixture = fixture_options[3]
+        st.session_state.sport = "Football"
+        st.rerun()
+
+active_preset = st.session_state.active_fixture
 
 # Enforce sport from fixture selection immediately
 target_sport = "Football" if active_preset.startswith("FB-") else "Basketball"
@@ -4147,8 +4168,82 @@ elif screen == "🎪 36h Virtual Tailgate & Meetups" or "Screen 2" in screen:
 # ==============================================================================
 elif screen == "⚡ In-Arena Game Hub & Crowd Defense" or "Screen 3" in screen:
 
-    st.header(f"🏟️ In-Arena Game Hub & Clutch Trigger ({st.session_state.sport} — {role_tag})")
+    st.header(f"🏟️ In-Arena Game Hub & Crowd Defense ({st.session_state.sport} — {role_tag})")
     st.caption(f"Live crowd energy, Momentum Pulse tapping, Armchair Coach fan callouts, and section rivalry for {st.session_state.sport}.")
+
+    # ==============================================================================
+    # CONCEPT 1 & 3: 3D ARENA ACOUSTIC SHOCKWAVE & REALITY DELTA PROBLEM VISUALIZER
+    # Shows the core problem (unmeasured noise) vs. the solution (111.8 dB shockwave)
+    # ==============================================================================
+    _is_clutch_active = st.session_state.get("is_clutch", False)
+    _arena_sport = st.session_state.get("sport", "Basketball")
+    _arena_sec = "Section 114 (Thunder Row)" if _arena_sport == "Basketball" else "Section 115 (End Zone Loyals)"
+    _cur_db = st.session_state.get("db", 82.0)
+    _cur_hr = st.session_state.get("hr", 98.0)
+    
+    _opp_prob = "41.2% (RATTLED & DISTRACTED)" if _is_clutch_active else "78.5% (UNCONTESTED)"
+    _opp_color = "#42be65" if _is_clutch_active else "#fa4d56"
+    _wave_color = "#da1e28" if _is_clutch_active else "#0f62fe"
+    _wave_status = "🔥 MAXIMUM ACOUSTIC SHOCKWAVE ACTIVE" if _is_clutch_active else "🌊 BASELINE CROWD AMBIENCE"
+
+    st.markdown(f"""
+    <div style="background: linear-gradient(145deg, #121622 0%, #0a0d14 100%); border: 2px solid {_wave_color}; border-radius: 18px; padding: 20px 24px; margin-bottom: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 24px {_wave_color}33;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 12px; border-bottom: 1px solid #1f2737; padding-bottom: 10px;">
+            <span style="background-color: {_wave_color}22; color: {_wave_color}; border: 1px solid {_wave_color}55; padding: 4px 12px; border-radius: 9999px; font-size: 8pt; font-weight: 800; letter-spacing: 0.8px;">
+                {_wave_status}
+            </span>
+            <span style="color: #f1c21b; font-size: 8.5pt; font-weight: 800;">
+                📍 {_arena_sec} &bull; SENSOR PODS ACTIVE
+            </span>
+        </div>
+
+        <!-- 3D Arena Wireframe & Acoustic Shockwave Animation -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+            <div style="flex: 1; min-width: 260px;">
+                <span style="color: #8d8d8d; font-size: 7.5pt; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">THE GAME MOMENTUM DELTA</span>
+                <h3 style="color: #ffffff; margin: 4px 0 6px 0; font-size: 14pt; font-weight: 800;">Acoustic Defense vs. Opponent Play</h3>
+                <div style="background-color: #0c0f17; border: 1px solid #1f2737; border-radius: 12px; padding: 12px 14px; margin-top: 8px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                        <span style="color: #a8a8a8; font-size: 8.5pt;">Opponent Shot / Conversion Odds:</span>
+                        <b style="color: {_opp_color}; font-size: 9pt;">{_opp_prob}</b>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                        <span style="color: #a8a8a8; font-size: 8.5pt;">Section Noise Wall Impact:</span>
+                        <b style="color: {_wave_color}; font-size: 9pt;">{_cur_db} dB Verified</b>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #a8a8a8; font-size: 8.5pt;">Section Biometric Pulse:</span>
+                        <b style="color: #5da8ff; font-size: 9pt;">{_cur_hr} BPM Synchronized</b>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Living Audio Equalizer & EKG Waveform -->
+            <div style="flex: 1; min-width: 260px; background-color: #0c0f17; border: 1px solid #1f2737; border-radius: 14px; padding: 16px; text-align: center;">
+                <span style="color: #8d8d8d; font-size: 7.5pt; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">LIVE ACOUSTIC SPECTRUM & PULSE</span>
+                <div style="display: flex; justify-content: center; align-items: flex-end; height: 60px; gap: 4px; margin: 10px 0;">
+                    <div style="width: 6px; height: 45%; background: {_wave_color}; border-radius: 3px;"></div>
+                    <div style="width: 6px; height: 75%; background: {_wave_color}; border-radius: 3px;"></div>
+                    <div style="width: 6px; height: 95%; background: {_wave_color}; border-radius: 3px;"></div>
+                    <div style="width: 6px; height: 60%; background: {_wave_color}; border-radius: 3px;"></div>
+                    <div style="width: 6px; height: 100%; background: {_wave_color}; border-radius: 3px;"></div>
+                    <div style="width: 6px; height: 85%; background: {_wave_color}; border-radius: 3px;"></div>
+                    <div style="width: 6px; height: 50%; background: {_wave_color}; border-radius: 3px;"></div>
+                    <div style="width: 6px; height: 90%; background: {_wave_color}; border-radius: 3px;"></div>
+                    <div style="width: 6px; height: 70%; background: {_wave_color}; border-radius: 3px;"></div>
+                    <div style="width: 6px; height: 100%; background: {_wave_color}; border-radius: 3px;"></div>
+                    <div style="width: 6px; height: 65%; background: {_wave_color}; border-radius: 3px;"></div>
+                    <div style="width: 6px; height: 40%; background: {_wave_color}; border-radius: 3px;"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 7.5pt; color: #8d8d8d; border-top: 1px solid #1a2230; padding-top: 6px;">
+                    <span>60 Hz (Sub-Bass)</span>
+                    <span style="color: {_wave_color}; font-weight: bold;">● {_cur_db} dB PEAK</span>
+                    <span>16 kHz (Vocal Screams)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
     _coordinator = InvisibleCoordinatorAgent(sport=st.session_state.sport)
     if is_basketball and st.session_state.is_clutch:
