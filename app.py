@@ -1734,31 +1734,28 @@ else:
 
 
 NAV_SCREENS = [
-    ("🎟️ Passport", "🎟️ Fan Passport & Section Roster"),
-    ("🎪 Tailgate", "🎪 36h Virtual Tailgate & Meetups"),
-    ("⚡ Game Hub", "⚡ In-Arena Game Hub & Crowd Defense"),
-    ("📜 Box Score", "📜 Crowd Box Score & Fan Storycard"),
-    ("🧠 AI Squad", "🧠 AI Squad & Game Intelligence")
+    "🎟️ Fan Passport & Section Roster",
+    "🎪 36h Virtual Tailgate & Meetups",
+    "⚡ In-Arena Game Hub & Crowd Defense",
+    "📜 Crowd Box Score & Fan Storycard",
+    "🧠 AI Squad & Game Intelligence"
 ]
 
 if "active_nav_screen" not in st.session_state:
-    st.session_state.active_nav_screen = NAV_SCREENS[0][1]
+    st.session_state.active_nav_screen = NAV_SCREENS[0]
 
-_nav_full_list = [full for _, full in NAV_SCREENS]
-_cur_radio_idx = 0
-if st.session_state.active_nav_screen in _nav_full_list:
-    _cur_radio_idx = _nav_full_list.index(st.session_state.active_nav_screen)
+def _on_sidebar_nav_change():
+    st.session_state.active_nav_screen = st.session_state.sidebar_nav_widget
+    st.session_state.top_screen_selector = st.session_state.sidebar_nav_widget
 
-sidebar_choice = st.sidebar.radio(
+st.session_state.sidebar_nav_widget = st.session_state.active_nav_screen
+
+st.sidebar.radio(
     "Navigate:",
-    _nav_full_list,
-    index=_cur_radio_idx,
-    key="sidebar_nav_radio_widget"
+    NAV_SCREENS,
+    key="sidebar_nav_widget",
+    on_change=_on_sidebar_nav_change
 )
-
-if sidebar_choice != st.session_state.active_nav_screen:
-    st.session_state.active_nav_screen = sidebar_choice
-    st.rerun()
 
 screen = st.session_state.active_nav_screen
 
@@ -2246,48 +2243,33 @@ def _render_pulse_tapper_fragment(is_basketball: bool, auto_tick_key: str) -> No
 
 
 # ==============================================================================
-# MOBILE-FIRST 1-TAP TOP NAVIGATION BAR (Always accessible, zero drawer popups)
+# MOBILE-FIRST 1-TAP TOP NAVIGATION BAR (Compact Single Row, Zero Clutter)
 # ==============================================================================
-st.markdown("""
-<style>
-/* Mobile-first top navigation styling */
-.kfl-mobile-nav {
-    display: flex;
-    justify-content: space-between;
-    gap: 4px;
-    margin-bottom: 12px;
-}
-div[data-testid="column"] button[kind="primary"] {
-    background-color: #0f62fe !important;
-    border-color: #0f62fe !important;
-    color: #ffffff !important;
-    font-weight: bold !important;
-    box-shadow: 0 0 10px rgba(15, 98, 254, 0.5) !important;
-}
-div[data-testid="column"] button[kind="secondary"] {
-    background-color: #141924 !important;
-    border: 1px solid #2a3346 !important;
-    color: #dcdcdc !important;
-    font-size: 8.5pt !important;
-}
-div[data-testid="column"] button:hover {
-    border-color: #0f62fe !important;
-    color: #ffffff !important;
-}
-</style>
-""", unsafe_allow_html=True)
+def _on_top_nav_change():
+    st.session_state.active_nav_screen = st.session_state.top_screen_selector
+    st.session_state.sidebar_nav_widget = st.session_state.top_screen_selector
 
-nav_c1, nav_c2, nav_c3, nav_c4, nav_c5 = st.columns(5)
-top_cols = [nav_c1, nav_c2, nav_c3, nav_c4, nav_c5]
+st.session_state.top_screen_selector = st.session_state.active_nav_screen
 
-for idx, (short_name, full_name) in enumerate(NAV_SCREENS):
-    is_cur = (st.session_state.active_nav_screen == full_name)
-    b_type = "primary" if is_cur else "secondary"
-    with top_cols[idx]:
-        if st.button(short_name, key=f"top_nav_bar_btn_{idx}", type=b_type, use_container_width=True):
-            if not is_cur:
-                st.session_state.active_nav_screen = full_name
-                st.rerun()
+c_nav_phase, c_nav_quick = st.columns([3, 2])
+with c_nav_phase:
+    st.selectbox(
+        "Active Gameday Phase",
+        NAV_SCREENS,
+        key="top_screen_selector",
+        on_change=_on_top_nav_change,
+        label_visibility="collapsed"
+    )
+with c_nav_quick:
+    _curr_idx = NAV_SCREENS.index(st.session_state.active_nav_screen) if st.session_state.active_nav_screen in NAV_SCREENS else 0
+    _next_idx = (_curr_idx + 1) % len(NAV_SCREENS)
+    _next_full = NAV_SCREENS[_next_idx]
+    _next_short = _next_full.split()[1]
+    if st.button(f"Next: {_next_short} ▶", key="btn_quick_step_next", type="primary", use_container_width=True):
+        st.session_state.active_nav_screen = _next_full
+        st.session_state.sidebar_nav_widget = _next_full
+        st.session_state.top_screen_selector = _next_full
+        st.rerun()
 
 st.markdown("<div style='margin-bottom: 6px;'></div>", unsafe_allow_html=True)
 
@@ -3761,6 +3743,8 @@ if screen == "🎟️ Fan Passport & Section Roster" or "Screen 1" in screen:
     with c_f2:
         if st.button("👉 Proceed to 36h Virtual Tailgate (Meetups & Chants) 🎪", key="btn_flow_to_s2", type="primary", use_container_width=True):
             st.session_state.active_nav_screen = "🎪 36h Virtual Tailgate & Meetups"
+            st.session_state.sidebar_nav_widget = "🎪 36h Virtual Tailgate & Meetups"
+            st.session_state.top_screen_selector = "🎪 36h Virtual Tailgate & Meetups"
             st.rerun()
 
 elif screen == "🎪 36h Virtual Tailgate & Meetups" or "Screen 2" in screen:
@@ -3984,6 +3968,8 @@ elif screen == "🎪 36h Virtual Tailgate & Meetups" or "Screen 2" in screen:
     with c_f2:
         if st.button("👉 Enter In-Arena Game Hub & Crowd Defense ⚡", key="btn_flow_to_s3", type="primary", use_container_width=True):
             st.session_state.active_nav_screen = "⚡ In-Arena Game Hub & Crowd Defense"
+            st.session_state.sidebar_nav_widget = "⚡ In-Arena Game Hub & Crowd Defense"
+            st.session_state.top_screen_selector = "⚡ In-Arena Game Hub & Crowd Defense"
             st.rerun()
 
 elif screen == "⚡ In-Arena Game Hub & Crowd Defense" or "Screen 3" in screen:
@@ -4609,6 +4595,8 @@ elif screen == "⚡ In-Arena Game Hub & Crowd Defense" or "Screen 3" in screen:
     with c_f2:
         if st.button("👉 View Crowd Box Score & Share Storycard 📜", key="btn_flow_to_s4", type="primary", use_container_width=True):
             st.session_state.active_nav_screen = "📜 Crowd Box Score & Fan Storycard"
+            st.session_state.sidebar_nav_widget = "📜 Crowd Box Score & Fan Storycard"
+            st.session_state.top_screen_selector = "📜 Crowd Box Score & Fan Storycard"
             st.rerun()
 
 elif screen == "📜 Crowd Box Score & Fan Storycard" or "Screen 4" in screen:
@@ -4853,6 +4841,8 @@ elif screen == "📜 Crowd Box Score & Fan Storycard" or "Screen 4" in screen:
     with c_f2:
         if st.button("👉 Consult AI Squad & Game Intelligence 🧠", key="btn_flow_to_s5", type="primary", use_container_width=True):
             st.session_state.active_nav_screen = "🧠 AI Squad & Game Intelligence"
+            st.session_state.sidebar_nav_widget = "🧠 AI Squad & Game Intelligence"
+            st.session_state.top_screen_selector = "🧠 AI Squad & Game Intelligence"
             st.rerun()
 
 elif screen == "🧠 AI Squad & Game Intelligence" or "Screen 5" in screen:
