@@ -4235,98 +4235,153 @@ elif screen == "⚡ In-Arena Game Hub & Crowd Defense" or "Screen 3" in screen:
     st.caption(f"Live crowd energy, Momentum Pulse tapping, Armchair Coach fan callouts, and section rivalry for {st.session_state.sport}.")
 
     # ==============================================================================
-    # CONCEPT 1 & 3: 3D ARENA ACOUSTIC SHOCKWAVE & REALITY DELTA (GUARANTEED HTML RENDERING)
-    # Direct visual proof: 111.8 dB acoustic shockwave radiating from Section 114 to opponent
+    # CONCEPT 1 & 3: LIVE CLUTCH DEFENSE CHALLENGE & SPONSOR REWARD UNLOCK
+    # Instantly communicates what the fan is looking at, why they care, and the direct reward
     # ==============================================================================
     _is_clutch_active = st.session_state.get("is_clutch", False)
     _arena_sport = st.session_state.get("sport", "Basketball")
-    _arena_sec = "Section 114 (Thunder Row)" if _arena_sport == "Basketball" else "Section 115 (End Zone Loyals)"
-    _cur_db = st.session_state.get("db", 82.0)
-    _cur_hr = st.session_state.get("hr", 98.0)
+    _is_bball_sport = (_arena_sport == "Basketball")
+    _arena_sec = "Section 114 (Thunder Row)" if _is_bball_sport else "Section 115 (End Zone Loyals)"
+    _cur_db = round(st.session_state.get("db", 82.0), 1)
+    _cur_hr = round(st.session_state.get("hr", 98.0), 1)
     
-    _opp_prob = "41.2% (RATTLED & DISTRACTED)" if _is_clutch_active else "78.5% (UNCONTESTED)"
+    _target_db = 105.0
+    _db_progress_pct = min(100, int((_cur_db / 115.0) * 100))
+    _perk_unlocked = (_cur_db >= _target_db)
+    
+    _opp_odds_txt = "41% SHOT ODDS (RATTLED!)" if _is_clutch_active else "78% SHOT ODDS (IN RHYTHM)"
+    _opp_odds_sub = "⚡ Noise Wall Shaking Backboard!" if _is_clutch_active else "🎯 Easy Shot — Bleachers Are Quiet"
     _opp_color = "#42be65" if _is_clutch_active else "#fa4d56"
-    _wave_color = "#da1e28" if _is_clutch_active else "#0f62fe"
-    _wave_status = "🔥 MAXIMUM ACOUSTIC SHOCKWAVE ACTIVE" if _is_clutch_active else "🌊 BASELINE CROWD AMBIENCE"
+    _border_glow = "#da1e28" if _is_clutch_active else "#0f62fe"
+    
+    _challenge_title = "🏀 CLUTCH FREE THROW DEFENSE // 0:14 REMAINING" if _is_bball_sport else "🏈 48-YARD FIELD GOAL SNAP // 0:03 REMAINING"
 
-    _s3_raw = f"""
-<div style="background: linear-gradient(145deg, #121622 0%, #0a0d14 100%); border: 2px solid {_wave_color}; border-radius: 18px; padding: 22px 24px; margin-bottom: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 25px {_wave_color}44;">
-<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 14px; border-bottom: 1px solid #1f2737; padding-bottom: 10px;">
-<span style="background-color: {_wave_color}22; color: {_wave_color}; border: 1px solid {_wave_color}55; padding: 4px 14px; border-radius: 9999px; font-size: 8pt; font-weight: 800; letter-spacing: 0.8px;">
-{_wave_status}
-</span>
-<span style="color: #f1c21b; font-size: 8.5pt; font-weight: 800;">
-📍 {_arena_sec} &bull; SENSOR PODS ACTIVE
-</span>
-</div>
+    # SVG Backboard or Goalpost Graphic
+    if _is_bball_sport:
+        _shake_class = "astryx-shockwave-ring" if _is_clutch_active else ""
+        _target_svg = f"""
+        <svg class="{_shake_class}" width="100%" height="130" viewBox="0 0 240 130" style="overflow: visible;">
+            <!-- Basketball Backboard -->
+            <rect x="30" y="10" width="180" height="90" rx="6" fill="#0d111a" stroke="{_border_glow}" stroke-width="3" />
+            <!-- Inner Target Square -->
+            <rect x="80" y="35" width="80" height="50" rx="3" fill="none" stroke="{_border_glow}" stroke-width="2" />
+            <!-- Rim -->
+            <ellipse cx="120" cy="90" rx="30" ry="8" fill="none" stroke="#ff6600" stroke-width="3.5" />
+            <!-- Net -->
+            <polygon points="95,90 145,90 135,120 105,120" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 2" />
+            <!-- Vibration Shockwaves when clutch active -->
+            {f'<ellipse cx="120" cy="90" rx="50" ry="16" fill="none" stroke="#da1e28" stroke-width="2" opacity="0.8" stroke-dasharray="4 2" />' if _is_clutch_active else ''}
+            {f'<ellipse cx="120" cy="90" rx="75" ry="24" fill="none" stroke="#f1c21b" stroke-width="1.5" opacity="0.6" stroke-dasharray="6 3" />' if _is_clutch_active else ''}
+        </svg>
+        """
+    else:
+        _target_svg = f"""
+        <svg width="100%" height="130" viewBox="0 0 240 130" style="overflow: visible;">
+            <!-- Football Goalpost -->
+            <line x1="120" y1="125" x2="120" y2="70" stroke="{_border_glow}" stroke-width="5" />
+            <line x1="50" y1="70" x2="190" y2="70" stroke="{_border_glow}" stroke-width="4" />
+            <line x1="50" y1="70" x2="50" y2="10" stroke="{_border_glow}" stroke-width="4" />
+            <line x1="190" y1="70" x2="190" y2="10" stroke="{_border_glow}" stroke-width="4" />
+            <!-- Kick trajectory -->
+            {f'<path d="M 120 120 Q 150 50 205 15" fill="none" stroke="#da1e28" stroke-width="3" stroke-dasharray="4 4" />' if _is_clutch_active else '<path d="M 120 120 Q 120 50 120 15" fill="none" stroke="#42be65" stroke-width="3" stroke-dasharray="4 4" />'}
+            <!-- Status text -->
+            <text x="120" y="100" fill="{_opp_color}" font-size="8" font-weight="800" text-anchor="middle">{'WIDE RIGHT (MISSED!)' if _is_clutch_active else 'SPLIT UPRIGHTS (GOOD)'}</text>
+        </svg>
+        """
 
-<!-- 3D Arena Graphic: Court / Field + Concentric Acoustic Shockwave Rings -->
-<div style="text-align: center; margin-bottom: 14px;">
-<svg width="100%" height="150" viewBox="0 0 400 150" style="overflow: visible; border-radius: 12px; background: #0c0f17; border: 1px solid #1a2230;">
-<rect x="15" y="15" width="370" height="120" rx="12" fill="#0d111a" stroke="#1f2737" stroke-width="1.5" />
-<line x1="200" y1="15" x2="200" y2="135" stroke="#1f2737" stroke-width="1.5" stroke-dasharray="4 4" />
-<circle cx="200" cy="75" r="26" fill="none" stroke="#1f2737" stroke-width="1.5" />
-<!-- Section 114 / 115 Bleachers (Acoustic Noise Source) -->
-<rect x="25" y="30" width="50" height="90" rx="8" fill="{_wave_color}33" stroke="{_wave_color}" stroke-width="2" />
-<text x="50" y="80" fill="#ffffff" font-size="8.5" font-weight="800" text-anchor="middle" transform="rotate(-90 50 80)">SEC 114</text>
-<!-- Opponent Target (Free Throw Shooter / Kicker) -->
-<circle cx="335" cy="75" r="14" fill="#141926" stroke="{_opp_color}" stroke-width="2" />
-<text x="335" y="79" fill="{_opp_color}" font-size="9" font-weight="800" text-anchor="middle">🎯</text>
-<!-- Concentric Acoustic Shockwave Rings radiating across arena -->
-<ellipse class="astryx-shockwave-ring" cx="75" cy="75" rx="65" ry="42" fill="none" stroke="{_wave_color}" stroke-width="2.5" opacity="0.85" stroke-dasharray="6 3" />
-<ellipse class="astryx-shockwave-ring" cx="75" cy="75" rx="130" ry="54" fill="none" stroke="{_wave_color}" stroke-width="2" opacity="0.65" stroke-dasharray="8 4" />
-<ellipse class="astryx-shockwave-ring" cx="75" cy="75" rx="195" ry="64" fill="none" stroke="{_wave_color}" stroke-width="1.5" opacity="0.45" stroke-dasharray="10 5" />
-<ellipse class="astryx-shockwave-ring" cx="75" cy="75" rx="260" ry="70" fill="none" stroke="{_wave_color}" stroke-width="1" opacity="0.25" stroke-dasharray="12 6" />
-</svg>
-</div>
+    _s3_challenge_raw = f"""
+<div style="background: linear-gradient(145deg, #121622 0%, #0a0d14 100%); border: 2px solid {_border_glow}; border-radius: 20px; padding: 22px 26px; margin-bottom: 18px; box-shadow: 0 12px 35px rgba(0,0,0,0.7), 0 0 28px {_border_glow}44;">
+    
+    <!-- Top Challenge Marquee Bar -->
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1f2737; padding-bottom: 12px; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="background: {'rgba(218,30,40,0.2)' if _is_clutch_active else 'rgba(15,98,254,0.2)'}; color: {'#ff8389' if _is_clutch_active else '#78a9ff'}; border: 1.5px solid {_border_glow}; padding: 4px 14px; border-radius: 9999px; font-size: 8pt; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">
+                {_challenge_title}
+            </span>
+            <span style="color: #42be65; font-size: 8pt; font-weight: 800;">● ARENA DEFENSE ACTIVE</span>
+        </div>
+        <span style="color: #f1c21b; font-size: 8.5pt; font-weight: 800;">🏆 {_arena_sec}: #1 IN ARENA NOISE</span>
+    </div>
 
-<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
-<div style="flex: 1; min-width: 250px;">
-<span style="color: #8d8d8d; font-size: 7.5pt; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">THE GAME MOMENTUM DELTA</span>
-<h3 style="color: #ffffff; margin: 4px 0 6px 0; font-size: 14pt; font-weight: 800;">Acoustic Defense vs. Opponent Play</h3>
-<div style="background-color: #0c0f17; border: 1px solid #1f2737; border-radius: 12px; padding: 12px 14px; margin-top: 8px;">
-<div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-<span style="color: #a8a8a8; font-size: 8.5pt;">Opponent Conversion Odds:</span>
-<b style="color: {_opp_color}; font-size: 9.5pt;">{_opp_prob}</b>
-</div>
-<div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-<span style="color: #a8a8a8; font-size: 8.5pt;">Section Noise Wall Impact:</span>
-<b style="color: {_wave_color}; font-size: 9.5pt;">{_cur_db} dB Verified</b>
-</div>
-<div style="display: flex; justify-content: space-between;">
-<span style="color: #a8a8a8; font-size: 8.5pt;">Section Biometric Pulse:</span>
-<b style="color: #5da8ff; font-size: 9.5pt;">{_cur_hr} BPM Synchronized</b>
-</div>
-</div>
-</div>
+    <!-- Main Visual Split: The Target Challenge (Left) & The Direct Fan Reward (Right) -->
+    <div style="display: flex; justify-content: space-between; align-items: stretch; flex-wrap: wrap; gap: 18px;">
+        
+        <!-- LEFT: Visual Sports Challenge (Shaking Hoop / Ruffled Uprights) -->
+        <div style="flex: 1.1; min-width: 270px; background: #0c0f17; border: 1px solid #1f2737; border-radius: 16px; padding: 18px; text-align: center; position: relative;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <span style="color: #8d8d8d; font-size: 7.5pt; text-transform: uppercase; font-weight: 800; letter-spacing: 0.8px;">TARGET: OPPOSE THE PLAY</span>
+                <span style="background: {'rgba(66,190,101,0.2)' if _is_clutch_active else 'rgba(218,30,40,0.2)'}; color: {_opp_color}; padding: 2px 8px; border-radius: 6px; font-size: 7.5pt; font-weight: 800;">{_opp_odds_txt}</span>
+            </div>
+            
+            {_target_svg}
+            
+            <div style="background: rgba(18,22,32,0.8); border: 1px solid #1f2737; border-radius: 10px; padding: 8px 12px; margin-top: 8px; display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: #dcdcdc; font-size: 8.5pt;"><b>Current Noise Wall:</b></span>
+                <span style="color: {_border_glow}; font-size: 11pt; font-weight: 800;">🔊 {_cur_db} dB Verified</span>
+            </div>
+        </div>
 
-<div style="flex: 1; min-width: 250px; background-color: #0c0f17; border: 1px solid #1f2737; border-radius: 14px; padding: 16px; text-align: center;">
-<span style="color: #8d8d8d; font-size: 7.5pt; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">LIVE ACOUSTIC SPECTRUM & EQUALIZER</span>
-<div style="display: flex; justify-content: center; align-items: flex-end; height: 60px; gap: 5px; margin: 12px 0;">
-<div class="astryx-eq-bar" style="height: 45%; background: {_wave_color};"></div>
-<div class="astryx-eq-bar" style="height: 75%; background: {_wave_color};"></div>
-<div class="astryx-eq-bar" style="height: 95%; background: {_wave_color};"></div>
-<div class="astryx-eq-bar" style="height: 60%; background: {_wave_color};"></div>
-<div class="astryx-eq-bar" style="height: 100%; background: {_wave_color};"></div>
-<div class="astryx-eq-bar" style="height: 85%; background: {_wave_color};"></div>
-<div class="astryx-eq-bar" style="height: 50%; background: {_wave_color};"></div>
-<div class="astryx-eq-bar" style="height: 90%; background: {_wave_color};"></div>
-<div class="astryx-eq-bar" style="height: 70%; background: {_wave_color};"></div>
-<div class="astryx-eq-bar" style="height: 100%; background: {_wave_color};"></div>
-<div class="astryx-eq-bar" style="height: 65%; background: {_wave_color};"></div>
-<div class="astryx-eq-bar" style="height: 40%; background: {_wave_color};"></div>
-</div>
-<div style="display: flex; justify-content: space-between; font-size: 7.5pt; color: #8d8d8d; border-top: 1px solid #1a2230; padding-top: 6px;">
-<span>60 Hz (Sub-Bass)</span>
-<span style="color: {_wave_color}; font-weight: bold;">● {_cur_db} dB LIVE PEAK</span>
-<span>16 kHz (Vocal Screams)</span>
-</div>
-</div>
-</div>
+        <!-- RIGHT: The Fan Value (Pound For The Perk / Sponsor Voucher) -->
+        <div style="flex: 1.1; min-width: 270px; background: #0c0f17; border: 1.5px solid {'#42be65' if _perk_unlocked else '#ff6600'}; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <span style="color: #ff6600; font-size: 7.5pt; text-transform: uppercase; font-weight: 800; letter-spacing: 0.8px;">🎁 GAMEDAY DROP CHALLENGE</span>
+                    <span style="background: rgba(255,102,0,0.2); color: #ff6600; border: 1px solid #ff660055; padding: 2px 8px; border-radius: 6px; font-size: 7.5pt; font-weight: 800;">OFFICIAL PARTNER</span>
+                </div>
+                
+                <h3 style="color: #ffffff; margin: 2px 0 4px 0; font-size: 14pt; font-weight: 800;">Whataburger® Clutch Drop</h3>
+                <p style="color: #a8a8a8; font-size: 8.5pt; margin: 0 0 10px 0;">Pound the bleachers past <b>105.0 dB</b> to unlock a free gameday voucher straight to your Trophy Case!</p>
+
+                <!-- Noise-to-Reward Progress Bar -->
+                <div style="background: #161c29; border-radius: 9999px; height: 12px; overflow: hidden; margin-bottom: 8px; border: 1px solid #232d40;">
+                    <div style="width: {_db_progress_pct}%; height: 100%; background: linear-gradient(90deg, #0f62fe 0%, #ff6600 70%, #42be65 100%); border-radius: 9999px;"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 7.5pt; color: #8d8d8d; margin-bottom: 10px;">
+                    <span>Baseline (82 dB)</span>
+                    <span style="color: #f1c21b; font-weight: bold;">Current: {_cur_db} dB</span>
+                    <span style="color: #42be65; font-weight: bold;">Target: 105 dB 🍔</span>
+                </div>
+            </div>
+
+            <!-- Instant Status Badge -->
+            <div>
+                {f'<div style="background: rgba(66,190,101,0.2); color: #42be65; border: 1px solid #42be65; border-radius: 10px; padding: 8px 12px; text-align: center; font-weight: 800; font-size: 9pt;">🎉 GOAL MET! VOUCHER UNLOCKED IN TROPHY CASE!</div>' if _perk_unlocked else f'<div style="background: rgba(255,102,0,0.15); color: #ff6600; border: 1px solid #ff660055; border-radius: 10px; padding: 8px 12px; text-align: center; font-weight: 800; font-size: 8.5pt;">⚡ KEEP POUNDING! +{round(max(0, _target_db - _cur_db), 1)} dB TO UNLOCK!</div>'}
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bottom Equalizer & Section Pulse Strip -->
+    <div style="margin-top: 14px; background: #0c0f17; border: 1px solid #1f2737; border-radius: 12px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="color: #8d8d8d; font-size: 7.5pt; text-transform: uppercase; font-weight: 700; letter-spacing: 0.8px;">ARENA SOUNDWALL:</span>
+            <!-- 12 Equalizer Bars -->
+            <div style="display: flex; align-items: flex-end; height: 28px; gap: 3px;">
+                <div class="astryx-eq-bar" style="height: 45%; background: {_border_glow}; width: 5px;"></div>
+                <div class="astryx-eq-bar" style="height: 75%; background: {_border_glow}; width: 5px;"></div>
+                <div class="astryx-eq-bar" style="height: 95%; background: {_border_glow}; width: 5px;"></div>
+                <div class="astryx-eq-bar" style="height: 60%; background: {_border_glow}; width: 5px;"></div>
+                <div class="astryx-eq-bar" style="height: 100%; background: {_border_glow}; width: 5px;"></div>
+                <div class="astryx-eq-bar" style="height: 85%; background: {_border_glow}; width: 5px;"></div>
+                <div class="astryx-eq-bar" style="height: 50%; background: {_border_glow}; width: 5px;"></div>
+                <div class="astryx-eq-bar" style="height: 90%; background: {_border_glow}; width: 5px;"></div>
+                <div class="astryx-eq-bar" style="height: 70%; background: {_border_glow}; width: 5px;"></div>
+                <div class="astryx-eq-bar" style="height: 100%; background: {_border_glow}; width: 5px;"></div>
+                <div class="astryx-eq-bar" style="height: 65%; background: {_border_glow}; width: 5px;"></div>
+                <div class="astryx-eq-bar" style="height: 40%; background: {_border_glow}; width: 5px;"></div>
+            </div>
+            <span style="color: {_border_glow}; font-weight: 800; font-size: 8.5pt;">{_cur_db} dB</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="color: #8d8d8d; font-size: 7.5pt; text-transform: uppercase; font-weight: 700; letter-spacing: 0.8px;">FAN HEARTBEAT:</span>
+            <span style="color: #5da8ff; font-weight: 800; font-size: 8.5pt;">💓 {_cur_hr} BPM</span>
+        </div>
+    </div>
+
 </div>
 """
-    _clean_s3 = "\n".join(l.lstrip() for l in _s3_raw.splitlines() if l.strip())
-    st.markdown(_clean_s3, unsafe_allow_html=True)
+    _clean_s3_challenge = "\n".join(l.lstrip() for l in _s3_challenge_raw.splitlines() if l.strip())
+    st.markdown(_clean_s3_challenge, unsafe_allow_html=True)
 
     _coordinator = InvisibleCoordinatorAgent(sport=st.session_state.sport)
     if is_basketball and st.session_state.is_clutch:
