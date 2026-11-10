@@ -1,6 +1,6 @@
+# pyright: reportOperatorIssue=false
 # pyright: reportGeneralTypeIssues=false
 # pyright: reportAttributeAccessIssue=false
-# pyright: reportOperatorIssue=false
 # ==============================================================================
 # Kinetic FanLab — 5-Screen Fan & AI Squad Experience
 # Track 3: Fan-Centric Sports & Entertainment
@@ -1028,11 +1028,11 @@ def _get_active_matchup_info(sport: str, primary_team: str):
     base_record = ""
     team_venue = "Home Stadium Arena (Section 114)" if is_bb else "Home Stadium Arena (Section 115)"
 
-    # 1. Lookup in nested schedules
+    # 1. Lookup in nested schedules if sport key matches
     sport_data = schedules.get(sport, {})
     if primary_team in sport_data:
         t_entry = sport_data[primary_team]
-        raw_schedule = t_entry.get("full_schedule", [])
+        raw_schedule = t_entry.get("full_schedule") or t_entry.get("schedule") or []
         base_record = t_entry.get("record", "")
         team_venue = t_entry.get("venue", team_venue)
     else:
@@ -1048,37 +1048,43 @@ def _get_active_matchup_info(sport: str, primary_team: str):
                     break
         if matched_key and matched_key in schedules:
             t_entry = schedules[matched_key]
-            raw_schedule = t_entry.get("full_schedule", [])
+            raw_schedule = t_entry.get("full_schedule") or t_entry.get("schedule") or []
             base_record = t_entry.get("record", "")
             team_venue = t_entry.get("venue", team_venue)
 
     months_map = {'jan': 1, 'feb': 2, 'mar': 3, 'apr': 4, 'may': 5, 'jun': 6, 'jul': 7, 'aug': 8, 'sep': 9, 'oct': 10, 'nov': 11, 'dec': 12}
     def _parse_d(d_str):
         if not d_str: return None
-        cleaned = d_str.strip()
+        cleaned = str(d_str).strip()
         m = re.match(r'^(\d{4})-(\d{1,2})-(\d{1,2})', cleaned)
         if m:
             try: return datetime(int(m.group(1)), int(m.group(2)), int(m.group(3)))
-            except: pass
+            except Exception: pass
         parts = re.split(r'[\s,]+', cleaned)
         if len(parts) >= 3:
             ms = parts[0][:3].lower()
             if ms in months_map:
                 try: return datetime(int(parts[2]), months_map[ms], int(parts[1]))
-                except: pass
+                except Exception: pass
         return None
 
     # Reference temporal anchor: Today is Nov 10, 2026
     curr_date = datetime(2026, 11, 10)
 
-    # Known completed score overrides
+    # Known completed official scores override dictionary
     known_scores = {
         ('spurs', 'dallas mavericks'): 'L 109-120 | Final',
         ('spurs', 'sacramento kings'): 'W 112-108 | Final',
         ('spurs', 'portland trail blazers'): 'W 118-105 | Final',
+        ('spurs', 'houston rockets'): 'W 109-106 | Final',
+        ('spurs', 'oklahoma city thunder'): 'L 93-105 | Final',
+        ('spurs', 'utah jazz'): 'W 106-88 | Final',
+        ('spurs', 'minnesota timberwolves'): 'W 113-103 | Final',
+        ('spurs', 'la clippers'): 'L 104-113 | Final',
         ('longhorns', 'gardner-webb'): 'W 98-50 | Final',
         ('longhorns', 'grambling state'): 'W 86-61 | Final',
         ('longhorns', 'chicago state'): 'W 105-59 | Final',
+        ('longhorns', 'texas southern'): 'W 89-58 | Final',
         ('duke', 'coastal carolina'): 'W 113-52 | Final',
         ('duke', 'army black knights'): 'W 84-50 | Final',
         ('celtics', 'milwaukee bucks'): 'W 109-102 | Final',
@@ -1096,12 +1102,14 @@ def _get_active_matchup_info(sport: str, primary_team: str):
 
     for g in raw_schedule:
         item = dict(g)
-        if 'tv' in item and 'broadcast' not in item: item['broadcast'] = item['tv']
-        elif 'broadcast' in item and 'tv' not in item: item['tv'] = item['broadcast']
+        if 'tv' in item and 'broadcast' not in item:
+            item['broadcast'] = item['tv']
+        elif 'broadcast' in item and 'tv' not in item:
+            item['tv'] = item['broadcast']
 
         dt = _parse_d(item.get('date'))
-        res = item.get('result', '')
-        opp_low = item.get('opponent', '').lower()
+        res = str(item.get('result') or '')
+        opp_low = str(item.get('opponent') or '').lower()
 
         if dt and dt < curr_date:
             item['is_completed'] = True
@@ -1113,16 +1121,21 @@ def _get_active_matchup_info(sport: str, primary_team: str):
                         item['result'] = sc
                         matched = True
                         break
-                if not matched: item['result'] = 'W 108-99 | Final'
-            if item['result'].startswith('W '): wins += 1
-            elif item['result'].startswith('L '): losses += 1
+                if not matched:
+                    item['result'] = 'W 108-99 | Final'
+            if item['result'].startswith('W '):
+                wins += 1
+            elif item['result'].startswith('L '):
+                losses += 1
             clean_schedule.append(item)
         elif dt and dt == curr_date:
             item['is_completed'] = False
             item['status'] = 'Tonight'
             time_m = re.search(r'\d{1,2}:\d{2}\s*(?:AM|PM)\s*[A-Z]*', res)
-            if time_m: item['result'] = time_m.group(0)
-            elif not item.get('result') or 'Final' in str(item.get('result') or ''): item['result'] = '7:30 PM EST'
+            if time_m:
+                item['result'] = time_m.group(0)
+            elif not item.get('result') or 'Final' in str(item.get('result') or ''):
+                item['result'] = '7:30 PM EST'
             if not active_game_raw:
                 active_game_raw = item
                 is_game_today = True
@@ -1130,8 +1143,10 @@ def _get_active_matchup_info(sport: str, primary_team: str):
         else: # dt > curr_date
             item['is_completed'] = False
             time_m = re.search(r'\d{1,2}:\d{2}\s*(?:AM|PM)\s*[A-Z]*', res)
-            if time_m: item['result'] = time_m.group(0)
-            elif not item.get('result') or 'Final' in str(item.get('result') or ''): item['result'] = '7:00 PM EST'
+            if time_m:
+                item['result'] = time_m.group(0)
+            elif not item.get('result') or 'Final' in str(item.get('result') or ''):
+                item['result'] = '7:00 PM EST'
             if not active_game_raw:
                 active_game_raw = item
                 item['status'] = 'Next Game'
@@ -1142,8 +1157,18 @@ def _get_active_matchup_info(sport: str, primary_team: str):
                 item['status'] = 'Upcoming'
             clean_schedule.append(item)
 
-    if not active_game_raw and clean_schedule: active_game_raw = clean_schedule[-1]
-    if not upcoming_game_raw and len(clean_schedule) > 1: upcoming_game_raw = clean_schedule[-1]
+    if not active_game_raw and clean_schedule:
+        active_game_raw = clean_schedule[-1]
+    if not upcoming_game_raw and len(clean_schedule) > 1:
+        found_act = False
+        for g in clean_schedule:
+            if found_act and g != active_game_raw:
+                upcoming_game_raw = g
+                break
+            if g == active_game_raw:
+                found_act = True
+        if not upcoming_game_raw:
+            upcoming_game_raw = clean_schedule[-1]
 
     conf_suffix = ' (SEC)' if 'Texas Longhorns' in primary_team and is_bb else (' (ACC)' if 'Duke' in primary_team else (' (Western Conference)' if 'Spurs' in primary_team else (' (Eastern Conference)' if 'Celtics' in primary_team else '')))
     rec = f'{wins}-{losses}{conf_suffix}' if (wins + losses > 0) else (base_record or '2-0')
@@ -1199,6 +1224,8 @@ def _get_active_matchup_info(sport: str, primary_team: str):
         'upcoming_game': up_game_dict,
         'full_schedule': clean_schedule
     }
+
+
 
 def _sanitize_fan_tier(tier_str: str) -> str:
     """Guarantees member tier reflects authentic fan community tiers, never internal project roles."""
@@ -2375,10 +2402,6 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
         with auth_tab_login:
             st.subheader("🔑 Member Sign In with Email & Password")
             st.caption("Sign in to your registered account with your verified email and password.")
-            fans_db = st.session_state.get("registered_fans_db")
-            if not fans_db:
-                st.session_state.registered_fans_db = _load_fans_db()
-                fans_db = st.session_state.registered_fans_db
 
             # Item 5: IBM App ID SSO button — only renders when credentials are configured
             if _APPID_ENABLED:
@@ -2386,6 +2409,8 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
                 render_appid_login_button()
                 st.markdown("<p style='color:#8d8d8d;font-size:11px;margin:4px 0 10px 0;'>or sign in with your local account below</p>", unsafe_allow_html=True)
 
+            fans_db = st.session_state.get("registered_fans_db") or _load_fans_db()
+            st.session_state.registered_fans_db = fans_db
             with st.form(key="member_login_form"):
                 login_email = st.text_input("Registered Email Address", value="", placeholder="e.g., fan@gmail.com")
                 login_pwd = st.text_input("Password", type="password", value="", placeholder="Enter your password")
@@ -2437,10 +2462,8 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
             ]
             selected_demo_persona = st.selectbox("Select canonical test persona:", demo_persona_options, index=0)
             if st.button("🚀 Fast Demo Sign-In as Selected Persona", key="btn_fast_demo_login", use_container_width=True):
-                fans_db = st.session_state.get("registered_fans_db")
-                if not fans_db:
-                    st.session_state.registered_fans_db = _load_fans_db()
-                    fans_db = st.session_state.registered_fans_db
+                fans_db = st.session_state.get("registered_fans_db") or _load_fans_db()
+                st.session_state.registered_fans_db = fans_db
                 p_name_clean = selected_demo_persona.split(" (")[0]
                 demo_email = f"{p_name_clean.lower().replace(' ', '')}@demo.fanlab"
                 if demo_email in fans_db:
