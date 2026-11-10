@@ -373,6 +373,156 @@ def _generate_npc_chat_reply(user_msg: str, author_handle: str, sport: str) -> d
 
 st.set_page_config(page_title="Kinetic FanLab", page_icon="⚡", layout="wide")
 
+# ==============================================================================
+# KINETIC FANLAB — ASTRYX & IBM CARBON STADIUM UI KIT (Design.md)
+# High-contrast stadium dark mode: #0b0e14 turf black, #12161f elevated cards,
+# electric stadium neon accents, and mobile-first 48px tactile touch targets.
+# ==============================================================================
+st.markdown("""
+<style>
+/* 1. Global App Canvas & Stadium Background */
+.stApp {
+    background-color: #0b0e14 !important;
+    color: #f4f4f4 !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+}
+
+/* 2. Suppress Streamlit Default Dev Chrome for Native App Feel */
+#MainMenu, footer, header[data-testid="stHeader"], div[data-testid="stToolbar"] {
+    display: none !important;
+}
+
+/* 3. Mobile Viewport & Ergonomic Padding */
+.block-container {
+    padding-top: 1.2rem !important;
+    padding-bottom: 3.5rem !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    max-width: 1200px !important;
+}
+
+/* 4. Astryx Stadium Cards & Component Containers */
+div[data-testid="stExpander"] {
+    background-color: #12161f !important;
+    border: 1px solid #222938 !important;
+    border-radius: 10px !important;
+    margin-bottom: 12px !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+}
+div[data-testid="stExpander"]:hover {
+    border-color: #0f62fe66 !important;
+}
+
+/* 5. Tactile Stadium Action Buttons (48px+ Apple/Google Standard) */
+div.stButton > button {
+    min-height: 48px !important;
+    border-radius: 8px !important;
+    font-size: 9.5pt !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.3px !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+div.stButton > button[kind="primary"] {
+    background: linear-gradient(135deg, #0f62fe 0%, #0043ce 100%) !important;
+    border: none !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(15, 98, 254, 0.4) !important;
+}
+div.stButton > button[kind="primary"]:hover {
+    box-shadow: 0 6px 20px rgba(15, 98, 254, 0.65) !important;
+    transform: translateY(-1px) !important;
+}
+div.stButton > button[kind="secondary"] {
+    background-color: #171d29 !important;
+    border: 1px solid #222938 !important;
+    color: #e0e0e0 !important;
+}
+div.stButton > button[kind="secondary"]:hover {
+    border-color: #0f62fe !important;
+    color: #ffffff !important;
+    background-color: #1e2638 !important;
+}
+
+/* 6. High-Contrast Streamlit Metrics & Numbers */
+div[data-testid="stMetricValue"] {
+    font-size: 1.85rem !important;
+    font-weight: 800 !important;
+    color: #ffffff !important;
+    letter-spacing: -0.5px !important;
+}
+div[data-testid="stMetricLabel"] {
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+    color: #8d8d8d !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.8px !important;
+}
+div[data-testid="stMetricDelta"] {
+    font-size: 0.8rem !important;
+    font-weight: 700 !important;
+}
+
+/* 7. Astryx Segmented Tabs & Mobile Horizontal Scroll */
+div[data-baseweb="tab-list"] {
+    background-color: #12161f !important;
+    border-radius: 8px !important;
+    padding: 4px !important;
+    border: 1px solid #222938 !important;
+    gap: 4px !important;
+    overflow-x: auto !important;
+}
+div[data-baseweb="tab"] {
+    border-radius: 6px !important;
+    color: #a8a8a8 !important;
+    font-weight: 600 !important;
+    font-size: 9pt !important;
+    padding: 8px 14px !important;
+    white-space: nowrap !important;
+}
+div[data-baseweb="tab"][aria-selected="true"] {
+    background-color: #0f62fe !important;
+    color: #ffffff !important;
+}
+
+/* 8. Stadium Sidebar Polish */
+section[data-testid="stSidebar"] {
+    background-color: #0d1117 !important;
+    border-right: 1px solid #1f2633 !important;
+}
+section[data-testid="stSidebar"] div[data-testid="stSidebarNav"] {
+    display: none !important;
+}
+section[data-testid="stSidebar"] div[role="radiogroup"] > label {
+    background-color: #141924 !important;
+    border: 1px solid #222938 !important;
+    border-radius: 8px !important;
+    padding: 10px 14px !important;
+    margin-bottom: 6px !important;
+    transition: all 0.15s ease !important;
+}
+section[data-testid="stSidebar"] div[role="radiogroup"] > label:hover {
+    border-color: #0f62fe !important;
+}
+section[data-testid="stSidebar"] div[role="radiogroup"] > label:has(input:checked) {
+    background-color: #172238 !important;
+    border-color: #0f62fe !important;
+    box-shadow: 0 0 12px rgba(15, 98, 254, 0.35) !important;
+}
+
+/* 9. Text Inputs & Forms */
+div[data-baseweb="input"] {
+    background-color: #141924 !important;
+    border-color: #222938 !important;
+    border-radius: 6px !important;
+    color: #ffffff !important;
+}
+div[data-baseweb="input"]:focus-within {
+    border-color: #0f62fe !important;
+    box-shadow: 0 0 8px rgba(15, 98, 254, 0.4) !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # --- Mathematical Normalization & Ground Truth Formula ---
 def normalize(val: float, min_val: float, max_val: float) -> float:
     clamped = max(min_val, min(val, max_val))
@@ -2736,14 +2886,29 @@ if screen == "🎟️ Fan Passport & Section Roster" or "Screen 1" in screen:
             # 1. Dynamic Fan Passport Card
             p_info = PERSONA_DB.get(st.session_state.active_member, PERSONA_DB["Marcus Vance" if is_basketball else "Sarah Jenkins"])
             glow_color = "#f1c21b" if "Tier 5" in p_info['tier'] else ("#8a3ffc" if "Tier 4" in p_info['tier'] else "#0f62fe")
+            tier_badge_bg = "#3a2e0a" if "Tier 5" in p_info['tier'] else ("#27163f" if "Tier 4" in p_info['tier'] else "#0c2356")
+            
             st.markdown(f"""
-            <div style="background-color: #161616; padding: 20px; border-radius: 12px; border: 2px solid {glow_color}; box-shadow: 0 0 15px {glow_color}88; text-align: center; margin-top: 6px;">
-                <p style="color: #8d8d8d; font-size: 9.5pt; margin: 0; text-transform: uppercase;">DYNAMIC MOMENTUM PASS</p>
-                <h2 style="color: #f4f4f4; margin: 4px 0;">{st.session_state.member_name}</h2>
-                <p style="color: #0f62fe; font-weight: bold; margin: 0;">{p_info['sec']}</p>
-                <hr style="border-color: #333; margin: 10px 0;">
-                <p style="color: #f4f4f4; font-size: 10.5pt; margin: 2px 0;">Tier: <b>{st.session_state.member_tier}</b></p>
-                <p style="color: #a8a8a8; font-size: 8.5pt; margin: 0;">Hash: <code>{st.session_state.member_hash}</code></p>
+            <div style="background: linear-gradient(145deg, #121622 0%, #0d1017 100%); padding: 22px; border-radius: 14px; border: 2px solid {glow_color}; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 20px {glow_color}44; text-align: center; margin-top: 6px; position: relative;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222938; padding-bottom: 10px; margin-bottom: 12px;">
+                    <span style="color: #8d8d8d; font-size: 7.5pt; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;">🎟️ OFFICIAL ARENA PASS // 2026-27</span>
+                    <span style="background-color: {tier_badge_bg}; color: {glow_color}; padding: 3px 8px; border-radius: 12px; font-size: 7.5pt; font-weight: 800; border: 1px solid {glow_color}66;">VERIFIED CREDENTIAL</span>
+                </div>
+                <h2 style="color: #ffffff; margin: 4px 0 2px 0; font-size: 18pt; font-weight: 800; letter-spacing: -0.5px;">{st.session_state.member_name}</h2>
+                <div style="display: inline-block; background-color: #0f62fe22; color: #5da8ff; border: 1px solid #0f62fe66; padding: 4px 12px; border-radius: 20px; font-weight: 700; font-size: 9pt; margin: 6px 0 12px 0;">
+                    📍 {p_info['sec']} &bull; Row 3, Seat 12
+                </div>
+                <div style="background-color: #0b0e14; border: 1px solid #1f2633; border-radius: 8px; padding: 10px 14px; margin-top: 4px; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="text-align: left;">
+                        <span style="color: #8d8d8d; font-size: 7.5pt; text-transform: uppercase; letter-spacing: 0.5px;">MEMBER TIER</span><br/>
+                        <span style="color: {glow_color}; font-weight: 800; font-size: 10pt;">🏆 {st.session_state.member_tier}</span>
+                    </div>
+                    <div style="text-align: right;">
+                        <span style="color: #8d8d8d; font-size: 7.5pt; text-transform: uppercase; letter-spacing: 0.5px;">AUTHENTICITY SEAL</span><br/>
+                        <span style="color: #42be65; font-size: 8pt; font-weight: 700;">● TAMPER-PROOF NFC</span>
+                    </div>
+                </div>
+                <p style="color: #666; font-size: 7pt; margin: 10px 0 0 0; font-family: monospace; letter-spacing: 0.5px;">PASS HASH: {st.session_state.member_hash}</p>
             </div>
             """, unsafe_allow_html=True)
 
@@ -3535,7 +3700,7 @@ if screen == "🎟️ Fan Passport & Section Roster" or "Screen 1" in screen:
 
             if is_admin_lead and tab_admin is not None:
                 with tab_admin:
-                    st.subheader("👑 Team Lead Member Feedback & Analytics Portal")
+                    st.subheader("👑 Member Feedback & Experience Analytics")
                     st.caption(f"Authenticated as **Troy Resendez** (`{st.session_state.get('member_email', 'fan@gmail.com')}`). Review real-time feedback synced from IBM Cloudant.")
 
                     all_fb = _load_all_feedback_with_fallbacks()
