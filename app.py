@@ -2251,6 +2251,10 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
         with auth_tab_login:
             st.subheader("🔑 Member Sign In with Email & Password")
             st.caption("Sign in to your registered account with your verified email and password.")
+            fans_db = st.session_state.get("registered_fans_db")
+            if not fans_db:
+                st.session_state.registered_fans_db = _load_fans_db()
+                fans_db = st.session_state.registered_fans_db
 
             # Item 5: IBM App ID SSO button — only renders when credentials are configured
             if _APPID_ENABLED:
@@ -2309,6 +2313,10 @@ if screen == "👤 Screen 1: Fan Passport & Roster":
             ]
             selected_demo_persona = st.selectbox("Select canonical test persona:", demo_persona_options, index=0)
             if st.button("🚀 Fast Demo Sign-In as Selected Persona", key="btn_fast_demo_login", use_container_width=True):
+                fans_db = st.session_state.get("registered_fans_db")
+                if not fans_db:
+                    st.session_state.registered_fans_db = _load_fans_db()
+                    fans_db = st.session_state.registered_fans_db
                 p_name_clean = selected_demo_persona.split(" (")[0]
                 demo_email = f"{p_name_clean.lower().replace(' ', '')}@demo.fanlab"
                 if demo_email in fans_db:
