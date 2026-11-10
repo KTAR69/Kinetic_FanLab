@@ -387,7 +387,23 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
-/* Animated Holographic Shimmer & Equalizer Bars */
+/* Animated Holographic Prismatic Foil & Equalizer Bars */
+@keyframes holoPrism {
+    0% { background-position: 0% 50%; filter: hue-rotate(0deg); }
+    50% { background-position: 100% 50%; filter: hue-rotate(45deg); }
+    100% { background-position: 0% 50%; filter: hue-rotate(0deg); }
+}
+
+@keyframes shockwavePulse {
+    0% { transform: scale(0.96); opacity: 0.6; }
+    50% { transform: scale(1.04); opacity: 1.0; }
+    100% { transform: scale(0.96); opacity: 0.6; }
+}
+
+.astryx-shockwave-ring {
+    animation: shockwavePulse 1.8s ease-in-out infinite;
+    transform-origin: 75px 80px;
+}
 @keyframes holoShimmer {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
@@ -2812,64 +2828,52 @@ if screen == "🎟️ Fan Passport & Section Roster" or "Screen 1" in screen:
         p_info = PERSONA_DB.get(st.session_state.active_member, PERSONA_DB["Marcus Vance" if is_basketball else "Sarah Jenkins"])
         glow_color = "#f1c21b" if "Tier 5" in p_info['tier'] else ("#8a3ffc" if "Tier 4" in p_info['tier'] else "#0f62fe")
 
-        # Unified Stadium App Bar & Member Credential Header
-        col_status_info, col_status_act = st.columns([4, 1])
-        with col_status_info:
-            st.markdown(f"""
-            <div style="background: linear-gradient(135deg, #131826 0%, #0d1017 100%); border: 1px solid #222938; border-left: 4px solid #0f62fe; padding: 12px 16px; border-radius: 10px; margin-bottom: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.4);">
-                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <span style="background-color: #0f62fe; color: white; padding: 2px 7px; border-radius: 4px; font-size: 7.5pt; font-weight: 800; letter-spacing: 0.8px;">⚡ KINETIC FANLAB</span>
-                        <span style="color: #42be65; font-size: 8pt; font-weight: 700;">● IN-ARENA SESSION ACTIVE</span>
-                    </div>
-                    <span style="color: {glow_color}; font-size: 8.5pt; font-weight: 800;">🏆 {st.session_state.member_tier}</span>
-                </div>
-                <h3 style="color: #ffffff; margin: 4px 0 2px 0; font-size: 15pt; font-weight: 800;">{st.session_state.member_name} <span style="color: #8d8d8d; font-size: 9pt; font-weight: 400;">({st.session_state.member_handle})</span></h3>
-                <span style="color: #5da8ff; font-size: 8.5pt; font-weight: 700;">📍 {p_info['sec']} &bull; Row 3, Seat 12</span>
+        # ==============================================================================
+        # THE DEFINITIVE 3D HOLOGRAPHIC ARENA ACCESS CREDENTIAL (SINGLE SOURCE OF TRUTH)
+        # Deep 3D Prismatic Foil, NFC Verified Seal, Seat Anchor & Sign Out
+        # ==============================================================================
+        _holo_raw = f"""
+<div style="background: linear-gradient(135deg, rgba(255,215,0,0.25) 0%, rgba(138,63,252,0.3) 35%, rgba(0,240,255,0.25) 70%, rgba(255,20,147,0.2) 100%), radial-gradient(circle at 85% 15%, rgba(15,98,254,0.35) 0%, transparent 60%), #10141f; background-size: 200% 200%; animation: holoPrism 8s ease infinite; border: 2px solid {glow_color}; border-radius: 20px; padding: 24px 28px; margin-bottom: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 35px {glow_color}55, inset 0 1px 1px rgba(255,255,255,0.25); position: relative;">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 12px; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="background: {glow_color}25; color: {glow_color}; border: 1.5px solid {glow_color}; padding: 4px 14px; border-radius: 9999px; font-size: 8pt; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase;">🎟️ OFFICIAL ARENA PASS // 2026-27</span>
+            <span style="color: #42be65; font-size: 8pt; font-weight: 800;">● NFC TAMPER-PROOF ACTIVE</span>
+        </div>
+        <span style="background-color: rgba(0,0,0,0.4); color: #8d8d8d; font-size: 7.5pt; font-family: monospace; padding: 3px 10px; border-radius: 6px; border: 1px solid #232d3f;">PASS ID: {st.session_state.member_hash[:18]}...</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; text-align: left; gap: 14px;">
+        <div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 16pt;">💳</span>
+                <span style="color: #8d8d8d; font-size: 8pt; text-transform: uppercase; font-weight: 700; letter-spacing: 1px;">AUTHENTICATED FAN IDENTITY</span>
             </div>
-            """, unsafe_allow_html=True)
-        with col_status_act:
+            <h2 style="color: #ffffff; margin: 4px 0 6px 0; font-size: 22pt; font-weight: 800; letter-spacing: -0.5px; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">{st.session_state.member_name} <span style="color: #8d8d8d; font-size: 10.5pt; font-weight: 400;">({st.session_state.member_handle})</span></h2>
+            <div style="display: inline-flex; align-items: center; gap: 6px; background-color: rgba(15, 98, 254, 0.2); color: #78a9ff; border: 1px solid rgba(15, 98, 254, 0.5); padding: 5px 14px; border-radius: 9999px; font-weight: 700; font-size: 9pt;">
+                📍 {p_info['sec']} &bull; Row 3, Seat 12
+            </div>
+        </div>
+        <div style="text-align: right; background-color: rgba(11, 14, 20, 0.7); border: 1px solid #1f2737; border-radius: 14px; padding: 12px 18px; backdrop-filter: blur(8px);">
+            <span style="color: #8d8d8d; font-size: 7.5pt; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700;">MEMBER ACCREDITATION</span><br/>
+            <span style="color: {glow_color}; font-weight: 800; font-size: 12pt; text-shadow: 0 0 12px {glow_color}88;">🏆 {st.session_state.member_tier}</span>
+        </div>
+    </div>
+    <div style="background-color: rgba(11, 14, 20, 0.7); border: 1px solid #1f2737; border-radius: 12px; padding: 12px 18px; margin-top: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <span style="color: #dcdcdc; font-size: 9pt;">⚡ <b style="color: #ffffff;">{st.session_state.get('member_games', 7)} Gamedays</b> in Section</span>
+        <span style="color: #dcdcdc; font-size: 9pt;">🔊 <b style="color: #ffffff;">{st.session_state.get('member_career_db', '1,340 dB')}</b> Crowd Roar Impact</span>
+        <span style="color: #dcdcdc; font-size: 9pt;">🛡️ <b style="color: #ffffff;">{st.session_state.get('member_clutch_stops', 9)} Verified</b> Clutch Stops</span>
+    </div>
+</div>
+"""
+        _clean_holo = "\n".join(l.lstrip() for l in _holo_raw.splitlines() if l.strip())
+        st.markdown(_clean_holo, unsafe_allow_html=True)
+
+        col_cred_act1, col_cred_act2 = st.columns([4, 1])
+        with col_cred_act1:
+            pass
+        with col_cred_act2:
             if st.button("🚪 Sign Out", key="btn_logout_user", use_container_width=True):
                 _clear_user_session_state()
                 st.rerun()
-
-        # Celebration card for newly signed-up user
-        if st.session_state.just_signed_up:
-            lead_npc_welcome = "Marcus Vance" if is_basketball else "Sarah Jenkins"
-            st.success(f"🎉 **Welcome to Kinetic FanLab, {st.session_state.member_name}!** Your persistent 365-day Fan Passport is active. Your Section Leader ({lead_npc_welcome}) is ready to guide your Rookie Walkthrough below!")
-            st.session_state.just_signed_up = False
-
-        # ==============================================================================
-        # CONCEPT 2: 3D HOLOGRAPHIC FOIL ARENA ACCESS CREDENTIAL (FRONT & CENTER)
-        # ==============================================================================
-        _holo_html = textwrap.dedent(f"""
-        <div style="background: linear-gradient(135deg, rgba(241,194,27,0.18) 0%, rgba(138,63,252,0.18) 50%, rgba(15,98,254,0.18) 100%), #121622; background-size: 200% 200%; animation: holoShimmer 6s ease infinite; border: 2px solid {glow_color}; border-radius: 18px; padding: 22px 24px; margin-bottom: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 24px {glow_color}44; position: relative;">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1f2737; padding-bottom: 10px; margin-bottom: 12px;">
-                <span style="background: {glow_color}22; color: {glow_color}; border: 1px solid {glow_color}55; padding: 4px 12px; border-radius: 9999px; font-size: 7.5pt; font-weight: 800; letter-spacing: 1px;">🎟️ ARENA ACCESS CREDENTIAL // 2026-27</span>
-                <span style="color: #42be65; font-size: 7.5pt; font-weight: 800;">● NFC TAMPER-PROOF ACTIVE</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; text-align: left; gap: 12px;">
-                <div>
-                    <span style="color: #8d8d8d; font-size: 8pt; text-transform: uppercase; letter-spacing: 1px;">VERIFIED SECTION MEMBER</span>
-                    <h2 style="color: #ffffff; margin: 2px 0 4px 0; font-size: 19pt; font-weight: 800; letter-spacing: -0.5px;">{st.session_state.member_name}</h2>
-                    <div style="display: inline-block; background-color: #0f62fe22; color: #5da8ff; border: 1px solid #0f62fe66; padding: 4px 12px; border-radius: 9999px; font-weight: 700; font-size: 8.5pt;">
-                        📍 {p_info['sec']} &bull; Row 3, Seat 12
-                    </div>
-                </div>
-                <div style="text-align: right; background-color: #0b0e14; border: 1px solid #1f2737; border-radius: 12px; padding: 10px 16px;">
-                    <span style="color: #8d8d8d; font-size: 7.5pt; text-transform: uppercase; letter-spacing: 0.5px;">MEMBER TIER</span><br/>
-                    <span style="color: {glow_color}; font-weight: 800; font-size: 11pt;">🏆 {st.session_state.member_tier}</span>
-                </div>
-            </div>
-            <div style="background-color: #0b0e14; border: 1px solid #1f2737; border-radius: 12px; padding: 10px 16px; margin-top: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-                <span style="color: #dcdcdc; font-size: 8.5pt;">⚡ <b>{st.session_state.get('member_games', 7)} Gamedays</b> in Section</span>
-                <span style="color: #dcdcdc; font-size: 8.5pt;">🔊 <b>{st.session_state.get('member_career_db', '1,340 dB')}</b> Crowd Roar Impact</span>
-                <span style="color: #dcdcdc; font-size: 8.5pt;">🛡️ <b>{st.session_state.get('member_clutch_stops', 9)} Verified</b> Clutch Stops</span>
-            </div>
-            <p style="color: #555; font-size: 7pt; margin: 10px 0 0 0; font-family: monospace; letter-spacing: 0.8px;">CRYPTOGRAPHIC PASSPORT HASH: {st.session_state.member_hash}</p>
-        </div>
-        """).strip()
-        st.markdown(_holo_html, unsafe_allow_html=True)
 
 
         # ------------------------------------------------------------------
@@ -4231,8 +4235,8 @@ elif screen == "⚡ In-Arena Game Hub & Crowd Defense" or "Screen 3" in screen:
     st.caption(f"Live crowd energy, Momentum Pulse tapping, Armchair Coach fan callouts, and section rivalry for {st.session_state.sport}.")
 
     # ==============================================================================
-    # CONCEPT 1 & 3: 3D ARENA ACOUSTIC SHOCKWAVE & REALITY DELTA PROBLEM VISUALIZER
-    # Shows the core problem (unmeasured noise) vs. the solution (111.8 dB shockwave)
+    # CONCEPT 1 & 3: 3D ARENA ACOUSTIC SHOCKWAVE & REALITY DELTA (GUARANTEED HTML RENDERING)
+    # Direct visual proof: 111.8 dB acoustic shockwave radiating from Section 114 to opponent
     # ==============================================================================
     _is_clutch_active = st.session_state.get("is_clutch", False)
     _arena_sport = st.session_state.get("sport", "Basketball")
@@ -4245,63 +4249,84 @@ elif screen == "⚡ In-Arena Game Hub & Crowd Defense" or "Screen 3" in screen:
     _wave_color = "#da1e28" if _is_clutch_active else "#0f62fe"
     _wave_status = "🔥 MAXIMUM ACOUSTIC SHOCKWAVE ACTIVE" if _is_clutch_active else "🌊 BASELINE CROWD AMBIENCE"
 
-    _s3_html = textwrap.dedent(f"""
-    <div style="background: linear-gradient(145deg, #121622 0%, #0a0d14 100%); border: 2px solid {_wave_color}; border-radius: 18px; padding: 20px 24px; margin-bottom: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 24px {_wave_color}33;">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 12px; border-bottom: 1px solid #1f2737; padding-bottom: 10px;">
-            <span style="background-color: {_wave_color}22; color: {_wave_color}; border: 1px solid {_wave_color}55; padding: 4px 12px; border-radius: 9999px; font-size: 8pt; font-weight: 800; letter-spacing: 0.8px;">
-                {_wave_status}
-            </span>
-            <span style="color: #f1c21b; font-size: 8.5pt; font-weight: 800;">
-                📍 {_arena_sec} &bull; SENSOR PODS ACTIVE
-            </span>
-        </div>
+    _s3_raw = f"""
+<div style="background: linear-gradient(145deg, #121622 0%, #0a0d14 100%); border: 2px solid {_wave_color}; border-radius: 18px; padding: 22px 24px; margin-bottom: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 25px {_wave_color}44;">
+<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 14px; border-bottom: 1px solid #1f2737; padding-bottom: 10px;">
+<span style="background-color: {_wave_color}22; color: {_wave_color}; border: 1px solid {_wave_color}55; padding: 4px 14px; border-radius: 9999px; font-size: 8pt; font-weight: 800; letter-spacing: 0.8px;">
+{_wave_status}
+</span>
+<span style="color: #f1c21b; font-size: 8.5pt; font-weight: 800;">
+📍 {_arena_sec} &bull; SENSOR PODS ACTIVE
+</span>
+</div>
 
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
-            <div style="flex: 1; min-width: 260px;">
-                <span style="color: #8d8d8d; font-size: 7.5pt; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">THE GAME MOMENTUM DELTA</span>
-                <h3 style="color: #ffffff; margin: 4px 0 6px 0; font-size: 14pt; font-weight: 800;">Acoustic Defense vs. Opponent Play</h3>
-                <div style="background-color: #0c0f17; border: 1px solid #1f2737; border-radius: 12px; padding: 12px 14px; margin-top: 8px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-                        <span style="color: #a8a8a8; font-size: 8.5pt;">Opponent Shot / Conversion Odds:</span>
-                        <b style="color: {_opp_color}; font-size: 9.5pt;">{_opp_prob}</b>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-                        <span style="color: #a8a8a8; font-size: 8.5pt;">Section Noise Wall Impact:</span>
-                        <b style="color: {_wave_color}; font-size: 9.5pt;">{_cur_db} dB Verified</b>
-                    </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="color: #a8a8a8; font-size: 8.5pt;">Section Biometric Pulse:</span>
-                        <b style="color: #5da8ff; font-size: 9.5pt;">{_cur_hr} BPM Synchronized</b>
-                    </div>
-                </div>
-            </div>
+<!-- 3D Arena Graphic: Court / Field + Concentric Acoustic Shockwave Rings -->
+<div style="text-align: center; margin-bottom: 14px;">
+<svg width="100%" height="150" viewBox="0 0 400 150" style="overflow: visible; border-radius: 12px; background: #0c0f17; border: 1px solid #1a2230;">
+<rect x="15" y="15" width="370" height="120" rx="12" fill="#0d111a" stroke="#1f2737" stroke-width="1.5" />
+<line x1="200" y1="15" x2="200" y2="135" stroke="#1f2737" stroke-width="1.5" stroke-dasharray="4 4" />
+<circle cx="200" cy="75" r="26" fill="none" stroke="#1f2737" stroke-width="1.5" />
+<!-- Section 114 / 115 Bleachers (Acoustic Noise Source) -->
+<rect x="25" y="30" width="50" height="90" rx="8" fill="{_wave_color}33" stroke="{_wave_color}" stroke-width="2" />
+<text x="50" y="80" fill="#ffffff" font-size="8.5" font-weight="800" text-anchor="middle" transform="rotate(-90 50 80)">SEC 114</text>
+<!-- Opponent Target (Free Throw Shooter / Kicker) -->
+<circle cx="335" cy="75" r="14" fill="#141926" stroke="{_opp_color}" stroke-width="2" />
+<text x="335" y="79" fill="{_opp_color}" font-size="9" font-weight="800" text-anchor="middle">🎯</text>
+<!-- Concentric Acoustic Shockwave Rings radiating across arena -->
+<ellipse class="astryx-shockwave-ring" cx="75" cy="75" rx="65" ry="42" fill="none" stroke="{_wave_color}" stroke-width="2.5" opacity="0.85" stroke-dasharray="6 3" />
+<ellipse class="astryx-shockwave-ring" cx="75" cy="75" rx="130" ry="54" fill="none" stroke="{_wave_color}" stroke-width="2" opacity="0.65" stroke-dasharray="8 4" />
+<ellipse class="astryx-shockwave-ring" cx="75" cy="75" rx="195" ry="64" fill="none" stroke="{_wave_color}" stroke-width="1.5" opacity="0.45" stroke-dasharray="10 5" />
+<ellipse class="astryx-shockwave-ring" cx="75" cy="75" rx="260" ry="70" fill="none" stroke="{_wave_color}" stroke-width="1" opacity="0.25" stroke-dasharray="12 6" />
+</svg>
+</div>
 
-            <div style="flex: 1; min-width: 260px; background-color: #0c0f17; border: 1px solid #1f2737; border-radius: 14px; padding: 16px; text-align: center;">
-                <span style="color: #8d8d8d; font-size: 7.5pt; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">LIVE ACOUSTIC SPECTRUM & PULSE</span>
-                <div style="display: flex; justify-content: center; align-items: flex-end; height: 60px; gap: 5px; margin: 12px 0;">
-                    <div class="astryx-eq-bar" style="height: 45%; background: {_wave_color};"></div>
-                    <div class="astryx-eq-bar" style="height: 75%; background: {_wave_color};"></div>
-                    <div class="astryx-eq-bar" style="height: 95%; background: {_wave_color};"></div>
-                    <div class="astryx-eq-bar" style="height: 60%; background: {_wave_color};"></div>
-                    <div class="astryx-eq-bar" style="height: 100%; background: {_wave_color};"></div>
-                    <div class="astryx-eq-bar" style="height: 85%; background: {_wave_color};"></div>
-                    <div class="astryx-eq-bar" style="height: 50%; background: {_wave_color};"></div>
-                    <div class="astryx-eq-bar" style="height: 90%; background: {_wave_color};"></div>
-                    <div class="astryx-eq-bar" style="height: 70%; background: {_wave_color};"></div>
-                    <div class="astryx-eq-bar" style="height: 100%; background: {_wave_color};"></div>
-                    <div class="astryx-eq-bar" style="height: 65%; background: {_wave_color};"></div>
-                    <div class="astryx-eq-bar" style="height: 40%; background: {_wave_color};"></div>
-                </div>
-                <div style="display: flex; justify-content: space-between; font-size: 7.5pt; color: #8d8d8d; border-top: 1px solid #1a2230; padding-top: 6px;">
-                    <span>60 Hz (Sub-Bass)</span>
-                    <span style="color: {_wave_color}; font-weight: bold;">● {_cur_db} dB LIVE PEAK</span>
-                    <span>16 kHz (Vocal Screams)</span>
-                </div>
-            </div>
-        </div>
-    </div>
-    """).strip()
-    st.markdown(_s3_html, unsafe_allow_html=True)
+<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+<div style="flex: 1; min-width: 250px;">
+<span style="color: #8d8d8d; font-size: 7.5pt; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">THE GAME MOMENTUM DELTA</span>
+<h3 style="color: #ffffff; margin: 4px 0 6px 0; font-size: 14pt; font-weight: 800;">Acoustic Defense vs. Opponent Play</h3>
+<div style="background-color: #0c0f17; border: 1px solid #1f2737; border-radius: 12px; padding: 12px 14px; margin-top: 8px;">
+<div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+<span style="color: #a8a8a8; font-size: 8.5pt;">Opponent Conversion Odds:</span>
+<b style="color: {_opp_color}; font-size: 9.5pt;">{_opp_prob}</b>
+</div>
+<div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+<span style="color: #a8a8a8; font-size: 8.5pt;">Section Noise Wall Impact:</span>
+<b style="color: {_wave_color}; font-size: 9.5pt;">{_cur_db} dB Verified</b>
+</div>
+<div style="display: flex; justify-content: space-between;">
+<span style="color: #a8a8a8; font-size: 8.5pt;">Section Biometric Pulse:</span>
+<b style="color: #5da8ff; font-size: 9.5pt;">{_cur_hr} BPM Synchronized</b>
+</div>
+</div>
+</div>
+
+<div style="flex: 1; min-width: 250px; background-color: #0c0f17; border: 1px solid #1f2737; border-radius: 14px; padding: 16px; text-align: center;">
+<span style="color: #8d8d8d; font-size: 7.5pt; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">LIVE ACOUSTIC SPECTRUM & EQUALIZER</span>
+<div style="display: flex; justify-content: center; align-items: flex-end; height: 60px; gap: 5px; margin: 12px 0;">
+<div class="astryx-eq-bar" style="height: 45%; background: {_wave_color};"></div>
+<div class="astryx-eq-bar" style="height: 75%; background: {_wave_color};"></div>
+<div class="astryx-eq-bar" style="height: 95%; background: {_wave_color};"></div>
+<div class="astryx-eq-bar" style="height: 60%; background: {_wave_color};"></div>
+<div class="astryx-eq-bar" style="height: 100%; background: {_wave_color};"></div>
+<div class="astryx-eq-bar" style="height: 85%; background: {_wave_color};"></div>
+<div class="astryx-eq-bar" style="height: 50%; background: {_wave_color};"></div>
+<div class="astryx-eq-bar" style="height: 90%; background: {_wave_color};"></div>
+<div class="astryx-eq-bar" style="height: 70%; background: {_wave_color};"></div>
+<div class="astryx-eq-bar" style="height: 100%; background: {_wave_color};"></div>
+<div class="astryx-eq-bar" style="height: 65%; background: {_wave_color};"></div>
+<div class="astryx-eq-bar" style="height: 40%; background: {_wave_color};"></div>
+</div>
+<div style="display: flex; justify-content: space-between; font-size: 7.5pt; color: #8d8d8d; border-top: 1px solid #1a2230; padding-top: 6px;">
+<span>60 Hz (Sub-Bass)</span>
+<span style="color: {_wave_color}; font-weight: bold;">● {_cur_db} dB LIVE PEAK</span>
+<span>16 kHz (Vocal Screams)</span>
+</div>
+</div>
+</div>
+</div>
+"""
+    _clean_s3 = "\n".join(l.lstrip() for l in _s3_raw.splitlines() if l.strip())
+    st.markdown(_clean_s3, unsafe_allow_html=True)
 
     _coordinator = InvisibleCoordinatorAgent(sport=st.session_state.sport)
     if is_basketball and st.session_state.is_clutch:
