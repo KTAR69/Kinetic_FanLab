@@ -4394,12 +4394,31 @@ elif screen == "⚡ In-Arena Game Hub & Crowd Defense" or "Screen 3" in screen:
         _game_ctx = "regular possession"
     coord_state = _coordinator.evaluate_game_state(_game_ctx)
 
-    # Quick Telemetry Simulation Controls
-    pulse_btn_col1, surge_btn_col2 = st.columns(2)
-    with pulse_btn_col1:
-        pulse_clicked = st.button("🎲 Pulse Telemetry Tick", help="Inject a live stadium sensor tick", use_container_width=True)
-    with surge_btn_col2:
-        surge_clicked = st.button("⚡ Live Telemetry Surge (Wave)", help="Inject a full crowd surge wave", use_container_width=True)
+    # ==============================================================================
+    # ONE-TAP DEFENSE HUB (Denis Zakharov Click Reduction & Consolidation)
+    # Combines bleacher pounding, crowd surge, and tactical chants into 1 tap
+    # ==============================================================================
+    st.markdown("""
+    <div style="background: linear-gradient(135deg, #131826 0%, #0d1017 100%); border: 1.5px solid #0f62fe; border-radius: 16px; padding: 18px 22px; margin-bottom: 16px; box-shadow: 0 4px 20px rgba(15, 98, 254, 0.25);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap;">
+            <span style="color: #5da8ff; font-size: 8.5pt; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">
+                ⚡ ONE-TAP IN-ARENA DEFENSE CONSOLE
+            </span>
+            <span style="color: #42be65; font-size: 8pt; font-weight: 700;">● ZERO-SCROLL TACTICAL ACTIONS</span>
+        </div>
+        <p style="color: #dcdcdc; font-size: 8.5pt; margin: 0 0 12px 0;">
+            Pound bleachers to surge crowd decibels past 105 dB, or trigger an instant section chant to rattle the opponent!
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # 1-Tap Primary Defense Surge
+    col_tap_main, col_tap_stats = st.columns([3, 2])
+    with col_tap_main:
+        surge_clicked = st.button("⚡ POUND BLEACHERS & SURGE DEFENSE (+5 TAPS)", key="btn_hero_defense_surge", type="primary", use_container_width=True)
+    with col_tap_stats:
+        pulse_clicked = st.button("🎲 Pulse Telemetry Tick (+1)", key="btn_pulse_tick", type="secondary", use_container_width=True)
+
 
     if pulse_clicked or surge_clicked:
         try:
@@ -4998,6 +5017,7 @@ elif screen == "⚡ In-Arena Game Hub & Crowd Defense" or "Screen 3" in screen:
 # ==============================================================================
 elif screen == "📜 Crowd Box Score & Fan Storycard" or "Screen 4" in screen:
     st.header(f"📊 Narrative Delta & Shareable Crowd Box Score ({st.session_state.sport})")
+    winning_sec = "Section 114 (Thunder Row)" if is_basketball else "Section 115 (End Zone Loyals)"
     st.caption("Post-play synthesis connecting crowd momentum to on-field execution, with viral story card export.")
 
     if "BB-01" in active_preset:
@@ -5059,31 +5079,43 @@ elif screen == "📜 Crowd Box Score & Fan Storycard" or "Screen 4" in screen:
     st.markdown(f"> *{narrative}*")
 
     st.markdown("---")
-    st.subheader("📲 One-Tap Shareable 'Proof-of-Momentum' Card")
-    st.write(f"Share your verified in-arena {st.session_state.sport} impact to Instagram, TikTok, and X:")
+    st.subheader("📲 Viral Gameday StoryCard (One-Tap Share)")
+    st.caption("Accredited Proof-of-Momentum card formatted for Instagram Stories, TikTok, and X.")
 
-    card_bg = "#161616"
-    card_border = "#0f62fe" if current_cmi < 80 else "#da1e28"
-    winning_sec = "Section 114 (Thunder Row)" if is_basketball else "Section 115 (End Zone Loyals)"
+    _card_border = "#da1e28" if current_cmi >= 80 else "#0f62fe"
+    _card_glow = "#da1e2855" if current_cmi >= 80 else "#0f62fe55"
+    _level_name = "NCAA D1 Collegiate Fandom" if ("Duke" in active_team_focus or "Texas" in active_team_focus or "Michigan" in active_team_focus) else "Professional League Fandom"
 
-    st.markdown(f"""
-    <div style="background-color: {card_bg}; border: 3px solid {card_border}; border-radius: 12px; padding: 24px; max-width: 520px; margin: 10px auto; color: white; text-align: center; box-shadow: 0 0 20px {card_border}66;">
-        <p style="color: #0f62fe; font-weight: bold; letter-spacing: 2px; margin: 0; font-size: 10pt;">KINETIC FANLAB // OFFICIAL PROOF-OF-MOMENTUM</p>
-        <h1 style="color: white; margin: 8px 0; font-size: 32pt;">{card_points_display}</h1>
-        <p style="color: {card_border}; font-weight: bold; font-size: 14pt; margin: 0;">{card_sub}</p>
-        <hr style="border-color: #333; margin: 14px 0;">
-        <div style="background-color: #111622; padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #0f62fe55; text-align: left;">
-            <p style="color: #f1c21b; font-size: 8.5pt; margin: 0; font-weight: bold; text-transform: uppercase;">VERIFIED FAN CERTIFICATE</p>
-            <p style="color: #ffffff; font-size: 11pt; margin: 2px 0; font-weight: bold;">{st.session_state.member_name} <code style="color:#0f62fe;">{st.session_state.member_handle}</code></p>
-            <p style="color: #a8a8a8; font-size: 8.5pt; margin: 0;">Passport Hash: <code>{st.session_state.member_hash}</code> &bull; Tier: <b>{_sanitize_fan_tier(st.session_state.member_tier)}</b></p>
-            <p style="color: #42be65; font-size: 8.5pt; margin: 2px 0 0 0;">Proof ID: <code>0xPRF-{st.session_state.sport[:2].upper()}-{int(current_cmi)}-{st.session_state.member_hash[2:6].upper()}</code></p>
-        </div>
-        <p style="color: #f4f4f4; font-size: 10.5pt; margin: 4px 0;">Sport: <b>{st.session_state.sport} ({role_tag})</b></p>
-        <p style="color: #f4f4f4; font-size: 10.5pt; margin: 4px 0;">Acoustic Peak: <b>{st.session_state.db} dB</b> | Peak Heart Rate: <b>{int(st.session_state.hr)} BPM</b></p>
-        <p style="color: #8d8d8d; font-size: 9pt; margin-top: 10px;">{winning_sec} Defense Belt Winner</p>
+    _s4_card_raw = f"""
+<div style="background: linear-gradient(145deg, #121622 0%, #0a0d14 100%); border: 2px solid {_card_border}; border-radius: 20px; padding: 26px 28px; max-width: 520px; margin: 12px auto; color: white; text-align: center; box-shadow: 0 16px 40px rgba(0,0,0,0.8), 0 0 30px {_card_glow}; position: relative;">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 10px; margin-bottom: 14px;">
+        <span style="background: {_card_border}25; color: {_card_border}; border: 1.5px solid {_card_border}; padding: 3px 12px; border-radius: 9999px; font-size: 7.5pt; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">
+            KINETIC FANLAB // ACCREDITED MOMENTUM PROOF
+        </span>
+        <span style="color: #42be65; font-size: 7.5pt; font-weight: 800;">● COS SHA-256 SEAL</span>
     </div>
-    """, unsafe_allow_html=True)
-
+    <span style="color: #8d8d8d; font-size: 8pt; text-transform: uppercase; letter-spacing: 1.2px; font-weight: 700;">{_level_name} &bull; {active_team_focus}</span>
+    <h1 style="color: #ffffff; margin: 6px 0; font-size: 38pt; font-weight: 800; letter-spacing: -1px; text-shadow: 0 0 20px {_card_border}88;">{card_points_display}</h1>
+    <span style="background-color: {_card_border}22; color: {'#ff8389' if current_cmi >= 80 else '#78a9ff'}; padding: 4px 14px; border-radius: 9999px; font-size: 9pt; font-weight: 800; border: 1px solid {_card_border}66;">{card_sub}</span>
+    <div style="background: rgba(11, 14, 20, 0.7); border: 1px solid #1f2737; border-radius: 14px; padding: 14px 16px; margin: 16px 0 10px 0; text-align: left;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+            <span style="color: #a8a8a8; font-size: 8.5pt;">Verified Member:</span>
+            <b style="color: #ffffff; font-size: 9.5pt;">{st.session_state.member_name} ({st.session_state.member_handle})</b>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+            <span style="color: #a8a8a8; font-size: 8.5pt;">Section Noise Peak:</span>
+            <b style="color: #f1c21b; font-size: 9.5pt;">{st.session_state.db} dB Verified</b>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+            <span style="color: #a8a8a8; font-size: 8.5pt;">Immutable Receipt:</span>
+            <span style="color: #42be65; font-size: 8pt; font-family: monospace;">0xPRF-{st.session_state.sport[:2].upper()}-{int(current_cmi)}-{st.session_state.member_hash[2:6].upper()}</span>
+        </div>
+    </div>
+    <span style="color: #666; font-size: 7.5pt;">Accredited across Collegiate & Pro Arenas &bull; IBM watsonx.governance DIR=0.953</span>
+</div>
+"""
+    _clean_s4_card = "\n".join(l.lstrip() for l in _s4_card_raw.splitlines() if l.strip())
+    st.markdown(_clean_s4_card, unsafe_allow_html=True)
     sh_col1, sh_col2, sh_col3 = st.columns([1, 2, 1])
     with sh_col2:
         share_btn_clicked = st.button("📲 Export Proof-of-Momentum & Share to Social Media", key="btn_share_proof_card", use_container_width=True)
