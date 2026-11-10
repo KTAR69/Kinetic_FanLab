@@ -374,25 +374,31 @@ def _generate_npc_chat_reply(user_msg: str, author_handle: str, sport: str) -> d
 st.set_page_config(page_title="Kinetic FanLab", page_icon="⚡", layout="wide")
 
 # ==============================================================================
-# KINETIC FANLAB — ASTRYX & IBM CARBON STADIUM UI KIT (Design.md)
-# High-contrast stadium dark mode: #0b0e14 turf black, #12161f elevated cards,
-# electric stadium neon accents, and mobile-first 48px tactile touch targets.
+# KINETIC FANLAB — META ASTRYX & IBM CARBON UI KIT SPECIFICATION
+# Direct implementation of Denis Zakharov's Astryx UI Kit (github.com/meta/astryx):
+#   - Floating Cards (border-radius: 18px, subtle border: 1px solid #1f2737)
+#   - Pill Badges (border-radius: 9999px, e.g., 'Available now', 'Live Gameday')
+#   - Tactile Pill Buttons (border-radius: 9999px like Astryx 'Add to cart' / '+ Add item')
+#   - Astryx Progress Bars with live fraction badges (like 'Reward progress 7/8')
+#   - Astryx Rounded Data Tables (Inventory-style rounded container & pill status)
 # ==============================================================================
 st.markdown("""
 <style>
-/* 1. Global App Canvas & Stadium Background */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/* 1. Astryx Root Canvas */
 .stApp {
     background-color: #0b0e14 !important;
     color: #f4f4f4 !important;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
 }
 
-/* 2. Suppress Streamlit Default Dev Chrome for Native App Feel */
-#MainMenu, footer, header[data-testid="stHeader"], div[data-testid="stToolbar"] {
+/* 2. Hide Streamlit Prototype Chrome for Commercial Native Feel */
+#MainMenu, footer, header[data-testid="stHeader"], div[data-testid="stToolbar"], div[data-testid="stDecoration"] {
     display: none !important;
 }
 
-/* 3. Mobile Viewport & Ergonomic Padding */
+/* 3. Mobile Ergonomic Container */
 .block-container {
     padding-top: 1.2rem !important;
     padding-bottom: 3.5rem !important;
@@ -401,101 +407,172 @@ st.markdown("""
     max-width: 1200px !important;
 }
 
-/* 4. Astryx Stadium Cards & Component Containers */
-div[data-testid="stExpander"] {
-    background-color: #12161f !important;
-    border: 1px solid #222938 !important;
-    border-radius: 10px !important;
-    margin-bottom: 12px !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+/* 4. Astryx Floating Card Components (from github.com/meta/astryx) */
+.astryx-card {
+    background: #121620 !important;
+    border: 1px solid #1f2737 !important;
+    border-radius: 18px !important;
+    padding: 20px 24px !important;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45) !important;
+    margin-bottom: 16px !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease !important;
 }
-div[data-testid="stExpander"]:hover {
-    border-color: #0f62fe66 !important;
+.astryx-card:hover {
+    border-color: rgba(15, 98, 254, 0.5) !important;
+    box-shadow: 0 12px 36px rgba(15, 98, 254, 0.2) !important;
 }
 
-/* 5. Tactile Stadium Action Buttons (48px+ Apple/Google Standard) */
+/* 5. Astryx Pill Badges (Available Now / Tooltip Pill Style) */
+.astryx-pill {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 4px 12px !important;
+    border-radius: 9999px !important;
+    font-size: 8pt !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.5px !important;
+    text-transform: uppercase !important;
+    line-height: 1.2 !important;
+}
+.astryx-pill-live {
+    background: rgba(218, 30, 40, 0.15) !important;
+    color: #ff8389 !important;
+    border: 1px solid rgba(218, 30, 40, 0.4) !important;
+}
+.astryx-pill-blue {
+    background: rgba(15, 98, 254, 0.15) !important;
+    color: #78a9ff !important;
+    border: 1px solid rgba(15, 98, 254, 0.4) !important;
+}
+.astryx-pill-gold {
+    background: rgba(241, 194, 27, 0.15) !important;
+    color: #f1c21b !important;
+    border: 1px solid rgba(241, 194, 27, 0.4) !important;
+}
+.astryx-pill-green {
+    background: rgba(66, 190, 101, 0.15) !important;
+    color: #6fdc8c !important;
+    border: 1px solid rgba(66, 190, 101, 0.4) !important;
+}
+
+/* 6. Astryx Pill Buttons (Round like Meta Quest / Add to Cart / + Add Item) */
 div.stButton > button {
-    min-height: 48px !important;
-    border-radius: 8px !important;
+    border-radius: 9999px !important;
+    min-height: 46px !important;
     font-size: 9.5pt !important;
     font-weight: 700 !important;
     letter-spacing: 0.3px !important;
+    padding: 0 22px !important;
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 div.stButton > button[kind="primary"] {
-    background: linear-gradient(135deg, #0f62fe 0%, #0043ce 100%) !important;
+    background: #0f62fe !important;
     border: none !important;
     color: #ffffff !important;
-    box-shadow: 0 4px 14px rgba(15, 98, 254, 0.4) !important;
+    box-shadow: 0 4px 16px rgba(15, 98, 254, 0.45) !important;
 }
 div.stButton > button[kind="primary"]:hover {
-    box-shadow: 0 6px 20px rgba(15, 98, 254, 0.65) !important;
+    background: #0043ce !important;
+    box-shadow: 0 6px 24px rgba(15, 98, 254, 0.7) !important;
     transform: translateY(-1px) !important;
 }
 div.stButton > button[kind="secondary"] {
-    background-color: #171d29 !important;
-    border: 1px solid #222938 !important;
+    background: #171d2b !important;
+    border: 1px solid #232d3f !important;
     color: #e0e0e0 !important;
 }
 div.stButton > button[kind="secondary"]:hover {
     border-color: #0f62fe !important;
     color: #ffffff !important;
-    background-color: #1e2638 !important;
+    background: #1e2638 !important;
+    transform: translateY(-1px) !important;
 }
 
-/* 6. High-Contrast Streamlit Metrics & Numbers */
+/* 7. Astryx Progress Bars (Like Astryx Reward Progress 7/8) */
+.astryx-progress-container {
+    background: #0b0e14 !important;
+    border: 1px solid #1f2737 !important;
+    border-radius: 12px !important;
+    padding: 12px 16px !important;
+    margin-top: 10px !important;
+}
+.astryx-progress-bar {
+    height: 8px !important;
+    background: #1c2333 !important;
+    border-radius: 9999px !important;
+    overflow: hidden !important;
+    margin-top: 6px !important;
+}
+.astryx-progress-fill {
+    height: 100% !important;
+    background: linear-gradient(90deg, #0f62fe 0%, #42be65 100%) !important;
+    border-radius: 9999px !important;
+    transition: width 0.4s ease !important;
+}
+
+/* 8. Astryx Segmented Tabs (Like Appearance Switcher) */
+div[data-baseweb="tab-list"] {
+    background: #121620 !important;
+    border: 1px solid #1f2737 !important;
+    border-radius: 9999px !important;
+    padding: 5px !important;
+    gap: 4px !important;
+    overflow-x: auto !important;
+}
+div[data-baseweb="tab"] {
+    border-radius: 9999px !important;
+    color: #8d8d8d !important;
+    font-weight: 700 !important;
+    font-size: 8.5pt !important;
+    padding: 8px 18px !important;
+    border: none !important;
+}
+div[data-baseweb="tab"][aria-selected="true"] {
+    background: #0f62fe !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 10px rgba(15, 98, 254, 0.4) !important;
+}
+
+/* 9. Astryx Form Inputs & Search Fields (Like How Can I Help You Pill) */
+div[data-baseweb="input"], div[data-baseweb="select"] > div {
+    background: #141926 !important;
+    border: 1px solid #232d3f !important;
+    border-radius: 12px !important;
+    color: #ffffff !important;
+}
+div[data-baseweb="input"]:focus-within, div[data-baseweb="select"] > div:focus-within {
+    border-color: #0f62fe !important;
+    box-shadow: 0 0 10px rgba(15, 98, 254, 0.3) !important;
+}
+
+/* 10. Astryx Streamlit Metrics */
 div[data-testid="stMetricValue"] {
-    font-size: 1.85rem !important;
+    font-size: 2rem !important;
     font-weight: 800 !important;
     color: #ffffff !important;
     letter-spacing: -0.5px !important;
 }
 div[data-testid="stMetricLabel"] {
-    font-size: 0.85rem !important;
+    font-size: 0.8rem !important;
     font-weight: 700 !important;
     color: #8d8d8d !important;
     text-transform: uppercase !important;
-    letter-spacing: 0.8px !important;
-}
-div[data-testid="stMetricDelta"] {
-    font-size: 0.8rem !important;
-    font-weight: 700 !important;
+    letter-spacing: 1px !important;
 }
 
-/* 7. Astryx Segmented Tabs & Mobile Horizontal Scroll */
-div[data-baseweb="tab-list"] {
-    background-color: #12161f !important;
-    border-radius: 8px !important;
-    padding: 4px !important;
-    border: 1px solid #222938 !important;
-    gap: 4px !important;
-    overflow-x: auto !important;
-}
-div[data-baseweb="tab"] {
-    border-radius: 6px !important;
-    color: #a8a8a8 !important;
-    font-weight: 600 !important;
-    font-size: 9pt !important;
-    padding: 8px 14px !important;
-    white-space: nowrap !important;
-}
-div[data-baseweb="tab"][aria-selected="true"] {
-    background-color: #0f62fe !important;
-    color: #ffffff !important;
-}
-
-/* 8. Stadium Sidebar Polish */
+/* 11. Sidebar Astryx Polish */
 section[data-testid="stSidebar"] {
-    background-color: #0d1117 !important;
-    border-right: 1px solid #1f2633 !important;
+    background-color: #0d1017 !important;
+    border-right: 1px solid #1a2230 !important;
 }
 section[data-testid="stSidebar"] div[data-testid="stSidebarNav"] {
     display: none !important;
 }
 section[data-testid="stSidebar"] div[role="radiogroup"] > label {
-    background-color: #141924 !important;
-    border: 1px solid #222938 !important;
-    border-radius: 8px !important;
+    background-color: #121620 !important;
+    border: 1px solid #1f2737 !important;
+    border-radius: 12px !important;
     padding: 10px 14px !important;
     margin-bottom: 6px !important;
     transition: all 0.15s ease !important;
@@ -508,20 +585,9 @@ section[data-testid="stSidebar"] div[role="radiogroup"] > label:has(input:checke
     border-color: #0f62fe !important;
     box-shadow: 0 0 12px rgba(15, 98, 254, 0.35) !important;
 }
-
-/* 9. Text Inputs & Forms */
-div[data-baseweb="input"] {
-    background-color: #141924 !important;
-    border-color: #222938 !important;
-    border-radius: 6px !important;
-    color: #ffffff !important;
-}
-div[data-baseweb="input"]:focus-within {
-    border-color: #0f62fe !important;
-    box-shadow: 0 0 8px rgba(15, 98, 254, 0.4) !important;
-}
 </style>
 """, unsafe_allow_html=True)
+
 
 # --- Mathematical Normalization & Ground Truth Formula ---
 def normalize(val: float, min_val: float, max_val: float) -> float:
@@ -2696,16 +2762,23 @@ if screen == "🎟️ Fan Passport & Section Roster" or "Screen 1" in screen:
     # LOGGED-IN FAN EXPERIENCE (Screen 1 Dashboard)
     # ------------------------------------------------------------------
     else:
-        st.header(f"👤 The Living Fan Passport & Section Roster ({st.session_state.sport})")
-        st.caption("Persistent 365-day fandom identity, interactive section mentors, and team affiliations.")
+        p_info = PERSONA_DB.get(st.session_state.active_member, PERSONA_DB["Marcus Vance" if is_basketball else "Sarah Jenkins"])
+        glow_color = "#f1c21b" if "Tier 5" in p_info['tier'] else ("#8a3ffc" if "Tier 4" in p_info['tier'] else "#0f62fe")
 
-        # Top User Status & Logout Banner
+        # Unified Stadium App Bar & Member Credential Header
         col_status_info, col_status_act = st.columns([4, 1])
         with col_status_info:
             st.markdown(f"""
-            <div style="background-color: #12161f; border-left: 4px solid #0f62fe; padding: 8px 14px; border-radius: 6px; margin-bottom: 8px;">
-                <span style="color: #0f62fe; font-weight: bold;">👋 LOGGED IN:</span>
-                <span style="color: #f4f4f4;"> <b>{st.session_state.member_name}</b> (<code>{st.session_state.member_handle}</code>) &bull; Tier: <b>{st.session_state.member_tier}</b> &bull; Hash: <code>{st.session_state.member_hash}</code></span>
+            <div style="background: linear-gradient(135deg, #131826 0%, #0d1017 100%); border: 1px solid #222938; border-left: 4px solid #0f62fe; padding: 12px 16px; border-radius: 10px; margin-bottom: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.4);">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="background-color: #0f62fe; color: white; padding: 2px 7px; border-radius: 4px; font-size: 7.5pt; font-weight: 800; letter-spacing: 0.8px;">⚡ KINETIC FANLAB</span>
+                        <span style="color: #42be65; font-size: 8pt; font-weight: 700;">● IN-ARENA SESSION ACTIVE</span>
+                    </div>
+                    <span style="color: {glow_color}; font-size: 8.5pt; font-weight: 800;">🏆 {st.session_state.member_tier}</span>
+                </div>
+                <h3 style="color: #ffffff; margin: 4px 0 2px 0; font-size: 15pt; font-weight: 800;">{st.session_state.member_name} <span style="color: #8d8d8d; font-size: 9pt; font-weight: 400;">({st.session_state.member_handle})</span></h3>
+                <span style="color: #5da8ff; font-size: 8.5pt; font-weight: 700;">📍 {p_info['sec']} &bull; Row 3, Seat 12</span>
             </div>
             """, unsafe_allow_html=True)
         with col_status_act:
@@ -2773,27 +2846,23 @@ if screen == "🎟️ Fan Passport & Section Roster" or "Screen 1" in screen:
             st.session_state[f"gameday_toast_shown_{active_team_sel}"] = True
 
         gameday_badge = (
-            '<span style="background-color: #da1e28; color: white; padding: 2px 8px; border-radius: 4px; font-size: 7.5pt; font-weight: bold; margin-left: 10px;">🔴 LIVE GAMEDAY TONIGHT</span>'
+            '<span style="background-color: #da1e28; color: white; padding: 3px 10px; border-radius: 12px; font-size: 7.5pt; font-weight: 800; letter-spacing: 0.8px;">🔴 LIVE GAMEDAY TONIGHT</span>'
             if is_today else
-            '<span style="background-color: #0f62fe; color: white; padding: 2px 8px; border-radius: 4px; font-size: 7.5pt; font-weight: bold; margin-left: 10px;">🗓️ NEXT UPCOMING GAMEDAY</span>'
+            '<span style="background-color: #0f62fe; color: white; padding: 3px 10px; border-radius: 12px; font-size: 7.5pt; font-weight: 800; letter-spacing: 0.8px;">🗓️ NEXT GAMEDAY</span>'
         )
 
         st.markdown(f"""
-        <div style="background-color: #0c111a; border-left: 5px solid #0f62fe; padding: 12px 18px; border-radius: 8px; margin-bottom: 12px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-                <div>
-                    <span style="color: #0f62fe; font-size: 8.5pt; font-weight: bold; letter-spacing: 1.5px; text-transform: uppercase;">
-                        🎯 OFFICIAL GAMEDAY TRACKER // 2026-27 SCHEDULE
-                    </span>
+        <div style="background: linear-gradient(135deg, #141a29 0%, #0d1017 100%); border: 1.5px solid #0f62fe; border-radius: 12px; padding: 14px 18px; margin-bottom: 10px; box-shadow: 0 4px 20px rgba(15, 98, 254, 0.25);">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 8px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
                     {gameday_badge}
+                    <span style="color: #5da8ff; font-size: 8.5pt; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">
+                        {active_team_sel} GAMEDAY HUB
+                    </span>
                 </div>
-                <div style="color: #f1c21b; font-size: 9pt; font-weight: bold;">
-                    Level: {matchup_data.get('level', 'Collegiate & Pro')} &bull; <span style="color:#ffffff;">Record: {t_record}</span>
-                </div>
+                <span style="color: #f1c21b; font-size: 9pt; font-weight: 800;">Record: {t_record}</span>
             </div>
-            <div style="margin-top: 6px; font-size: 9pt; color: #a8a8a8;">
-                Switch Active Team Focus:
-            </div>
+            <div style="font-size: 8.5pt; color: #a8a8a8;">Select Team Affiliation:</div>
         </div>
         """, unsafe_allow_html=True)
 
