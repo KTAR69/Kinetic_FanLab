@@ -4472,10 +4472,11 @@ elif screen == "🎪 36h Virtual Tailgate & Meetups" or "Screen 2" in screen:
         with col_p3:
             p_margin = st.slider("Projected Final Margin (Pts)", min_value=-20, max_value=30, value=7, key="sld_p_margin")
 
-        _pred_locked = st.session_state.get("predictions_locked", False)
+        _pred_locked = st.session_state.get(f"predictions_locked_{_tg_team}", False)
         if not _pred_locked:
             if st.button("🔮 Lock Predictions & Mint Gameday Oracle NFT", key="btn_lock_predictions", type="primary", use_container_width=True):
-                st.session_state.predictions_locked = True
+                st.session_state[f"predictions_locked_{_tg_team}"] = True
+                st.session_state[f"pred_data_{_tg_team}"] = {"turnover": p_to.split(' ')[0], "roar": p_roar.split(' ')[0], "margin": p_margin}
                 
                 # Mint and record the authentic Oracle NFT directly to Living Trophy Case
                 _m_hash = st.session_state.member_hash[2:8].upper()
@@ -4499,9 +4500,12 @@ elif screen == "🎪 36h Virtual Tailgate & Meetups" or "Screen 2" in screen:
                 st.success("🎉 Predictions locked & Gameday Oracle NFT minted directly into your Living Trophy Case!")
                 st.rerun()
         else:
-            sign_str = '+' if p_margin > 0 else ''
-            to_sub = p_to.split(' ')[0]
-            roar_sub = p_roar.split(' ')[0]
+            _stored_pred = st.session_state.get(f"pred_data_{_tg_team}", {"turnover": p_to.split(' ')[0], "roar": p_roar.split(' ')[0], "margin": p_margin})
+            to_sub = _stored_pred.get("turnover", "Yes")
+            roar_sub = _stored_pred.get("roar", "Yes")
+            stored_m = _stored_pred.get("margin", 7)
+            sign_str = '+' if stored_m > 0 else ''
+            p_margin = stored_m
             _m_hash = st.session_state.member_hash[2:8].upper()
             
             # Holographic NFT Showcase Card
@@ -5616,6 +5620,52 @@ elif screen == "📜 Crowd Box Score & Fan Storycard" or "Screen 4" in screen:
         st.write(f"* Peak Heart Rate Logged: **{int(st.session_state.hr)} BPM**")
         st.write(f"* Peak Acoustic Contribution: **{st.session_state.db} dB**")
         st.write(f"* watsonx Vocal Urgency: **{st.session_state.vu} VU**")
+
+
+    # ==============================================================================
+    # LIVING TROPHY CASE & DIGITAL VAULT (SCREEN 4 HERO SHOWCASE)
+    # Displays all claimed vouchers, Oracle NFTs, and capstone badges
+    # ==============================================================================
+    st.markdown("---")
+    st.subheader(f"🏆 Living Trophy Case & Digital Vault ({st.session_state.member_name})")
+    st.caption("Verifiable IBM Cloudant & COS blockchain-accredited collectibles, Oracle NFTs, and unlocked sponsor drops.")
+
+    _trophy_items = st.session_state.get("claimed_vouchers", [])
+    
+    if not _trophy_items:
+        st.info("ℹ️ **Your Living Trophy Case is currently waiting for its first collectible.**\n\nLock in your pre-game predictions in **Screen 2** to mint an **Oracle NFT**, or cross 105 dB in **Screen 3** to unlock a **Whataburger® Clutch Drop**!")
+    else:
+        # Group into columns
+        num_cols = min(3, len(_trophy_items))
+        tr_cols = st.columns(num_cols)
+        for t_idx, tr in enumerate(_trophy_items):
+            c_idx = t_idx % num_cols
+            with tr_cols[c_idx]:
+                _is_nft = tr.get("is_nft", False)
+                _b_color = tr.get("brand_color", "#f1c21b" if _is_nft else "#ff6600")
+                _border_css = f"2px solid {_b_color}"
+                _glow_css = f"0 10px 25px rgba(0,0,0,0.8), 0 0 20px {_b_color}44"
+                _badge_label = "VERIFIED NFT COLLECTIBLE" if _is_nft else "SPONSOR REWARD VOUCHER"
+                
+                _tr_card = f"""
+                <div style="background: linear-gradient(145deg, #121622 0%, #0a0d14 100%); border: {_border_css}; border-radius: 16px; padding: 18px; margin-bottom: 14px; box-shadow: {_glow_css}; text-align: center; position: relative;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="background: {_b_color}25; color: {_b_color}; border: 1px solid {_b_color}; padding: 2px 8px; border-radius: 9999px; font-size: 7pt; font-weight: 800; text-transform: uppercase;">
+                            {_badge_label}
+                        </span>
+                        <span style="color: #42be65; font-size: 7.5pt; font-weight: bold;">● CLAIMED</span>
+                    </div>
+                    <span style="font-size: 32pt;">{tr.get('icon', '🏆')}</span>
+                    <h4 style="color: #ffffff; margin: 6px 0 4px 0; font-size: 11.5pt; font-weight: 800;">{tr.get('title', 'Accredited Trophy')}</h4>
+                    <p style="color: #dcdcdc; font-size: 8pt; margin: 0 0 10px 0; line-height: 1.3;">{tr.get('desc', 'Gameday achievement recorded to ledger.')}</p>
+                    <div style="background: #07090e; border: 1px dashed {_b_color}; border-radius: 8px; padding: 8px; font-size: 7.5pt; color: #a8a8a8; font-family: monospace;">
+                        HASH: {tr.get('claim_hash', '0xHASH')[:18]}...<br/>
+                        CODE: <b style="color: #ffffff;">{tr.get('discount_code', 'ACTIVE')}</b>
+                    </div>
+                </div>
+                """
+                st.markdown("\n".join(l.lstrip() for l in _tr_card.splitlines() if l.strip()), unsafe_allow_html=True)
+
 
 # ==============================================================================
 # SCREEN 5: AI SQUAD & GAME INTELLIGENCE (@coach, @conductor, @strategist, @scout)
