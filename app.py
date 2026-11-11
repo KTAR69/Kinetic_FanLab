@@ -1295,6 +1295,99 @@ def _get_team_visual_theme(team_name: str, sport: str):
         return {"color": "#ffb612", "arena": "Lambeau Field (Frozen Tundra)", "unit": "Cheesehead Wall (NFL)", "icon": "🧀"}
     return {"color": "#0f62fe", "arena": "Arena Stadium (Section 114)", "unit": "Section 114 Loyals", "icon": "🏟️"}
 
+
+def _get_tailgate_theme(team_name: str, sport: str):
+    """Provides team-specific tailgate culture, lots, food specialties, and rivalry data."""
+    is_bb = ('basket' in str(sport or '').lower())
+    t_low = str(team_name or '').lower()
+    if 'duke' in t_low:
+        return {
+            'lot_name': 'Krzyzewskiville (K-Ville) Digital Tent Village',
+            'tent_unit': 'Tent #114 (Cameron Crazies)',
+            'grill_special': 'Durham Pit BBQ & Blue Devil Glaze',
+            'entrance_anthem': 'Basshunter - DotA & Blue Devils March',
+            'rival_name': 'Visiting Opponent Section',
+            'icon': '⛺',
+            'accent': '#003087',
+            'tradition': 'Face-painting, sleeping in tents for 36 hours, line monitor roll call.'
+        }
+    elif 'longhorns' in t_low:
+        return {
+            'lot_name': "Bevo's Smokehouse Tailgate Lot & Corral",
+            'tent_unit': 'Corral Lot 114/115 (Longhorn Loyals)',
+            'grill_special': '14-Hour Oak-Smoked Texas Brisket & Sausage',
+            'entrance_anthem': 'Wabash Cannonball & Eyes of Texas',
+            'rival_name': 'Visiting SEC Fan Section',
+            'icon': '🥩',
+            'accent': '#bf5700',
+            'tradition': 'Smoked brisket pits, Big Bertha drum cadence, burnt orange smoke flares.'
+        }
+    elif 'celtics' in t_low:
+        return {
+            'lot_name': 'Causeway Street Plaza Pre-Game Rally',
+            'tent_unit': 'The Garden Faithful Tent #114',
+            'grill_special': 'New England Clam Chowder & Boston Grinders',
+            "entrance_anthem": "Dropkick Murphys - I'm Shipping Up to Boston",
+            'rival_name': 'Visiting Eastern Conf Section',
+            'icon': '☘️',
+            'accent': '#007a33',
+            'tradition': 'Green clover banner drop, legendary parquet floor history huddle.'
+        }
+    elif 'spurs' in t_low:
+        return {
+            'lot_name': 'Frost Bank Concourse & Baseline Fan Fiesta',
+            'tent_unit': 'Baseline Bums Stall #114',
+            'grill_special': 'Whataburger® Gameday Drops & Carne Asada Tacos',
+            'entrance_anthem': 'Spurs Coyote Drumline & Bass Drop',
+            'rival_name': 'Visiting Western Conf Section',
+            'icon': '⚡',
+            'accent': '#00b4d8',
+            'tradition': 'Baseline Bums drumline, Whataburger gameday vouchers, Coyote hype squad.'
+        }
+    elif 'wolverines' in t_low:
+        return {
+            'lot_name': 'The Big House Pioneer High Tailgate Commons',
+            'tent_unit': 'Maize Rage Tent Lot M-115',
+            'grill_special': 'Ann Arbor Smoked Brats & Warm Apple Cider',
+            'entrance_anthem': 'The Victors (Michigan Marching Band)',
+            'rival_name': 'Visiting Big Ten Fan Section',
+            'icon': '〽️',
+            'accent': '#ffcb05',
+            'tradition': 'Touching the Go Blue banner, Block M cornhole, 110,000 fan choir rehearsal.'
+        }
+    elif 'cowboys' in t_low:
+        return {
+            'lot_name': 'AT&T Stadium Miller Lite Corral Mega-Tailgate',
+            'tent_unit': 'Star Loyals Canopy Lot 115',
+            'grill_special': 'Dallas Smoked Ribs & Whataburger® Patty Melt',
+            'entrance_anthem': 'Cowboys Stampede Hype Anthem',
+            'rival_name': 'Visiting NFC Fan Section',
+            'icon': '⭐',
+            'accent': '#003594',
+            'tradition': 'Miller Lite West Plaza rally, giant screen pre-game film study.'
+        }
+    elif 'packers' in t_low:
+        return {
+            'lot_name': 'Lambeau Frozen Tundra Tailgate Tents',
+            'tent_unit': 'Cheesehead Wall Lot 115',
+            'grill_special': 'Johnsonville Beer Brats & Wisconsin Cheese Curds',
+            'entrance_anthem': 'Roll Out the Barrel & Green & Gold Roar',
+            'rival_name': 'Visiting NFC North Section',
+            'icon': '🧀',
+            'accent': '#ffb612',
+            'tradition': 'Open charcoal grills in freezing snow, cheesehead crowning ceremony.'
+        }
+    return {
+        'lot_name': 'Stadium Arena Pre-Game Commons',
+        'tent_unit': 'Section 114 Tailgate Zone',
+        'grill_special': 'All-American Stadium Dogs & Cold Drinks',
+        'entrance_anthem': 'Stadium Hype Anthem',
+        'rival_name': 'Visiting Rival Section',
+        'icon': '🎪',
+        'accent': '#0f62fe',
+        'tradition': 'Bleacher chant rehearsal and section warmup.'
+    }
+
 def _get_active_matchup_info(sport: str, primary_team: str):
     """Retrieves real-time active and upcoming schedule with autonomous temporal auto-advancement across all teams."""
     import re
@@ -4056,217 +4149,241 @@ if screen == "🎟️ Fan Passport & Section Roster" or "Screen 1" in screen:
 # SCREEN 2: 36-HOUR VIRTUAL TAILGATE
 # ==============================================================================
 elif screen == "🎪 36h Virtual Tailgate & Meetups" or "Screen 2" in screen:
-    st.header(f"🎪 The 36-Hour Virtual Tailgate ({st.session_state.sport})")
-    st.caption(f"Unlocks 36 hours before game-time. Section strategy, chant coordination, and community meetups for {st.session_state.sport}.")
 
-    st.info(f"⏳ **COUNTDOWN TO {start_term.upper()}:** 14 Hours, 22 Minutes Remaining | **Section Status:** Strategy Huddle Active")
+    _tg_sport = st.session_state.get("sport", "Basketball")
+    _tg_is_bb = ("basket" in _tg_sport.lower())
+    _tg_team = active_team_focus
+    _tg = _get_tailgate_theme(_tg_team, _tg_sport)
 
-    tab_strat, tab_meet = st.tabs(["🗣️ Tactical Chant Huddle", "📍 Meetup Commons & Gameday Logistics"])
+    st.header(f"🎪 The 36-Hour Virtual Tailgate ({_tg_sport} — {role_tag})")
+    st.caption(f"Unlocks 36 hours before game-time. Section culture, pre-game campus rally, rivalry war room, and chant huddle.")
 
-    with tab_strat:
-        st.subheader(f"Defensive Chant Voting & Coordination ({st.session_state.sport})")
-        st.write(f"Fans submit chant ideas for **{st.session_state.sport}** and synthesize the top 3 coordinated section chants:")
+    # ------------------------------------------------------------------
+    # HERO MARQUEE: TAILGATE CAMPUS & NEON COUNTDOWN CLOCK
+    # ------------------------------------------------------------------
+    _hero_tg_html = f"""
+    <div style="background: linear-gradient(135deg, #101522 0%, #080c14 100%); border: 2px solid {_tg['accent']}; border-radius: 18px; padding: 20px 24px; margin-bottom: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 25px {_tg['accent']}44;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 10px; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+            <span style="background: {_tg['accent']}25; color: {_tg['accent']}; border: 1.5px solid {_tg['accent']}; padding: 3px 12px; border-radius: 9999px; font-size: 8pt; font-weight: 800; text-transform: uppercase;">
+                {_tg['icon']} {_tg['lot_name'].upper()}
+            </span>
+            <span style="color: #42be65; font-size: 8pt; font-weight: 800;">● LIVE PRE-GAME COMMONS ACTIVE</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div>
+                <h2 style="color: #ffffff; margin: 0 0 4px 0; font-size: 17pt; font-weight: 800;">{_tg['tent_unit']}</h2>
+                <p style="color: #dcdcdc; font-size: 9pt; margin: 0;"><b>Section Tradition:</b> {_tg['tradition']}</p>
+            </div>
+            <div style="background: rgba(11,14,20,0.85); border: 1px solid #1f2737; border-radius: 12px; padding: 10px 16px; text-align: right;">
+                <span style="color: #f1c21b; font-size: 12pt; font-weight: 800; font-family: monospace;">⏳ 14H : 22M : 08S</span><br/>
+                <span style="color: #8d8d8d; font-size: 7.5pt; text-transform: uppercase;">Until Doors Open &bull; 148 Fans Checked In</span>
+            </div>
+        </div>
+    </div>
+    """
+    st.markdown("\n".join(l.lstrip() for l in _hero_tg_html.splitlines() if l.strip()), unsafe_allow_html=True)
 
-        if is_basketball:
-            chant_proposals = [
-                "Wave thundersticks left to right on his second dribble",
-                "Scream OFF THE RIM right when his elbow bends",
-                "Everyone yell BRING THE NOISE on three",
-                "Dead silent when he spins ball, deafening when he shoots"
-            ]
-        else:
-            chant_proposals = [
-                "Sustained 111 dB roar on 0:03 snap",
-                "Rhythmic low-end bleacher stomps during timeout delay",
-                "Ice the kicker! Make him wait in the cold!",
-                "Pre-snap acoustic crescendo breaking QB cadence"
-            ]
+    # ------------------------------------------------------------------
+    # 3 HIGH-IMPACT VIRTUAL TAILGATE HUBS (INTERACTIVE SELECTION)
+    # ------------------------------------------------------------------
+    s2_zone = st.radio(
+        "Tailgate Hub Selector",
+        ["⛺ 1. The Interactive Tailgate Campus & Stalls", "⚔️ 2. The 36h Rivalry War Room ('Tale of the Tape')", "🗣️ 3. Watsonx Granite Tactical Chant Synthesizer"],
+        horizontal=True,
+        label_visibility="collapsed"
+    )
 
-        if st.button("🤖 Synthesize Top 3 Section Chants"):
-            with st.spinner("Synthesizing this week's top 3 section chants..."):
-                st.session_state[f"chants_{st.session_state.sport}"] = summarize_tailgate_chants_live(st.session_state.sport, chant_proposals)
-                st.session_state.chant_action_taken = True
-            st.success(f"Official {st.session_state.sport} section chant strategy locked in!")
+    # ==============================================================================
+    # ZONE 1: THE INTERACTIVE TAILGATE CAMPUS & STALLS
+    # ==============================================================================
+    if "1. The Interactive Tailgate Campus" in s2_zone:
+        st.subheader(f"🏟️ Interactive Arena Campus & Meetup Stalls ({_tg_team})")
+        st.caption("Explore active campus zones, pitch your virtual section tent, claim pre-game sponsor BBQ vouchers, and stage entrance audio.")
 
-        sport_chants = st.session_state.get(f"chants_{st.session_state.sport}")
-        if not sport_chants:
-            if is_basketball:
-                sport_chants = [
-                    "1. MISS IT! OFF THE RIM! - Synchronized waving on shooter knee-bend",
-                    "2. BRING THE NOISE! - Piercing high-frequency whistle chant",
-                    "3. AIR BALL! AIR BALL! - Coordinated psychological breakdown"
-                ]
-            else:
-                sport_chants = [
-                    "1. BLOCK THAT KICK! - Max 111 dB acoustic wall at the 0:03 snap",
-                    "2. ICE THE KICKER! - Heavy low-frequency bleacher stomps during timeout delay",
-                    "3. FALSE START! GET LOUD! - Pre-snap crescendo to drown out quarterback cadence"
-                ]
+        # SVG Interactive Campus Map
+        _campus_svg = f"""
+        <svg width="100%" height="160" viewBox="0 0 600 160" style="background: #090c13; border: 1px solid #1f2737; border-radius: 14px; overflow: hidden;">
+            <!-- Stadium Oval in Center -->
+            <ellipse cx="300" cy="80" rx="110" ry="55" fill="#121622" stroke="{_tg['accent']}" stroke-width="2.5" stroke-dasharray="4 2" />
+            <text x="300" y="78" fill="#ffffff" font-size="11" font-weight="800" text-anchor="middle">{_tg_team.upper()}</text>
+            <text x="300" y="94" fill="#8d8d8d" font-size="8" text-anchor="middle">ARENA BOWL (GATES OPEN 5:30 PM)</text>
+            
+            <!-- Zone 1: Tent City Beacon (Left) -->
+            <circle cx="110" cy="80" r="32" fill="rgba(0,48,135,0.25)" stroke="{_tg['accent']}" stroke-width="1.5" />
+            <circle cx="110" cy="80" r="6" fill="#f1c21b" class="astryx-shockwave-ring" />
+            <text x="110" y="58" fill="#f1c21b" font-size="8.5" font-weight="800" text-anchor="middle">⛺ TENT COMMONS</text>
+            <text x="110" y="122" fill="#dcdcdc" font-size="7.5" text-anchor="middle">{_tg['tent_unit'][:18]}</text>
 
-        st.markdown(f"### 📢 Official Section Chants for {st.session_state.sport}:")
-        for chant in sport_chants:
-            st.markdown(f"- **{chant}**")
+            <!-- Zone 2: Smokehouse Pit Beacon (Right) -->
+            <circle cx="490" cy="80" r="32" fill="rgba(255,102,0,0.2)" stroke="#ff6600" stroke-width="1.5" />
+            <circle cx="490" cy="80" r="6" fill="#ff6600" class="astryx-shockwave-ring" />
+            <text x="490" y="58" fill="#ff6600" font-size="8.5" font-weight="800" text-anchor="middle">🥩 SMOKEHOUSE PIT</text>
+            <text x="490" y="122" fill="#dcdcdc" font-size="7.5" text-anchor="middle">Whataburger® & Pit BBQ</text>
 
-    with tab_meet:
-        st.subheader(f"Community Meetups & Gameday Logistics ({st.session_state.sport})")
-        st.caption("RSVP for official section meetups and tailgates to earn Community Consistency streaks toward future NFT trophies.")
-        user_is_logged = st.session_state.get("is_logged_in", False)
-        if not user_is_logged:
-            # P2-FE: blurred preview with clear sign-up CTA instead of flat lock message
+            <!-- Zone 3: Rally Soundstage (Top) -->
+            <circle cx="300" cy="20" r="5" fill="#42be65" />
+            <text x="300" y="14" fill="#42be65" font-size="7.5" font-weight="800" text-anchor="middle">📢 RALLY SOUNDSTAGE & SHUTTLES</text>
+        </svg>
+        """
+        st.markdown("\n".join(l.lstrip() for l in _campus_svg.splitlines() if l.strip()), unsafe_allow_html=True)
+
+        col_st1, col_st2 = st.columns(2)
+        with col_st1:
             st.markdown(f"""
-            <div style="background-color:#0c111a; border:1px solid #2a3345; border-radius:10px; padding:18px 22px; margin-bottom:14px; position:relative; overflow:hidden;">
-                <div style="filter:blur(2px); pointer-events:none; opacity:0.4;">
-                    <p style="color:#f4f4f4; font-weight:bold; margin:0 0 6px 0;">📍 {'Arena North Plaza Rally' if is_basketball else 'Lot B Tailgate & Brisket BBQ'}</p>
-                    <p style="color:#a8a8a8; font-size:9.5pt; margin:0;">Arrive 2 hours early · Section {'114' if is_basketball else '115'} priority wristbands · NFT community streak</p>
-                </div>
-                <div style="position:absolute; top:0; left:0; right:0; bottom:0; background:linear-gradient(transparent 20%,#0c111a 80%); display:flex; align-items:flex-end; padding:14px;">
-                    <div>
-                        <span style="color:#f1c21b; font-size:10pt; font-weight:bold;">🔒 Members-Only Meetup Access</span><br>
-                        <span style="color:#a8a8a8; font-size:9pt;">Sign up on Screen 1 to RSVP, earn Community Consistency streaks, and unlock NFT trophies.</span>
-                    </div>
+            <div style="background: #0f131d; border: 1.5px solid {_tg['accent']}; border-radius: 14px; padding: 16px; margin-top: 10px;">
+                <span style="background: {_tg['accent']}25; color: {_tg['accent']}; padding: 2px 8px; border-radius: 4px; font-size: 7.5pt; font-weight: 800;">⛺ STALL #1 &bull; TENT COMMONS</span>
+                <h4 style="color: #ffffff; margin: 6px 0 4px 0;">{_tg['tent_unit']}</h4>
+                <p style="color: #dcdcdc; font-size: 8.5pt; margin: 0 0 10px 0;">Section 114/115 fan campout. Line monitors on duty. Early wristband access.</p>
+                <div style="background: #080c14; padding: 8px 12px; border-radius: 8px; border: 1px solid #1f2737; font-size: 8pt; color: #a8a8a8;">
+                    📍 <b>Host:</b> Marcus Vance & Elena Rostova &bull; 🎟️ <b>Perk:</b> 1.25x Multiplier Entry
                 </div>
             </div>
             """, unsafe_allow_html=True)
-            if st.button("🚀 Sign Up Free on Screen 1 →", key="btn_rsvp_signup_cta", use_container_width=False):
-                st.session_state.active_screen = "🏠 Screen 1: Fan Passport & Roster"
+            _tent_pitched = st.session_state.get("tailgate_tent_pitched", False)
+            if not _tent_pitched:
+                if st.button(f"⛺ Pitch Section Tent & RSVP ({_tg_team})", key="btn_pitch_tent", use_container_width=True):
+                    st.session_state.tailgate_tent_pitched = True
+                    st.session_state.tailgates_attended = st.session_state.get("tailgates_attended", 0) + 1
+                    _sync_and_persist_user_state()
+                    st.success("🎉 Tent pitched! Your section stall reservation is recorded on your Fan Passport.")
+                    st.rerun()
+            else:
+                _tent_h = st.session_state.get("member_hash", "0xBCN-TENT")[:8].upper()
+                st.success(f"✅ **Tent Stall Confirmed!** Passport Hash: `{_tent_h}` &bull; Attendance Logged.")
+                if st.button("Cancel Tent Reservation", key="btn_cancel_tent"):
+                    st.session_state.tailgate_tent_pitched = False
+                    _sync_and_persist_user_state()
+                    st.rerun()
+
+        with col_st2:
+            st.markdown(f"""
+            <div style="background: #0f131d; border: 1.5px solid #ff6600; border-radius: 14px; padding: 16px; margin-top: 10px;">
+                <span style="background: rgba(255,102,0,0.2); color: #ff6600; padding: 2px 8px; border-radius: 4px; font-size: 7.5pt; font-weight: 800;">🥩 STALL #2 &bull; SMOKEHOUSE & GRILL</span>
+                <h4 style="color: #ffffff; margin: 6px 0 4px 0;">{_tg['grill_special']}</h4>
+                <p style="color: #dcdcdc; font-size: 8.5pt; margin: 0 0 10px 0;">Official Tailgate Partner Station. Smoked hot off the pit 3 hours before doors open.</p>
+                <div style="background: #080c14; padding: 8px 12px; border-radius: 8px; border: 1px solid #1f2737; font-size: 8pt; color: #a8a8a8;">
+                    🍔 <b>Partner:</b> Whataburger® &bull; 🎟️ <b>Perk:</b> Free Pre-Game Drink & Biscuit Voucher
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+            _claimed_food = st.session_state.get("tailgate_food_claimed", False)
+            if not _claimed_food:
+                if st.button("🍔 Claim Pre-Game Tailgate BBQ Voucher", key="btn_claim_tailgate_food", use_container_width=True):
+                    st.session_state.tailgate_food_claimed = True
+                    _sync_and_persist_user_state()
+                    st.balloons()
+                    st.success("🎉 Whataburger® Pre-Game Voucher added to your Living Trophy Case!")
+                    st.rerun()
+            else:
+                st.success("✅ **BBQ Voucher Claimed!** Redeemable at Lot B Concourse Gates.")
+
+    # ==============================================================================
+    # ZONE 2: THE 36-HOUR RIVALRY WAR ROOM ('TALE OF THE TAPE')
+    # ==============================================================================
+    elif "2. The 36h Rivalry War Room" in s2_zone:
+        st.subheader(f"⚔️ 36-Hour Rivalry War Room: Tale of the Tape ({_tg_team})")
+        st.caption("Head-to-head fan section confrontation metrics and collective game prediction lock-in.")
+
+        # Head-to-Head Confrontation Cards
+        col_w1, col_w2 = st.columns(2)
+        with col_w1:
+            st.markdown(f"""
+            <div style="background: linear-gradient(135deg, #101522 0%, #0c1018 100%); border: 2px solid {_tg['accent']}; border-radius: 14px; padding: 18px;">
+                <span style="background: {_tg['accent']}; color: white; padding: 2px 8px; border-radius: 4px; font-size: 7.5pt; font-weight: 800;">HOME ADVANTAGE</span>
+                <h3 style="color: #ffffff; margin: 6px 0 2px 0;">🛡️ SECTION 114 / 115</h3>
+                <p style="color: #f1c21b; font-size: 9pt; font-weight: bold; margin: 0 0 10px 0;">Home Arena Win Streak: 23-1</p>
+                <div style="background: #080c14; padding: 10px; border-radius: 8px; border: 1px solid #1f2737; font-size: 8.5pt;">
+                    🔊 <b>Peak Verified Noise Wall:</b> 108.5 dB<br/>
+                    ⚡ <b>Clutch Stops Forced:</b> 23 Verified<br/>
+                    👥 <b>Section Energy Rating:</b> 96% In Sync
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+        with col_w2:
+            st.markdown(f"""
+            <div style="background: linear-gradient(135deg, #181112 0%, #0d0909 100%); border: 2px solid #da1e28; border-radius: 14px; padding: 18px;">
+                <span style="background: #da1e28; color: white; padding: 2px 8px; border-radius: 4px; font-size: 7.5pt; font-weight: 800;">VISITING OPPONENT</span>
+                <h3 style="color: #ffffff; margin: 6px 0 2px 0;">🎯 {_tg['rival_name'].upper()}</h3>
+                <p style="color: #fa4d56; font-size: 9pt; font-weight: bold; margin: 0 0 10px 0;">Road Win Rate in Our Arena: 12%</p>
+                <div style="background: #080c14; padding: 10px; border-radius: 8px; border: 1px solid #1f2737; font-size: 8.5pt;">
+                    🔊 <b>Opponent Traveling Noise:</b> 88.2 dB Avg<br/>
+                    📉 <b>Road Conversion Rate:</b> 41.2% (Rattled)<br/>
+                    ❌ <b>Visiting Section Synergy:</b> 52% Disjointed
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+        st.markdown("### 🔒 Collective Section Prediction Lock-In")
+        st.write("Pool your pre-game predictions with Section 114 to earn the **Certified Section Prognosticator** passport stamp:")
+
+        col_p1, col_p2, col_p3 = st.columns(3)
+        with col_p1:
+            p_to = st.selectbox("Force Turnover in 1st 5 Min?", ["Yes (Defense Rattles 'Em)", "No (Pre-Play Rhythm)"], key="sel_p_to")
+        with col_p2:
+            p_roar = st.selectbox("Break 105 dB before Halftime?", ["Yes (Bleachers Rocking)", "No (Saving for Clutch)"], key="sel_p_roar")
+        with col_p3:
+            p_margin = st.slider("Projected Final Margin (Pts)", min_value=-20, max_value=30, value=7, key="sld_p_margin")
+
+        _pred_locked = st.session_state.get("predictions_locked", False)
+        if not _pred_locked:
+            if st.button("🔒 Lock In Section Predictions & Claim Stamp", key="btn_lock_predictions", type="primary", use_container_width=True):
+                st.session_state.predictions_locked = True
+                _sync_and_persist_user_state()
+                st.balloons()
+                sign_str = '+' if p_margin > 0 else ''
+                st.success(f"🎉 Predictions locked! Margin: {sign_str}{p_margin} Pts. 'Certified Section Prognosticator' badge awarded!")
                 st.rerun()
-        m1, m2 = st.columns(2)
-        if is_basketball:
-            with m1:
-                st.markdown(f"""
-                **🏀 Student Section Arena Plaza Rally (Hosted by Marcus & Elena)**
-                * **Location:** Arena North Plaza (Student Gate)
-                * **Arrival Time:** 2 Hours before {start_term}
-                * **Perks:** Thunderstick pickup, student banner painting, Row 1-5 wristbands
-                * **Section Hosts:** Marcus Vance (Section Director) & Elena Rostova (Prop Captain)
-                """)
-                ev_plaza = "plaza_rally_bb"
-                rsvpd_plaza = (ev_plaza in st.session_state.get("meetup_rsvps_bb", [])) if user_is_logged else False
-                if not user_is_logged:
-                    st.caption("🔑 Log in on Screen 1 to claim priority wristband & RSVP.")
-                elif not rsvpd_plaza:
-                    if st.button("🎟️ RSVP for Plaza Rally", key="btn_rsvp_plaza", use_container_width=True):
-                        st.session_state.meetup_rsvps_bb.append(ev_plaza)
-                        st.session_state.tailgates_attended_bb = len(st.session_state.meetup_rsvps_bb)
-                        st.session_state.tailgates_attended = st.session_state.tailgates_attended_bb
-                        st.session_state.meetup_rsvps = list(st.session_state.meetup_rsvps_bb)
-                        st.session_state.chant_action_taken_bb = True
-                        st.session_state.chant_action_taken = True
-                        _sync_and_persist_user_state()
-                        _ensure_member_in_persona_db()
-                        st.rerun()
-                else:
-                    st.success(f"🎟️ **RSVP CONFIRMED FOR {st.session_state.member_name.upper()} ({st.session_state.member_handle})!**\n\n📍 **Pass Assigned:** `Row 1-5 Wristband Priority` | **Event:** Arena Plaza Rally\n🔑 **Passport Hash:** `0xBCN-{st.session_state.member_hash[2:8].upper()}` &bull; Consistency: **{st.session_state.tailgates_attended_bb} Basketball Event(s) Logged**")
-                    if st.button("Cancel Plaza Rally RSVP", key="btn_cancel_plaza", use_container_width=True):
-                        if ev_plaza in st.session_state.meetup_rsvps_bb:
-                            st.session_state.meetup_rsvps_bb.remove(ev_plaza)
-                        st.session_state.tailgates_attended_bb = len(st.session_state.meetup_rsvps_bb)
-                        st.session_state.tailgates_attended = st.session_state.tailgates_attended_bb
-                        st.session_state.meetup_rsvps = list(st.session_state.meetup_rsvps_bb)
-                        _sync_and_persist_user_state()
-                        _ensure_member_in_persona_db()
-                        st.rerun()
-
-            with m2:
-                st.markdown(f"""
-                **🍕 Campus Walk Pregame Crew (Hosted by Devon)**
-                * **Meeting Spot:** Student Union Commons
-                * **Shuttles Depart:** Every 10 minutes starting 90 minutes before {start_term}
-                * **Perks:** Free pizza slice, 1.25x Early Arrival check-in coordination
-                * **Section Host:** Devon Miller (Vocal Tactician)
-                """)
-                ev_campus = "campus_walk_bb"
-                rsvpd_campus = (ev_campus in st.session_state.get("meetup_rsvps_bb", [])) if user_is_logged else False
-                if not user_is_logged:
-                    st.caption("🔑 Log in on Screen 1 to claim campus shuttle pass & RSVP.")
-                elif not rsvpd_campus:
-                    if st.button("🎟️ RSVP for Campus Walk", key="btn_rsvp_campus", use_container_width=True):
-                        st.session_state.meetup_rsvps_bb.append(ev_campus)
-                        st.session_state.tailgates_attended_bb = len(st.session_state.meetup_rsvps_bb)
-                        st.session_state.tailgates_attended = st.session_state.tailgates_attended_bb
-                        st.session_state.meetup_rsvps = list(st.session_state.meetup_rsvps_bb)
-                        _sync_and_persist_user_state()
-                        _ensure_member_in_persona_db()
-                        st.rerun()
-                else:
-                    st.success(f"🎟️ **RSVP CONFIRMED FOR {st.session_state.member_name.upper()} ({st.session_state.member_handle})!**\n\n🚌 **Shuttle Pass:** `Union Commons Express #2` | **Event:** Campus Walk Crew\n🔑 **Passport Hash:** `0xBCN-{st.session_state.member_hash[2:8].upper()}` &bull; Consistency: **{st.session_state.tailgates_attended_bb} Basketball Event(s) Logged**")
-                    if st.button("Cancel Campus Walk RSVP", key="btn_cancel_campus", use_container_width=True):
-                        if ev_campus in st.session_state.meetup_rsvps_bb:
-                            st.session_state.meetup_rsvps_bb.remove(ev_campus)
-                        st.session_state.tailgates_attended_bb = len(st.session_state.meetup_rsvps_bb)
-                        st.session_state.tailgates_attended = st.session_state.tailgates_attended_bb
-                        st.session_state.meetup_rsvps = list(st.session_state.meetup_rsvps_bb)
-                        _sync_and_persist_user_state()
-                        _ensure_member_in_persona_db()
-                        st.rerun()
         else:
-            with m1:
-                st.markdown(f"""
-                **🏈 Lot B Mega-Tailgate Grill (Hosted by Carlos & Sarah)**
-                * **Location:** Lot B, Row 4 (Under the Giant Blue Canopy)
-                * **Arrival Time:** 4 Hours before {start_term}
-                * **Menu & Perks:** 14-Hour Smoked Brisket, Sausage, Local Drinks, First-time members eat free!
-                * **Section Hosts:** Carlos Mendez (Tailgate Host) & Sarah Jenkins (10-Yr Veteran)
-                """)
-                ev_lotb = "lotb_tailgate_fb"
-                rsvpd_lotb = (ev_lotb in st.session_state.get("meetup_rsvps_fb", [])) if user_is_logged else False
-                if not user_is_logged:
-                    st.caption("🔑 Log in on Screen 1 to claim Lot B VIP voucher & RSVP.")
-                elif not rsvpd_lotb:
-                    if st.button("🎟️ RSVP for Lot B Tailgate", key="btn_rsvp_lotb", use_container_width=True):
-                        st.session_state.meetup_rsvps_fb.append(ev_lotb)
-                        st.session_state.tailgates_attended_fb = len(st.session_state.meetup_rsvps_fb)
-                        st.session_state.tailgates_attended = st.session_state.tailgates_attended_fb
-                        st.session_state.meetup_rsvps = list(st.session_state.meetup_rsvps_fb)
-                        st.session_state.chant_action_taken_fb = True
-                        st.session_state.chant_action_taken = True
-                        _sync_and_persist_user_state()
-                        _ensure_member_in_persona_db()
-                        st.rerun()
-                else:
-                    st.success(f"🎟️ **RSVP CONFIRMED FOR {st.session_state.member_name.upper()} ({st.session_state.member_handle})!**\n\n🥩 **Pass Assigned:** `Lot B VIP Smoked Brisket & Drink Voucher`\n🔑 **Passport Hash:** `0xBCN-{st.session_state.member_hash[2:8].upper()}` &bull; Consistency: **{st.session_state.tailgates_attended_fb} Football Event(s) Logged**")
-                    if st.button("Cancel Lot B RSVP", key="btn_cancel_lotb", use_container_width=True):
-                        if ev_lotb in st.session_state.meetup_rsvps_fb:
-                            st.session_state.meetup_rsvps_fb.remove(ev_lotb)
-                        st.session_state.tailgates_attended_fb = len(st.session_state.meetup_rsvps_fb)
-                        st.session_state.tailgates_attended = st.session_state.tailgates_attended_fb
-                        st.session_state.meetup_rsvps = list(st.session_state.meetup_rsvps_fb)
-                        _sync_and_persist_user_state()
-                        _ensure_member_in_persona_db()
-                        st.rerun()
+            sign_str = '+' if p_margin > 0 else ''
+            to_sub = p_to.split(' ')[0]
+            roar_sub = p_roar.split(' ')[0]
+            st.success(f"🏆 **Section Predictions Locked!** Projected Margin: `{sign_str}{p_margin} Pts` &bull; Turnover: `{to_sub}` &bull; 105 dB: `{roar_sub}`. Passport credential updated.")
 
-            with m2:
-                st.markdown(f"""
-                **🚌 Stadium North Express Shuttle (Hosted by Maya)**
-                * **Meeting Spot:** North Express Park & Ride (Bay 3)
-                * **Tech Sync:** Wearable fitness band calibration and app BLE pairing station
-                * **Perks:** Section 115 early check-in push for the 1.25x Multiplier!
-                * **Section Host:** Maya Patel (Biometric & Tech Superfan)
-                """)
-                ev_shuttle = "north_shuttle_fb"
-                rsvpd_shuttle = (ev_shuttle in st.session_state.get("meetup_rsvps_fb", [])) if user_is_logged else False
-                if not user_is_logged:
-                    st.caption("🔑 Log in on Screen 1 to claim North Express shuttle pass & RSVP.")
-                elif not rsvpd_shuttle:
-                    if st.button("🎟️ RSVP for North Express Shuttle", key="btn_rsvp_shuttle", use_container_width=True):
-                        st.session_state.meetup_rsvps_fb.append(ev_shuttle)
-                        st.session_state.tailgates_attended_fb = len(st.session_state.meetup_rsvps_fb)
-                        st.session_state.tailgates_attended = st.session_state.tailgates_attended_fb
-                        st.session_state.meetup_rsvps = list(st.session_state.meetup_rsvps_fb)
-                        _sync_and_persist_user_state()
-                        _ensure_member_in_persona_db()
-                        st.rerun()
-                else:
-                    st.success(f"🎟️ **RSVP CONFIRMED FOR {st.session_state.member_name.upper()} ({st.session_state.member_handle})!**\n\n🚌 **Boarding Pass:** `North Express Bay 3 Priority Shuttle`\n🔑 **Passport Hash:** `0xBCN-{st.session_state.member_hash[2:8].upper()}` &bull; Consistency: **{st.session_state.tailgates_attended_fb} Football Event(s) Logged**")
-                    if st.button("Cancel Shuttle RSVP", key="btn_cancel_shuttle", use_container_width=True):
-                        if ev_shuttle in st.session_state.meetup_rsvps_fb:
-                            st.session_state.meetup_rsvps_fb.remove(ev_shuttle)
-                        st.session_state.tailgates_attended_fb = len(st.session_state.meetup_rsvps_fb)
-                        st.session_state.tailgates_attended = st.session_state.tailgates_attended_fb
-                        st.session_state.meetup_rsvps = list(st.session_state.meetup_rsvps_fb)
-                        _sync_and_persist_user_state()
-                        _ensure_member_in_persona_db()
-                        st.rerun()
+    # ==============================================================================
+    # ZONE 3: WATSONX GRANITE TACTICAL CHANT SYNTHESIZER
+    # ==============================================================================
+    else:
+        st.subheader(f"🗣️ Watsonx Granite Defensive Chant Synthesizer ({_tg_sport})")
+        st.caption("AI-synthesized section distraction chants engineered to disrupt opposing offensive cadence.")
+
+        if st.button("🤖 Re-Synthesize Section Chants with Granite AI", key="btn_synth_chants"):
+            with st.spinner("Consulting Watsonx Granite Sports Engine..."):
+                st.session_state[f"chants_{_tg_sport}"] = summarize_tailgate_chants_live(_tg_sport, [
+                    "Scream OFF THE RIM right when his elbow bends",
+                    "Rhythmic bleacher stomps drowning out play-caller cadence",
+                    "Sustained 108 dB wall at 0:03 play clock",
+                    "Dead silent when opponent dribbles, deafening roar on release"
+                ])
+            st.success("Tactical defensive chants re-synthesized!")
+            st.rerun()
+
+        _chants = st.session_state.get(f"chants_{_tg_sport}")
+        if not _chants:
+            if _tg_is_bb:
+                _chants = [
+                    "1. MISS IT! OFF THE RIM! — Coordinated vocal spike exactly on shooter knee-bend (Target: 106.5 dB)",
+                    "2. BRING THE NOISE! — High-frequency acoustic whistle wall breaking communication",
+                    "3. AIR BALL! AIR BALL! — Sustained psychological rattle on subsequent possessions"
+                ]
+            else:
+                _chants = [
+                    "1. BLOCK THAT KICK! — Maximum 111 dB acoustic shockwave at the 0:03 snap",
+                    "2. ICE THE KICKER! — Heavy low-frequency bleacher stomps during timeout delay",
+                    "3. FALSE START! GET LOUD! — Pre-snap acoustic crescendo drowning quarterback cadence"
+                ]
+
+        for idx, ch in enumerate(_chants):
+            st.markdown(f"""
+            <div style="background: #0f131d; border-left: 4px solid {_tg['accent']}; border-radius: 8px; padding: 12px 16px; margin-bottom: 10px;">
+                <span style="color: #f1c21b; font-size: 8pt; font-weight: 800; text-transform: uppercase;">TACTICAL CHANT #{idx+1}</span>
+                <h4 style="color: #ffffff; margin: 4px 0;">{ch}</h4>
+                <div style="display: flex; gap: 8px; margin-top: 6px;">
+                    <span style="background: rgba(15,98,254,0.2); color: #5da8ff; padding: 2px 8px; border-radius: 4px; font-size: 7.5pt;">🔊 Acoustics: Peak Urgency</span>
+                    <span style="background: rgba(66,190,101,0.2); color: #42be65; padding: 2px 8px; border-radius: 4px; font-size: 7.5pt;">⚡ Impact: -37.3% Opponent Conversion</span>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
 
 # ==============================================================================
 # SCREEN 3: IN-ARENA GAME HUB & TRIGGER (CLEAN FAN-TO-FAN & ARMCHAIR COACH HUB)
