@@ -4194,7 +4194,7 @@ elif screen == "🎪 36h Virtual Tailgate & Meetups" or "Screen 2" in screen:
     )
 
     # ==============================================================================
-    # ZONE 1: THE INTERACTIVE TAILGATE CAMPUS & STALLS
+    # ZONE 1: GAMEDAY TAILGATE & MEETUP COMMONS
     # ==============================================================================
     if "1. Gameday Tailgate & Meetup Commons" in s2_zone or "Tailgate" in s2_zone:
         st.subheader(f"🎪 Official Gameday Tailgate & Pre-Game Meetups ({_tg_team})")
@@ -4255,7 +4255,7 @@ elif screen == "🎪 36h Virtual Tailgate & Meetups" or "Screen 2" in screen:
         st.markdown("\n".join(l.lstrip() for l in _tailgate_hero_svg.splitlines() if l.strip()), unsafe_allow_html=True)
 
         # ==============================================================================
-        # TWO INTERACTIVE VIP MEETUP WRISTBANDS & STATIONS
+        # TWO INTERACTIVE VIP MEETUP WRISTBANDS & STATIONS (CLEAN HTML RENDERING)
         # ==============================================================================
         st.markdown("### 🎟️ Official Gameday Meetup Stations & Wristbands")
         col_m1, col_m2 = st.columns(2)
@@ -4266,7 +4266,7 @@ elif screen == "🎪 36h Virtual Tailgate & Meetups" or "Screen 2" in screen:
             _lot_ev_id = "meetup_rally_main"
             _rsvpd_main = st.session_state.get(f"rsvpd_{_lot_ev_id}", False)
             
-            st.markdown(f"""
+            _card1_raw = f"""
             <div style="background: linear-gradient(135deg, #101522 0%, #0a0d14 100%); border: 2px solid {'#42be65' if _rsvpd_main else _tg['accent']}; border-radius: 14px; padding: 18px; margin-bottom: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.6);">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                     <span style="background: {'rgba(66,190,101,0.2)' if _rsvpd_main else 'rgba(15,98,254,0.2)'}; color: {'#42be65' if _rsvpd_main else '#78a9ff'}; padding: 3px 10px; border-radius: 9999px; font-size: 7.5pt; font-weight: 800; text-transform: uppercase;">
@@ -4276,13 +4276,13 @@ elif screen == "🎪 36h Virtual Tailgate & Meetups" or "Screen 2" in screen:
                 </div>
                 <h4 style="color: #ffffff; margin: 4px 0 6px 0; font-size: 12pt;">{_lot_title}</h4>
                 <p style="color: #dcdcdc; font-size: 8.5pt; margin: 0 0 10px 0;">Official pre-game gathering for Section 114/115. Thunderstick pickup, banner painting, and smoked food drop.</p>
-                
                 <div style="background: #07090e; border: 1px solid #1f2737; border-radius: 8px; padding: 10px; font-size: 8pt; color: #a8a8a8; margin-bottom: 12px;">
                     📍 <b>Location:</b> North Plaza Student Gate (Lot B) &bull; ⏰ <b>Arrival:</b> 2 Hours Prior<br/>
                     🍔 <b>Menu:</b> {_tg['grill_special']} &bull; ⚡ <b>Perk:</b> 1.25x Attendance Multiplier
                 </div>
             </div>
-            """, unsafe_allow_html=True)
+            """
+            st.markdown("\n".join(l.lstrip() for l in _card1_raw.splitlines() if l.strip()), unsafe_allow_html=True)
 
             if not _rsvpd_main:
                 if st.button("🎟️ Claim VIP Tailgate Wristband", key="btn_claim_main_tailgate", type="primary", use_container_width=True):
@@ -4306,7 +4306,7 @@ elif screen == "🎪 36h Virtual Tailgate & Meetups" or "Screen 2" in screen:
             _shut_ev_id = "meetup_shuttle_march"
             _rsvpd_shut = st.session_state.get(f"rsvpd_{_shut_ev_id}", False)
             
-            st.markdown(f"""
+            _card2_raw = f"""
             <div style="background: linear-gradient(135deg, #101522 0%, #0a0d14 100%); border: 2px solid {'#42be65' if _rsvpd_shut else '#ff6600'}; border-radius: 14px; padding: 18px; margin-bottom: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.6);">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                     <span style="background: {'rgba(66,190,101,0.2)' if _rsvpd_shut else 'rgba(255,102,0,0.2)'}; color: {'#42be65' if _rsvpd_shut else '#ff8833'}; padding: 3px 10px; border-radius: 9999px; font-size: 7.5pt; font-weight: 800; text-transform: uppercase;">
@@ -4316,13 +4316,13 @@ elif screen == "🎪 36h Virtual Tailgate & Meetups" or "Screen 2" in screen:
                 </div>
                 <h4 style="color: #ffffff; margin: 4px 0 6px 0; font-size: 12pt;">{_shut_title}</h4>
                 <p style="color: #dcdcdc; font-size: 8.5pt; margin: 0 0 10px 0;">Express transit directly to Section 114 turnstiles. Wearable BLE pairing station and coordinated march.</p>
-                
                 <div style="background: #07090e; border: 1px solid #1f2737; border-radius: 8px; padding: 10px; font-size: 8pt; color: #a8a8a8; margin-bottom: 12px;">
                     📍 <b>Pickup:</b> North Express Bay 3 &bull; ⏰ <b>Departures:</b> Starting 90 Min Prior<br/>
                     📱 <b>Sync:</b> Wearable BLE App Pairing &bull; 🚶 <b>March:</b> Gate 3 Concourse Entrance
                 </div>
             </div>
-            """, unsafe_allow_html=True)
+            """
+            st.markdown("\n".join(l.lstrip() for l in _card2_raw.splitlines() if l.strip()), unsafe_allow_html=True)
 
             if not _rsvpd_shut:
                 if st.button("🚌 Claim Shuttle Boarding Pass", key="btn_claim_shuttle_pass", use_container_width=True):
@@ -4338,15 +4338,17 @@ elif screen == "🎪 36h Virtual Tailgate & Meetups" or "Screen 2" in screen:
                     _sync_and_persist_user_state()
                     st.rerun()
 
-
+    # ==============================================================================
+    # ZONE 2: THE 36-HOUR RIVALRY WAR ROOM ('TALE OF THE TAPE' & NFT PROGNOSTICATOR)
+    # ==============================================================================
     elif "2. The 36h Rivalry War Room" in s2_zone:
         st.subheader(f"⚔️ 36-Hour Rivalry War Room: Tale of the Tape ({_tg_team})")
-        st.caption("Head-to-head fan section confrontation metrics and collective game prediction lock-in.")
+        st.caption("Head-to-head fan confrontation metrics, collective section predictions, and dynamic Oracle NFT minting.")
 
         # Head-to-Head Confrontation Cards
         col_w1, col_w2 = st.columns(2)
         with col_w1:
-            st.markdown(f"""
+            _w1_raw = f"""
             <div style="background: linear-gradient(135deg, #101522 0%, #0c1018 100%); border: 2px solid {_tg['accent']}; border-radius: 14px; padding: 18px;">
                 <span style="background: {_tg['accent']}; color: white; padding: 2px 8px; border-radius: 4px; font-size: 7.5pt; font-weight: 800;">HOME ADVANTAGE</span>
                 <h3 style="color: #ffffff; margin: 6px 0 2px 0;">🛡️ SECTION 114 / 115</h3>
@@ -4357,9 +4359,10 @@ elif screen == "🎪 36h Virtual Tailgate & Meetups" or "Screen 2" in screen:
                     👥 <b>Section Energy Rating:</b> 96% In Sync
                 </div>
             </div>
-            """, unsafe_allow_html=True)
+            """
+            st.markdown("\n".join(l.lstrip() for l in _w1_raw.splitlines() if l.strip()), unsafe_allow_html=True)
         with col_w2:
-            st.markdown(f"""
+            _w2_raw = f"""
             <div style="background: linear-gradient(135deg, #181112 0%, #0d0909 100%); border: 2px solid #da1e28; border-radius: 14px; padding: 18px;">
                 <span style="background: #da1e28; color: white; padding: 2px 8px; border-radius: 4px; font-size: 7.5pt; font-weight: 800;">VISITING OPPONENT</span>
                 <h3 style="color: #ffffff; margin: 6px 0 2px 0;">🎯 {_tg['rival_name'].upper()}</h3>
@@ -4370,10 +4373,44 @@ elif screen == "🎪 36h Virtual Tailgate & Meetups" or "Screen 2" in screen:
                     ❌ <b>Visiting Section Synergy:</b> 52% Disjointed
                 </div>
             </div>
-            """, unsafe_allow_html=True)
+            """
+            st.markdown("\n".join(l.lstrip() for l in _w2_raw.splitlines() if l.strip()), unsafe_allow_html=True)
 
-        st.markdown("### 🔒 Collective Section Prediction Lock-In")
-        st.write("Pool your pre-game predictions with Section 114 to earn the **Certified Section Prognosticator** passport stamp:")
+        # ------------------------------------------------------------------
+        # LIVE SECTION 114 CROWD CONSENSUS INTELLIGENCE (DATA UTILIZATION)
+        # ------------------------------------------------------------------
+        st.markdown("### 📊 Live Section 114 Crowd Consensus (194 Fan Predictions In)")
+        _consensus_raw = f"""
+        <div style="background: #0e121a; border: 1.5px solid #283447; border-radius: 14px; padding: 16px 20px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap;">
+                <span style="color: #5da8ff; font-size: 8.5pt; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase;">
+                    ⚡ CROWD WISDOM METRICS &bull; SECTION 114 CONFIDENCE
+                </span>
+                <span style="color: #f1c21b; font-size: 8.5pt; font-weight: 800;">Consensus Spread: +8.4 Points</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;">
+                <div style="background: #141924; padding: 10px 14px; border-radius: 8px; border-left: 3px solid #42be65;">
+                    <span style="color: #8d8d8d; font-size: 7.5pt; text-transform: uppercase;">Q1 Turnover Forced</span>
+                    <h4 style="color: #42be65; margin: 2px 0;">89% Predict YES</h4>
+                    <span style="color: #dcdcdc; font-size: 7.5pt;">172 of 194 Fans in agreement</span>
+                </div>
+                <div style="background: #141924; padding: 10px 14px; border-radius: 8px; border-left: 3px solid #ff6600;">
+                    <span style="color: #8d8d8d; font-size: 7.5pt; text-transform: uppercase;">Roar Threshold (105+ dB)</span>
+                    <h4 style="color: #ff6600; margin: 2px 0;">94% Before Halftime</h4>
+                    <span style="color: #dcdcdc; font-size: 7.5pt;">Whataburger Perk Expected</span>
+                </div>
+                <div style="background: #141924; padding: 10px 14px; border-radius: 8px; border-left: 3px solid #0f62fe;">
+                    <span style="color: #8d8d8d; font-size: 7.5pt; text-transform: uppercase;">Oracle Reward Status</span>
+                    <h4 style="color: #5da8ff; margin: 2px 0;">2x NFT Multiplier</h4>
+                    <span style="color: #dcdcdc; font-size: 7.5pt;">Unlocks on Screen 4 if hit</span>
+                </div>
+            </div>
+        </div>
+        """
+        st.markdown("\n".join(l.lstrip() for l in _consensus_raw.splitlines() if l.strip()), unsafe_allow_html=True)
+
+        st.markdown("### 🔮 Lock In Your Section Prediction & Mint Gameday Oracle NFT")
+        st.caption("Submit your tactical prediction to earn the verifiable Section Oracle NFT in your Living Trophy Case.")
 
         col_p1, col_p2, col_p3 = st.columns(3)
         with col_p1:
@@ -4385,18 +4422,62 @@ elif screen == "🎪 36h Virtual Tailgate & Meetups" or "Screen 2" in screen:
 
         _pred_locked = st.session_state.get("predictions_locked", False)
         if not _pred_locked:
-            if st.button("🔒 Lock In Section Predictions & Claim Stamp", key="btn_lock_predictions", type="primary", use_container_width=True):
+            if st.button("🔮 Lock Predictions & Mint Gameday Oracle NFT", key="btn_lock_predictions", type="primary", use_container_width=True):
                 st.session_state.predictions_locked = True
+                
+                # Mint and record the authentic Oracle NFT directly to Living Trophy Case
+                _m_hash = st.session_state.member_hash[2:8].upper()
+                oracle_nft = {
+                    "title": f"🏆 Section 114 Gameday Oracle NFT ({_tg_team})",
+                    "brand": "Section 114 Intelligence DAO",
+                    "brand_color": "#f1c21b",
+                    "icon": "🔮",
+                    "retail_value": 25.00,
+                    "discount_code": f"ORACLE-{_m_hash}",
+                    "claim_hash": f"0xORACLE-{_m_hash}-2026",
+                    "desc": f"Certified pre-game prognosticator NFT. Locked predictions: Q1 Turnover ({p_to.split(' ')[0]}), 105 dB ({p_roar.split(' ')[0]}), Margin ({'+' if p_margin>0 else ''}{p_margin} Pts). Unlocks 2x Fan Multiplier in Living Trophy Case!",
+                    "status": "MINTED & VERIFIED",
+                    "is_nft": True
+                }
+                if "claimed_vouchers" not in st.session_state:
+                    st.session_state.claimed_vouchers = []
+                st.session_state.claimed_vouchers.append(oracle_nft)
                 _sync_and_persist_user_state()
                 st.balloons()
-                sign_str = '+' if p_margin > 0 else ''
-                st.success(f"🎉 Predictions locked! Margin: {sign_str}{p_margin} Pts. 'Certified Section Prognosticator' badge awarded!")
+                st.success("🎉 Predictions locked & Gameday Oracle NFT minted directly into your Living Trophy Case!")
                 st.rerun()
         else:
             sign_str = '+' if p_margin > 0 else ''
             to_sub = p_to.split(' ')[0]
             roar_sub = p_roar.split(' ')[0]
-            st.success(f"🏆 **Section Predictions Locked!** Projected Margin: `{sign_str}{p_margin} Pts` &bull; Turnover: `{to_sub}` &bull; 105 dB: `{roar_sub}`. Passport credential updated.")
+            _m_hash = st.session_state.member_hash[2:8].upper()
+            
+            # Holographic NFT Showcase Card
+            _nft_card_raw = f"""
+            <div style="background: linear-gradient(135deg, rgba(241,194,27,0.18) 0%, rgba(138,63,252,0.2) 50%, rgba(15,98,254,0.18) 100%), #0c1018; border: 2px solid #f1c21b; border-radius: 16px; padding: 20px 24px; margin-top: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 25px rgba(241,194,27,0.35);">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 8px; margin-bottom: 12px; flex-wrap: wrap;">
+                    <span style="background: rgba(241,194,27,0.2); color: #f1c21b; border: 1px solid #f1c21b; padding: 3px 12px; border-radius: 9999px; font-size: 8pt; font-weight: 800; text-transform: uppercase;">
+                        🔮 GAMEDAY ORACLE NFT #0xORACLE-{_m_hash} &bull; MINTED & ACTIVE
+                    </span>
+                    <span style="color: #42be65; font-size: 8pt; font-weight: 800;">● STORED IN LIVING TROPHY CASE (SCREEN 4)</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+                    <div>
+                        <h3 style="color: #ffffff; margin: 0 0 4px 0;">{st.session_state.member_name} — Locked Section Predictions</h3>
+                        <p style="color: #dcdcdc; font-size: 8.5pt; margin: 0;">
+                            <b>Q1 Turnover:</b> <span style="color:#42be65;">{to_sub}</span> &bull; 
+                            <b>105 dB Halftime:</b> <span style="color:#ff6600;">{roar_sub}</span> &bull; 
+                            <b>Projected Margin:</b> <span style="color:#f1c21b;">{sign_str}{p_margin} Pts</span>
+                        </p>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.5); padding: 8px 14px; border-radius: 8px; border: 1px solid #333; text-align: right;">
+                        <span style="color: #f1c21b; font-size: 8pt; font-weight: bold;">Trophy Multiplier:</span><br/>
+                        <span style="color: #ffffff; font-weight: 800; font-size: 11pt;">2.0x UNLOCKED</span>
+                    </div>
+                </div>
+            </div>
+            """
+            st.markdown("\n".join(l.lstrip() for l in _nft_card_raw.splitlines() if l.strip()), unsafe_allow_html=True)
 
     # ==============================================================================
     # ZONE 3: WATSONX GRANITE TACTICAL CHANT SYNTHESIZER
