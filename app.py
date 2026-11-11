@@ -1274,6 +1274,27 @@ def _load_schedules_db():
             print(f"[_load_schedules_db] warning: {_e}")
     return {}
 
+
+def _get_team_visual_theme(team_name: str, sport: str):
+    """Provides authentic visual stadium identity, mascot accents, and venue names across collegiate and pro levels."""
+    is_bb = ("basket" in str(sport or "").lower())
+    t_low = str(team_name or "").lower()
+    if "duke" in t_low:
+        return {"color": "#003087", "arena": "Cameron Indoor Stadium", "unit": "Cameron Crazies (ACC)", "icon": "😈"}
+    elif "longhorns" in t_low:
+        return {"color": "#bf5700", "arena": "Moody Center" if is_bb else "DKR Texas Memorial Stadium", "unit": "Longhorn Corral (SEC)" if is_bb else "End Zone 115 (SEC)", "icon": "🤘"}
+    elif "celtics" in t_low:
+        return {"color": "#007a33", "arena": "TD Garden", "unit": "Garden Faithful (NBA)", "icon": "☘️"}
+    elif "spurs" in t_low:
+        return {"color": "#00b4d8", "arena": "Frost Bank Center", "unit": "Baseline Bums (NBA)", "icon": "⚡"}
+    elif "wolverines" in t_low:
+        return {"color": "#ffcb05", "arena": "Michigan Stadium (The Big House)", "unit": "Maize Rage (Big Ten)", "icon": "〽️"}
+    elif "cowboys" in t_low:
+        return {"color": "#003594", "arena": "AT&T Stadium", "unit": "America's Defense (NFL)", "icon": "⭐"}
+    elif "packers" in t_low:
+        return {"color": "#ffb612", "arena": "Lambeau Field (Frozen Tundra)", "unit": "Cheesehead Wall (NFL)", "icon": "🧀"}
+    return {"color": "#0f62fe", "arena": "Arena Stadium (Section 114)", "unit": "Section 114 Loyals", "icon": "🏟️"}
+
 def _get_active_matchup_info(sport: str, primary_team: str):
     """Retrieves real-time active and upcoming schedule with autonomous temporal auto-advancement across all teams."""
     import re
@@ -2846,34 +2867,53 @@ if screen == "🎟️ Fan Passport & Section Roster" or "Screen 1" in screen:
         # Deep 3D Prismatic Foil, NFC Verified Seal, Seat Anchor & Sign Out
         # ==============================================================================
         _holo_raw = f"""
-<div style="background: linear-gradient(135deg, rgba(255,215,0,0.25) 0%, rgba(138,63,252,0.3) 35%, rgba(0,240,255,0.25) 70%, rgba(255,20,147,0.2) 100%), radial-gradient(circle at 85% 15%, rgba(15,98,254,0.35) 0%, transparent 60%), #10141f; background-size: 200% 200%; animation: holoPrism 8s ease infinite; border: 2px solid {glow_color}; border-radius: 20px; padding: 24px 28px; margin-bottom: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 35px {glow_color}55, inset 0 1px 1px rgba(255,255,255,0.25); position: relative;">
+<div style="background: linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(138,63,252,0.25) 35%, rgba(0,240,255,0.2) 70%, rgba(255,20,147,0.18) 100%), radial-gradient(circle at 85% 15%, rgba(15,98,254,0.3) 0%, transparent 60%), #0c1018; background-size: 200% 200%; animation: holoPrism 8s ease infinite; border: 2px solid {glow_color}; border-radius: 20px; padding: 22px 26px; margin-bottom: 16px; box-shadow: 0 24px 60px rgba(0,0,0,0.85), 0 0 35px {glow_color}44, inset 0 1px 2px rgba(255,255,255,0.3); position: relative; overflow: hidden;">
+    
+    <!-- Top Lanyard Punch-Hole Slot for Authentic Physical Arena Pass -->
+    <div style="width: 54px; height: 9px; background: #07090e; border: 1.5px solid #283447; border-radius: 9999px; margin: -10px auto 14px auto; box-shadow: inset 0 2px 4px rgba(0,0,0,0.9);"></div>
+
+    <!-- Holographic Watermark Micro-Etching -->
+    <div style="position: absolute; right: -20px; bottom: -20px; font-size: 80pt; font-weight: 900; color: rgba(255,255,255,0.02); pointer-events: none; user-select: none; transform: rotate(-15deg); font-family: sans-serif;">SEC 114</div>
+
+    <!-- Top Credential Header Bar -->
     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 12px; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
         <div style="display: flex; align-items: center; gap: 8px;">
-            <span style="background: {glow_color}25; color: {glow_color}; border: 1.5px solid {glow_color}; padding: 4px 14px; border-radius: 9999px; font-size: 8pt; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase;">🎟️ OFFICIAL ARENA PASS // 2026-27</span>
-            <span style="color: #42be65; font-size: 8pt; font-weight: 800;">● NFC TAMPER-PROOF ACTIVE</span>
+            <span style="background: {glow_color}25; color: {glow_color}; border: 1.5px solid {glow_color}; padding: 3px 12px; border-radius: 9999px; font-size: 7.5pt; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase;">🎟️ OFFICIAL ARENA PASS // 2026-27</span>
+            <span style="color: #42be65; font-size: 7.5pt; font-weight: 800;">● NFC TAMPER-PROOF ACTIVE</span>
         </div>
-        <span style="background-color: rgba(0,0,0,0.4); color: #8d8d8d; font-size: 7.5pt; font-family: monospace; padding: 3px 10px; border-radius: 6px; border: 1px solid #232d3f;">PASS ID: {st.session_state.member_hash[:18]}...</span>
+        <span style="background-color: rgba(0,0,0,0.4); color: #8d8d8d; font-size: 7.5pt; font-family: monospace; padding: 2px 8px; border-radius: 4px; border: 1px solid #232d3f;">PASS ID: {st.session_state.member_hash[:18]}...</span>
     </div>
+
+    <!-- Main Credential Body: Authenticated Fan Identity & Gold Chip -->
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; text-align: left; gap: 14px;">
-        <div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="font-size: 16pt;">💳</span>
-                <span style="color: #8d8d8d; font-size: 8pt; text-transform: uppercase; font-weight: 700; letter-spacing: 1px;">AUTHENTICATED FAN IDENTITY</span>
+        <div style="display: flex; align-items: center; gap: 14px;">
+            <!-- Embedded Gold Smart Chip / NFC Contact Pad -->
+            <div style="width: 44px; height: 34px; background: linear-gradient(135deg, #ffd700 0%, #b8860b 50%, #d4af37 100%); border-radius: 6px; border: 1px solid #ffe066; position: relative; box-shadow: inset 0 1px 2px rgba(255,255,255,0.6), 0 2px 8px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <div style="width: 100%; height: 1px; background: #8b6508; position: absolute; top: 11px;"></div>
+                <div style="width: 100%; height: 1px; background: #8b6508; position: absolute; bottom: 11px;"></div>
+                <div style="width: 1px; height: 100%; background: #8b6508; position: absolute; left: 14px;"></div>
+                <div style="width: 1px; height: 100%; background: #8b6508; position: absolute; right: 14px;"></div>
+                <div style="width: 14px; height: 10px; border: 1px solid #8b6508; border-radius: 2px;"></div>
             </div>
-            <h2 style="color: #ffffff; margin: 4px 0 6px 0; font-size: 22pt; font-weight: 800; letter-spacing: -0.5px; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">{st.session_state.member_name} <span style="color: #8d8d8d; font-size: 10.5pt; font-weight: 400;">({st.session_state.member_handle})</span></h2>
-            <div style="display: inline-flex; align-items: center; gap: 6px; background-color: rgba(15, 98, 254, 0.2); color: #78a9ff; border: 1px solid rgba(15, 98, 254, 0.5); padding: 5px 14px; border-radius: 9999px; font-weight: 700; font-size: 9pt;">
-                📍 {p_info['sec']} &bull; Row 3, Seat 12
+            <div>
+                <span style="color: #8d8d8d; font-size: 7.5pt; text-transform: uppercase; font-weight: 700; letter-spacing: 1px;">AUTHENTICATED FAN IDENTITY</span>
+                <h2 style="color: #ffffff; margin: 2px 0 4px 0; font-size: 20pt; font-weight: 800; letter-spacing: -0.5px;">{st.session_state.member_name} <span style="color: #8d8d8d; font-size: 10pt; font-weight: 400;">({st.session_state.member_handle})</span></h2>
+                <div style="display: inline-flex; align-items: center; gap: 6px; background-color: rgba(15, 98, 254, 0.2); color: #78a9ff; border: 1px solid rgba(15, 98, 254, 0.5); padding: 4px 12px; border-radius: 9999px; font-weight: 700; font-size: 8.5pt;">
+                    📍 {p_info['sec']} &bull; Row 3, Seat 12
+                </div>
             </div>
         </div>
-        <div style="text-align: right; background-color: rgba(11, 14, 20, 0.7); border: 1px solid #1f2737; border-radius: 14px; padding: 12px 18px; backdrop-filter: blur(8px);">
+        <div style="text-align: right; background-color: rgba(11, 14, 20, 0.75); border: 1px solid #1f2737; border-radius: 12px; padding: 10px 16px; backdrop-filter: blur(8px);">
             <span style="color: #8d8d8d; font-size: 7.5pt; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700;">MEMBER ACCREDITATION</span><br/>
-            <span style="color: {glow_color}; font-weight: 800; font-size: 12pt; text-shadow: 0 0 12px {glow_color}88;">🏆 {st.session_state.member_tier}</span>
+            <span style="color: {glow_color}; font-weight: 800; font-size: 11.5pt; text-shadow: 0 0 12px {glow_color}88;">🏆 {st.session_state.member_tier}</span>
         </div>
     </div>
-    <div style="background-color: rgba(11, 14, 20, 0.7); border: 1px solid #1f2737; border-radius: 12px; padding: 12px 18px; margin-top: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-        <span style="color: #dcdcdc; font-size: 9pt;">⚡ <b style="color: #ffffff;">{st.session_state.get('member_games', 7)} Gamedays</b> in Section</span>
-        <span style="color: #dcdcdc; font-size: 9pt;">🔊 <b style="color: #ffffff;">{st.session_state.get('member_career_db', '1,340 dB')}</b> Crowd Roar Impact</span>
-        <span style="color: #dcdcdc; font-size: 9pt;">🛡️ <b style="color: #ffffff;">{st.session_state.get('member_clutch_stops', 9)} Verified</b> Clutch Stops</span>
+
+    <!-- Career Roar Metrics Bar -->
+    <div style="background-color: rgba(11, 14, 20, 0.75); border: 1px solid #1f2737; border-radius: 10px; padding: 10px 16px; margin-top: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+        <span style="color: #dcdcdc; font-size: 8.5pt;">⚡ <b style="color: #ffffff;">{st.session_state.get('member_games', 7)} Gamedays</b> in Section</span>
+        <span style="color: #dcdcdc; font-size: 8.5pt;">🔊 <b style="color: #ffffff;">{st.session_state.get('member_career_db', '1,340 dB')}</b> Crowd Roar Impact</span>
+        <span style="color: #dcdcdc; font-size: 8.5pt;">🛡️ <b style="color: #ffffff;">{st.session_state.get('member_clutch_stops', 9)} Verified</b> Clutch Stops</span>
     </div>
 </div>
 """
@@ -4250,24 +4290,28 @@ elif screen == "⚡ In-Arena Game Hub & Crowd Defense" or "Screen 3" in screen:
     # ==============================================================================
     # CONCEPT 1 & 3: LIVE CLUTCH DEFENSE CHALLENGE & SPONSOR REWARD UNLOCK
     # Instantly communicates what the fan is looking at, why they care, and the direct reward
+    # Multi-Sport: Duke, Longhorns, Spurs, Celtics, Wolverines, Cowboys, Packers
     # ==============================================================================
-    _is_clutch_active = st.session_state.get("is_clutch", False)
     _arena_sport = st.session_state.get("sport", "Basketball")
     _is_bball_sport = (_arena_sport == "Basketball")
-    _arena_sec = "Section 114 (Thunder Row)" if _is_bball_sport else "Section 115 (End Zone Loyals)"
+    _active_tm = active_team_focus
+    _theme = _get_team_visual_theme(_active_tm, _arena_sport)
+    
+    _is_clutch_active = st.session_state.get("is_clutch", False)
+    _arena_sec = _theme.get("unit", "Section 114 (Thunder Row)" if _is_bball_sport else "Section 115 (End Zone Loyals)")
     _cur_db = round(st.session_state.get("db", 82.0), 1)
     _cur_hr = round(st.session_state.get("hr", 98.0), 1)
     
     _target_db = 105.0
     _db_progress_pct = min(100, int((_cur_db / 115.0) * 100))
-    _perk_unlocked = (_cur_db >= _target_db)
+    _perk_unlocked = (_cur_db >= _target_db or _is_clutch_active)
     
     _opp_odds_txt = "41% SHOT ODDS (RATTLED!)" if _is_clutch_active else "78% SHOT ODDS (IN RHYTHM)"
     _opp_odds_sub = "⚡ Noise Wall Shaking Backboard!" if _is_clutch_active else "🎯 Easy Shot — Bleachers Are Quiet"
     _opp_color = "#42be65" if _is_clutch_active else "#fa4d56"
-    _border_glow = "#da1e28" if _is_clutch_active else "#0f62fe"
+    _border_glow = "#da1e28" if _is_clutch_active else _theme.get("color", "#0f62fe")
     
-    _challenge_title = "🏀 CLUTCH FREE THROW DEFENSE // 0:14 REMAINING" if _is_bball_sport else "🏈 48-YARD FIELD GOAL SNAP // 0:03 REMAINING"
+    _challenge_title = f"{_theme['icon']} {_theme['arena'].upper()} // {_arena_sec.upper()}"
 
     # SVG Backboard or Goalpost Graphic
     if _is_bball_sport:
@@ -4578,75 +4622,75 @@ elif screen == "⚡ In-Arena Game Hub & Crowd Defense" or "Screen 3" in screen:
         zone_color = "#0f62fe"
         zone_desc = "⚪ BASELINE ANTICIPATION: Stadium holds pre-play focus."
 
-    cmi_col_left, cmi_col_right = st.columns([1, 2])
+    with st.expander(f"📊 View 4-Factor Acoustic Momentum Science & Watsonx Contract Breakdown (Current CMI: {current_cmi} / 100)", expanded=False):
+        cmi_col_left, cmi_col_right = st.columns([1, 2])
+        with cmi_col_left:
+            st.markdown(f"""
+            <div style="background-color: #12161f; padding: 20px; border-radius: 12px; text-align: center; border: 2px solid {zone_color}; box-shadow: 0 0 18px {zone_color}55;">
+                <p style="color: #a8a8a8; font-size: 8.5pt; font-weight: bold; margin: 0; letter-spacing: 1.5px; text-transform: uppercase;">
+                    CALCULATED MOMENTUM INDEX
+                </p>
+                <h1 style="color: {zone_color}; font-size: 46pt; margin: 4px 0 0 0; line-height: 1;">{current_cmi}</h1>
+                <p style="color: #8d8d8d; font-size: 9pt; margin: 0;">out of 100 pts</p>
+                <div style="margin-top: 10px; background-color: {zone_color}; color: #ffffff; padding: 4px 12px; border-radius: 16px; font-weight: bold; font-size: 9pt; display: inline-block;">
+                    {tier_name} TIER
+                </div>
+                <p style="color: #dcdcdc; font-size: 8.5pt; margin: 10px 0 0 0; font-style: italic;">{zone_desc}</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+        with cmi_col_right:
+            # Segmented Multi-Zone Progression Bar
+            b_pct = min(100.0, (current_cmi / 100.0) * 100.0)
+            st.markdown(f"""
+            <div style="background-color: #161616; padding: 14px 18px; border-radius: 10px; border: 1px solid #333; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; font-size: 8pt; font-weight: bold; margin-bottom: 6px;">
+                    <span style="color: #0f62fe;">⚪ 0-44 Baseline</span>
+                    <span style="color: #0043ce;">🟡 45-64 Building</span>
+                    <span style="color: #f1c21b;">🟠 65-79 High Surge</span>
+                    <span style="color: #da1e28;">🔴 80-100 Clutch Peak</span>
+                </div>
+                <div style="height: 14px; width: 100%; background-color: #262626; border-radius: 7px; overflow: hidden; position: relative;">
+                    <div style="height: 100%; width: {b_pct}%; background: linear-gradient(90deg, #0f62fe 0%, #0043ce 45%, #f1c21b 65%, #da1e28 85%); border-radius: 7px; transition: width 0.3s ease;"></div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # 4-Component Live Formula Stack Breakdown
+            st.markdown(f"""
+            <div style="background-color: #0e1117; padding: 12px 16px; border-radius: 10px; border-left: 4px solid {zone_color};">
+                <span style="color: #f4f4f4; font-size: 9pt; font-weight: bold; letter-spacing: 0.5px;">
+                    📊 LIVE 4-FACTOR FORMULA BREAKDOWN:
+                </span>
+                <span style="color: #8d8d8d; font-size: 8pt; float: right;">35% / 25% / 20% / 20% Contract</span>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px;">
+                    <div style="background-color: #1a1f2c; padding: 10px; border-radius: 8px; text-align: center;">
+                        <div style="color: #8d8d8d; font-size: 7.5pt; text-transform: uppercase;">🔊 Acoustics (35%)</div>
+                        <div style="color: #f4f4f4; font-size: 11pt; font-weight: bold; margin: 2px 0;">{st.session_state.db} dB</div>
+                        <div style="color: #42be65; font-size: 8.5pt; font-weight: bold;">+{cmi_breakdown['db_pts']} / 35.0</div>
+                    </div>
+                    <div style="background-color: #1a1f2c; padding: 10px; border-radius: 8px; text-align: center;">
+                        <div style="color: #8d8d8d; font-size: 7.5pt; text-transform: uppercase;">💓 Heart Rate (25%)</div>
+                        <div style="color: #f4f4f4; font-size: 11pt; font-weight: bold; margin: 2px 0;">{int(st.session_state.hr)} BPM</div>
+                        <div style="color: #42be65; font-size: 8.5pt; font-weight: bold;">+{cmi_breakdown['hr_pts']} / 25.0</div>
+                    </div>
+                    <div style="background-color: #1a1f2c; padding: 10px; border-radius: 8px; text-align: center;">
+                        <div style="color: #8d8d8d; font-size: 7.5pt; text-transform: uppercase;">📱 Taps / Sec (20%)</div>
+                        <div style="color: #f4f4f4; font-size: 11pt; font-weight: bold; margin: 2px 0;">{st.session_state.taps}/s</div>
+                        <div style="color: #42be65; font-size: 8.5pt; font-weight: bold;">+{cmi_breakdown['taps_pts']} / 20.0</div>
+                    </div>
+                    <div style="background-color: #1a1f2c; padding: 10px; border-radius: 8px; text-align: center;">
+                        <div style="color: #8d8d8d; font-size: 7.5pt; text-transform: uppercase;">🗣️ Vocal Urgency (20%)</div>
+                        <div style="color: #f4f4f4; font-size: 11pt; font-weight: bold; margin: 2px 0;">{st.session_state.vu} VU</div>
+                        <div style="color: #42be65; font-size: 8.5pt; font-weight: bold;">+{cmi_breakdown['vu_pts']} / 20.0</div>
+                    </div>
+                </div>
+                <div style="margin-top: 8px; font-size: 8pt; color: #a8a8a8; text-align: center;">
+                    <b>Formula:</b> ({cmi_breakdown['db_pts']} + {cmi_breakdown['hr_pts']} + {cmi_breakdown['taps_pts']} + {cmi_breakdown['vu_pts']}) = <span style="color:{zone_color}; font-weight:bold;">{current_cmi} / 100 Total CMI</span>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
     
-    with cmi_col_left:
-        st.markdown(f"""
-        <div style="background-color: #12161f; padding: 20px; border-radius: 12px; text-align: center; border: 2px solid {zone_color}; box-shadow: 0 0 18px {zone_color}55;">
-            <p style="color: #a8a8a8; font-size: 8.5pt; font-weight: bold; margin: 0; letter-spacing: 1.5px; text-transform: uppercase;">
-                CALCULATED MOMENTUM INDEX
-            </p>
-            <h1 style="color: {zone_color}; font-size: 46pt; margin: 4px 0 0 0; line-height: 1;">{current_cmi}</h1>
-            <p style="color: #8d8d8d; font-size: 9pt; margin: 0;">out of 100 pts</p>
-            <div style="margin-top: 10px; background-color: {zone_color}; color: #ffffff; padding: 4px 12px; border-radius: 16px; font-weight: bold; font-size: 9pt; display: inline-block;">
-                {tier_name} TIER
-            </div>
-            <p style="color: #dcdcdc; font-size: 8.5pt; margin: 10px 0 0 0; font-style: italic;">{zone_desc}</p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-    with cmi_col_right:
-        # Segmented Multi-Zone Progression Bar
-        b_pct = min(100.0, (current_cmi / 100.0) * 100.0)
-        st.markdown(f"""
-        <div style="background-color: #161616; padding: 14px 18px; border-radius: 10px; border: 1px solid #333; margin-bottom: 12px;">
-            <div style="display: flex; justify-content: space-between; font-size: 8pt; font-weight: bold; margin-bottom: 6px;">
-                <span style="color: #0f62fe;">⚪ 0-44 Baseline</span>
-                <span style="color: #0043ce;">🟡 45-64 Building</span>
-                <span style="color: #f1c21b;">🟠 65-79 High Surge</span>
-                <span style="color: #da1e28;">🔴 80-100 Clutch Peak</span>
-            </div>
-            <div style="height: 14px; width: 100%; background-color: #262626; border-radius: 7px; overflow: hidden; position: relative;">
-                <div style="height: 100%; width: {b_pct}%; background: linear-gradient(90deg, #0f62fe 0%, #0043ce 45%, #f1c21b 65%, #da1e28 85%); border-radius: 7px; transition: width 0.3s ease;"></div>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        # 4-Component Live Formula Stack Breakdown
-        st.markdown(f"""
-        <div style="background-color: #0e1117; padding: 12px 16px; border-radius: 10px; border-left: 4px solid {zone_color};">
-            <span style="color: #f4f4f4; font-size: 9pt; font-weight: bold; letter-spacing: 0.5px;">
-                📊 LIVE 4-FACTOR FORMULA BREAKDOWN:
-            </span>
-            <span style="color: #8d8d8d; font-size: 8pt; float: right;">35% / 25% / 20% / 20% Contract</span>
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px;">
-                <div style="background-color: #1a1f2c; padding: 10px; border-radius: 8px; text-align: center;">
-                    <div style="color: #8d8d8d; font-size: 7.5pt; text-transform: uppercase;">🔊 Acoustics (35%)</div>
-                    <div style="color: #f4f4f4; font-size: 11pt; font-weight: bold; margin: 2px 0;">{st.session_state.db} dB</div>
-                    <div style="color: #42be65; font-size: 8.5pt; font-weight: bold;">+{cmi_breakdown['db_pts']} / 35.0</div>
-                </div>
-                <div style="background-color: #1a1f2c; padding: 10px; border-radius: 8px; text-align: center;">
-                    <div style="color: #8d8d8d; font-size: 7.5pt; text-transform: uppercase;">💓 Heart Rate (25%)</div>
-                    <div style="color: #f4f4f4; font-size: 11pt; font-weight: bold; margin: 2px 0;">{int(st.session_state.hr)} BPM</div>
-                    <div style="color: #42be65; font-size: 8.5pt; font-weight: bold;">+{cmi_breakdown['hr_pts']} / 25.0</div>
-                </div>
-                <div style="background-color: #1a1f2c; padding: 10px; border-radius: 8px; text-align: center;">
-                    <div style="color: #8d8d8d; font-size: 7.5pt; text-transform: uppercase;">📱 Taps / Sec (20%)</div>
-                    <div style="color: #f4f4f4; font-size: 11pt; font-weight: bold; margin: 2px 0;">{st.session_state.taps}/s</div>
-                    <div style="color: #42be65; font-size: 8.5pt; font-weight: bold;">+{cmi_breakdown['taps_pts']} / 20.0</div>
-                </div>
-                <div style="background-color: #1a1f2c; padding: 10px; border-radius: 8px; text-align: center;">
-                    <div style="color: #8d8d8d; font-size: 7.5pt; text-transform: uppercase;">🗣️ Vocal Urgency (20%)</div>
-                    <div style="color: #f4f4f4; font-size: 11pt; font-weight: bold; margin: 2px 0;">{st.session_state.vu} VU</div>
-                    <div style="color: #42be65; font-size: 8.5pt; font-weight: bold;">+{cmi_breakdown['vu_pts']} / 20.0</div>
-                </div>
-            </div>
-            <div style="margin-top: 8px; font-size: 8pt; color: #a8a8a8; text-align: center;">
-                <b>Formula:</b> ({cmi_breakdown['db_pts']} + {cmi_breakdown['hr_pts']} + {cmi_breakdown['taps_pts']} + {cmi_breakdown['vu_pts']}) = <span style="color:{zone_color}; font-weight:bold;">{current_cmi} / 100 Total CMI</span>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
     with st.expander("💡 What is the Calculated Momentum Index (CMI)? — Quick Guide for Fans", expanded=False):
         st.markdown("""
         **The 0–100 Calculated Momentum Index (CMI)** quantifies the live psychological and acoustic pressure your stadium section exerts on visiting opponents:
