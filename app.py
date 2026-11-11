@@ -5403,23 +5403,32 @@ elif screen == "📜 Crowd Box Score & Fan Storycard" or "Screen 4" in screen:
         card_sub = "CLUTCH DEFENSIVE IMPACT VERIFIED"
         card_points_display = f"+{actual_surge} PTS"
 
-    st.markdown(f"""
-    <div style="background-color: #edf5ff; padding: 18px; border-radius: 8px; border-left: 6px solid #0f62fe; margin-bottom: 20px;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
+    _hud_raw = f"""
+    <div style="background: linear-gradient(135deg, #101522 0%, #080c14 100%); border: 2px solid #0f62fe; border-radius: 16px; padding: 20px 24px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 25px rgba(15,98,254,0.35);">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 10px; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+            <span style="background: rgba(15,98,254,0.25); color: #78a9ff; border: 1.5px solid #0f62fe; padding: 3px 12px; border-radius: 9999px; font-size: 8pt; font-weight: 800; text-transform: uppercase;">
+                ⚡ LIVE NARRATIVE DELTA // ON-COURT SYNTHESIS
+            </span>
+            <span style="color: #42be65; font-size: 8pt; font-weight: 800;">● CROWD MOMENTUM IMPACT VERIFIED</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
             <div>
-                <h2 style="color: #0043ce; margin: 0;">{surge_title}</h2>
-                <p style="color: #161616; margin: 4px 0 0 0;">
-                    <b>Pre-Play Baseline:</b> {pre_val}/100 CMI &nbsp;➔&nbsp; <b>Clutch Peak:</b> {current_cmi}/100 CMI &nbsp;|&nbsp; <b>Net Surge:</b> <span style="color:#0043ce; font-weight:bold;">+{actual_surge} PTS</span>
+                <h2 style="color: #ffffff; margin: 0 0 4px 0; font-size: 20pt; font-weight: 800; text-shadow: 0 0 16px rgba(15,98,254,0.6);">{surge_title}</h2>
+                <p style="color: #dcdcdc; font-size: 9pt; margin: 0 0 8px 0;">
+                    <b>Pre-Play Focus:</b> <span style="color:#8d8d8d;">{pre_val} CMI</span> &nbsp;➔&nbsp; <b>Clutch Peak:</b> <span style="color:#f1c21b; font-weight:bold;">{current_cmi} CMI</span> &nbsp;|&nbsp; <b>Net Surge:</b> <span style="color:#42be65; font-weight:bold;">+{actual_surge} PTS</span>
                 </p>
-                <p style="color: #393939; font-size: 9.5pt; margin: 4px 0 0 0;"><b>Verified Game Event:</b> {outcome_label}</p>
+                <div style="display: inline-flex; align-items: center; gap: 6px; background: rgba(66,190,101,0.15); border: 1px solid #42be65; border-radius: 6px; padding: 4px 10px; font-size: 8pt; color: #42be65; font-weight: bold;">
+                    🎯 {outcome_label}
+                </div>
             </div>
-            <div style="text-align: right; background-color: #d0e2ff; padding: 10px 16px; border-radius: 8px; border: 1px solid #a6c8ff;">
-                <span style="font-size: 8.5pt; color: #002d9c; font-weight: bold; text-transform: uppercase;">Defense Belt Status</span><br>
-                <b style="color: #0043ce; font-size: 13pt;">{'🏆 AWARDED' if actual_surge >= 30.0 or current_cmi >= 80.0 else 'IN CONTENTION'}</b>
+            <div style="text-align: right; background: rgba(11,14,20,0.85); border: 1.5px solid #f1c21b; border-radius: 12px; padding: 12px 18px; box-shadow: 0 0 15px rgba(241,194,27,0.25);">
+                <span style="font-size: 7.5pt; color: #f1c21b; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px;">🏆 DEFENSE BELT STATUS</span><br/>
+                <b style="color: #ffffff; font-size: 13pt;">{'AWARDED TO ' + winning_sec.split(' ')[0] if actual_surge >= 30.0 or current_cmi >= 80.0 else 'IN CONTENTION'}</b>
             </div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """
+    st.markdown("\n".join(l.lstrip() for l in _hud_raw.splitlines() if l.strip()), unsafe_allow_html=True)
 
     st.subheader(f"🤖 Post-Play Narrative Breakdown ({st.session_state.sport})")
     # Fix #2: key on tier (4 values) not the float CMI (100 possible values) to
@@ -5606,20 +5615,65 @@ elif screen == "📜 Crowd Box Score & Fan Storycard" or "Screen 4" in screen:
         {"name": _bs_chase_sec, "cmi": round(current_cmi * _chase_factor, 1),       "checked_in_fans": 140, "early_multiplier": 1.0, "clutch_multiplier": 1.0},
         {"name": _bs_third_sec, "cmi": round(current_cmi * _third_factor, 1),       "checked_in_fans": 120, "early_multiplier": 1.0, "clutch_multiplier": 1.0},
     ])
-    c1, c2 = st.columns(2)
-    with c1:
-        st.markdown(f"**Live Section Standings ({st.session_state.sport}):**")
+    col_st_left, col_st_right = st.columns(2)
+    with col_st_left:
         medals = ["🥇", "🥈", "🥉"]
+        _standings_rows = ""
         for _ri, _re in enumerate(_bs_standings["standings"]):
-            _belt = " — *Winner: Section Defense Belt*" if _ri == 0 else ""
-            st.markdown(f"* {medals[_ri]} **{_re['section']}:** **{_re['score']} pts**{_belt}")
-    with c2:
+            _belt_pill = '<span style="background: rgba(241,194,27,0.2); color: #f1c21b; padding: 2px 6px; border-radius: 4px; font-size: 7pt; font-weight: bold; margin-left: 6px;">BELT WINNER 🏆</span>' if _ri == 0 else ""
+            _is_lead = (_ri == 0)
+            _bg = "background: rgba(15,98,254,0.15); border: 1px solid #0f62fe;" if _is_lead else "background: #10141e; border: 1px solid #1f2737;"
+            _standings_rows += f"""<div style="{_bg} border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 14pt;">{medals[_ri]}</span>
+                    <div>
+                        <b style="color: #ffffff; font-size: 9pt;">{_re['section']}</b>{_belt_pill}
+                        <div style="color: #8d8d8d; font-size: 7.5pt;">{_re.get('checked_in_fans', 140)} Fans Active In Section</div>
+                    </div>
+                </div>
+                <span style="color: {'#42be65' if _is_lead else '#f1c21b'}; font-size: 11pt; font-weight: 800;">{_re['score']} pts</span>
+            </div>"""
+        
+        _standings_card_raw = f"""
+        <div style="background: #0b0e14; border: 1.5px solid #1f2737; border-radius: 14px; padding: 16px; margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="color: #5da8ff; font-size: 8pt; font-weight: 800; text-transform: uppercase;">🏆 LIVE SECTION LEADERBOARD</span>
+                <span style="color: #42be65; font-size: 7.5pt; font-weight: bold;">● OPTIMIZED REAL-TIME</span>
+            </div>
+            {_standings_rows}
+        </div>
+        """
+        st.markdown("\n".join(l.lstrip() for l in _standings_card_raw.splitlines() if l.strip()), unsafe_allow_html=True)
+
+    with col_st_right:
         user_sec = _bs_lead_sec.split("(")[0].strip()
-        st.markdown(f"**Your Personal Fan Contribution ({user_sec}):**")
-        st.write(f"* Momentum Pulse Taps Contributed: **{st.session_state.tap_count} taps**")
-        st.write(f"* Peak Heart Rate Logged: **{int(st.session_state.hr)} BPM**")
-        st.write(f"* Peak Acoustic Contribution: **{st.session_state.db} dB**")
-        st.write(f"* watsonx Vocal Urgency: **{st.session_state.vu} VU**")
+        _contrib_card_raw = f"""
+        <div style="background: #0b0e14; border: 1.5px solid #1f2737; border-radius: 14px; padding: 16px; margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="color: #f1c21b; font-size: 8pt; font-weight: 800; text-transform: uppercase;">⚡ YOUR PERSONAL GAMEDAY BOX SCORE</span>
+                <span style="color: #78a9ff; font-size: 7.5pt; font-weight: bold;">{user_sec}</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                <div style="background: #121824; border: 1px solid #1f2737; border-radius: 8px; padding: 10px; text-align: center;">
+                    <span style="color: #8d8d8d; font-size: 7pt; text-transform: uppercase;">TAPS CONTRIBUTED</span><br/>
+                    <b style="color: #ffffff; font-size: 13pt;">{st.session_state.tap_count}</b>
+                </div>
+                <div style="background: #121824; border: 1px solid #1f2737; border-radius: 8px; padding: 10px; text-align: center;">
+                    <span style="color: #8d8d8d; font-size: 7pt; text-transform: uppercase;">PEAK HEART RATE</span><br/>
+                    <b style="color: #5da8ff; font-size: 13pt;">{int(st.session_state.hr)} BPM</b>
+                </div>
+                <div style="background: #121824; border: 1px solid #1f2737; border-radius: 8px; padding: 10px; text-align: center;">
+                    <span style="color: #8d8d8d; font-size: 7pt; text-transform: uppercase;">NOISE PEAK</span><br/>
+                    <b style="color: #f1c21b; font-size: 13pt;">{st.session_state.db} dB</b>
+                </div>
+                <div style="background: #121824; border: 1px solid #1f2737; border-radius: 8px; padding: 10px; text-align: center;">
+                    <span style="color: #8d8d8d; font-size: 7pt; text-transform: uppercase;">VOCAL URGENCY</span><br/>
+                    <b style="color: #42be65; font-size: 13pt;">{st.session_state.vu} VU</b>
+                </div>
+            </div>
+        </div>
+        """
+        st.markdown("\n".join(l.lstrip() for l in _contrib_card_raw.splitlines() if l.strip()), unsafe_allow_html=True)
 
 
     # ==============================================================================
