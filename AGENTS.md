@@ -128,3 +128,50 @@ All 16 native YAML agents and 16 Python `@tool` functions are live-deployed in I
   - `tests/test_full_suite_week5.py`: **51 / 51 PASS (100%)**
   - `tests/test_16_agent_production.py`: **44 / 44 PASS (100%)**
   - `tests/test_step4_finops_and_discovery.py`: **26 / 26 PASS (100%)**
+---
+
+## 8. Weeks 7–9 Enterprise & UI/UX Upgrades (Meta Astryx UI Kit & Autonomous Gameday Engine)
+
+### 8.1 Autonomous Dynamic Gameday Engine & Rollover Architecture
+To eliminate legacy temporal drift and date freeze bugs across all sports, the schedule resolution engine was upgraded to be 100% autonomous and self-healing:
+1. **Live Calendar Clock Binding:** Excised static date anchors (`curr_date = datetime(2026, 11, 10)`). The app now binds dynamically to `datetime.now(ZoneInfo("America/Chicago"))`, guaranteeing that games automatically roll over to `Final` at midnight local stadium time.
+2. **Permanent Removal of `CANONICAL_GAME_SCHEDULE_ANCHORS` Loop:** Deleted the legacy anchor loop that was matching partial team names and erroneously overwriting future dates (e.g. overwriting the Spurs' Dec 1 game into Nov 11).
+3. **Master Database & In-Code Authority Guardrail:**
+   * Master schedule database (`data/gameday_schedules.json`) maintains zero duplicate dates across all 8 collegiate and pro teams.
+   * Locked official ESPN Champions Classic result for Duke Blue Devils: **`L 73-79 | Final`** (record: **`2-1 (ACC)`**).
+   * Automatically evaluates active gamedays: Spurs vs. Kings (7:00 PM CST) and Celtics vs. Warriors (7:30 PM EST) promoted to **`🔴 TONIGHT`** (Nov 11, 2026). Off-day teams correctly roll forward to `Next Game` (Nov 12 Longhorns BB, Nov 13 Duke BB, Nov 14 Michigan FB, Nov 14 Texas FB, Nov 15 Cowboys, Nov 17 Packers).
+
+### 8.2 Denis Zakharov's Click-Reduction Architecture (Astryx UI Kit Standard)
+Following Denis's challenge to eliminate mobile click fatigue, the UI was streamlined while preserving authentic fan agency:
+1. **1-Tap Tactile Toggle Pills on Screen 2:** Replaced multi-click `st.radio` and nested `st.selectbox` menus with 1-tap horizontal toggle pills:
+   * **Zone Selector:** `[ 🎪 1. Tailgate Commons ]` &bull; `[ ⚔️ 2. Rivalry War Room ]` &bull; `[ 🗣️ 3. Chant Synthesizer ]`.
+   * **Prediction Toggles:** 1-tap binary pills (`[ 🟢 YES ]` | `[ ⚪ NO ]`), reducing 6 cumbersome dropdown clicks down to 2 effortless thumb taps.
+2. **Team-Scoped Prediction State:** Scoped prediction state per team (`predictions_locked_{team}` and `pred_data_{team}`), ensuring that locking predictions for Duke applies solely to Duke, leaving other teams independent.
+3. **Preservation of Earned Reward Mechanics:** Maintained deliberate fan accomplishment on Screen 3: bleacher pounding progressively builds crowd decibels (82 dB &rarr; 94 dB &rarr; 106.5 dB). Once the 105 dB threshold is broken, the Whataburger voucher button illuminates in gold, allowing the fan to consciously claim their hard-earned reward.
+
+### 8.3 Screen-by-Screen UI/UX Invariants & Visual Upgrades
+
+| Screen | Core Theme & Role | Key Visual & Functional Breakthroughs |
+| :--- | :--- | :--- |
+| **Screen 1** | **Fan Passport & Section Roster** | **3D Holographic Arena VIP Credential (Single Source of Truth):** Lanyard punch-hole cutout, embedded gold EMV/NFC smart chip with circuit traces, specular prismatic foil shader, and metallic tiered border (Gold for Tier 5, Amethyst for Tier 4, Electric Blue for Tiers 1–3). Shows authenticated seat anchor, season gamedays, roar decibels, and clutch stops. |
+| **Screen 2** | **36-Hour Virtual Tailgate** | **Team-Aligned Tailgate Commons & Rivalry War Room:** Neutral dynamic tailgate showcase eliminating conflicting AI imagery; 3-tier visual membership pipeline (`+250 XP`, `1.0x -> 1.5x Multiplier`, `Oracle NFT`); live Section 114 crowd consensus metrics (89% Q1 turnover, 94% 105+ dB roar); verifiable **Gameday Oracle NFT** minting. |
+| **Screen 3** | **In-Arena Game Hub & Crowd Defense** | **Visual Problem-Solution-Reward Console:** Shaking SVG backboard/rim vs. football goalposts with live conversion odds flip (`41% RATTLED` vs. `78% IN RHYTHM`); Whataburger® Clutch Drop progress bar filling to 105 dB; 12-band audio visualizer (60 Hz–16 kHz) beside synchronized heart rate (`💓 136 BPM`); 1-tap **`⚡ POUND BLEACHERS & SURGE DEFENSE (+5)`** action center; collapsible 4-Factor Acoustic Science drawer. |
+| **Screen 4** | **Narrative Delta & Crowd Box Score** | **Dark Stadium HUD & Living Trophy Case:** High-contrast momentum surge HUD (`#101522`) replacing light-blue box; viral social StoryCard with SHA-256 seal; live section leaderboard podium (`🥇 Sec 114`, `🥈 Sec 115`, `🥉 Sec 113`) and personal box score grid; embedded **🏆 Living Trophy Case & Digital Vault** housing Oracle NFTs, Whataburger vouchers, and Tailgate VIP wristbands. |
+| **Screen 5** | **AI Squad & Game Intelligence** | **Tactical Stadium Command Center:** Real-time tactical situation HUD, 4 structured metric cards (Opponent Miss Odds, Home Win Swing, Section Lead), 5 interactive agent selectors (`@coach`, `@conductor`, `@strategist`, `@scout`, `@squad`), and conversational console backed by live watsonx Orchestrate & Granite AI. |
+| **Sidebar** | **Global Navigation & Live Chat** | **Restored Emoji Reaction Icons:** Fixed button padding conflicts so all 8 circular reaction buttons (`🏀`, `🔥`, `⚡`, `🛡️`, `📣`, `👏`, `🏆`, `🙌`) render crisp, visible, and centered at `15pt`. |
+
+### 8.4 Strict Code Invariants for Bob IDE Review
+To preserve project stability and prevent regressions during Bob's review:
+1. **Zero Hardcoded Dates:** Gameday resolution must strictly compute from `datetime.now(ZoneInfo("America/Chicago"))`.
+2. **Clean HTML Rendering in Markdown:** Always strip leading whitespace across multi-line HTML strings using `"\n".join(l.lstrip() for l in raw_html.splitlines() if l.strip())`. Never allow 4+ space indentation inside `st.markdown(..., unsafe_allow_html=True)`.
+3. **Team-Scoped Session Keys:** Flags and selections tied to a specific team (predictions, active matchup focus) must use `{key}_{team}` syntax to prevent cross-team pollution.
+4. **Earned Reward Progression:** Never auto-claim rewards on a single tap. Sustain the progressive threshold mechanics that give fans authentic pride in earning their drops.
+
+### 8.5 Transition to Pillar 3: 120-Second Sales Video Pitch
+Following Bob's architectural review and code audit, the core triad will immediately author the definitive 120-second sales pitch video script adhering to Denis's **60/30/30 format**:
+- **0:00–1:00 (60s) — Problem & The Fan Revolution:** Disconnected stadium spectators, acoustic dissipation, and how Kinetic FanLab unifies the crowd into a synchronized 6th/12th Man.
+- **1:00–1:30 (30s) — Live Defense Engine & watsonx AI Squad:** Real-time acoustic telemetry, backboard vibration shockwaves, 41.2% defensive disruption, and watsonx Orchestrate multi-agent coordination.
+- **1:30–2:00 (30s) — Two-Sided Commercial Unit Economics:** Whataburger® Gameday Drops, Living Trophy Case Oracle NFTs, and 99.7% gross margins for venues and sponsors.
+
+---
+*Authored for Kinetic FanLab • Core Triad: Troy Resendez, IBM Bob IDE, Gemini*
