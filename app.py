@@ -1356,18 +1356,7 @@ def _get_active_matchup_info(sport: str, primary_team: str):
         _now = datetime.now()
     curr_date = datetime(_now.year, _now.month, _now.day)
 
-    # Autonomous Canonical Schedule Authority & Score Anchor Dictionary
-    # Permanently repairs UTC timezone offsets, drifts, or stale dates across all teams and sports
-    CANONICAL_GAME_SCHEDULE_ANCHORS = {
-        ('duke', 'michigan state'): ('Nov 10, 2026', 'W 77-69 | Final', 'United Center (Chicago)', 'ESPN'),
-        ('spurs', 'sacramento kings'): ('Nov 11, 2026', '7:00 PM CST', 'Frost Bank Center', 'BSSW'),
-        ('longhorns', 'mississippi valley'): ('Nov 12, 2026', '7:00 PM CST', 'Moody Center', 'SEC Network+'),
-        ('celtics', 'golden state'): ('Nov 11, 2026', '7:30 PM EST', 'TD Garden', 'ESPN'),
-        ('longhorns', 'arkansas'): ('Nov 14, 2026', '11:00 AM CST', 'Donald W. Reynolds Razorback Stadium', 'ABC'),
-        ('cowboys', 'philadelphia'): ('Nov 15, 2026', '3:25 PM CST', 'AT&T Stadium', 'CBS'),
-        ('wolverines', 'oregon'): ('Nov 14, 2026', '3:30 PM EST', 'Autzen Stadium', 'CBS'),
-        ('packers', 'chicago'): ('Nov 17, 2026', '12:00 PM CST', 'Soldier Field', 'FOX'),
-    }
+
 
     known_scores = {
         ('spurs', 'dallas mavericks'): 'L 109-120 | Final',
@@ -1384,7 +1373,7 @@ def _get_active_matchup_info(sport: str, primary_team: str):
         ('longhorns', 'texas southern'): 'W 89-58 | Final',
         ('duke', 'coastal carolina'): 'W 113-52 | Final',
         ('duke', 'army black knights'): 'W 84-50 | Final',
-        ('duke', 'michigan state'): 'W 77-69 | Final',
+        ('duke', 'michigan state'): 'L 73-79 | Final',
         ('longhorns', 'florida'): 'W 49-17 | Final',
         ('wolverines', 'michigan state'): 'W 24-17 | Final',
         ('cowboys', 'indianapolis colts'): 'L 21-27 | Final',
@@ -1410,18 +1399,7 @@ def _get_active_matchup_info(sport: str, primary_team: str):
 
         opp_low = str(item.get('opponent') or '').lower()
 
-        # Auto-heal canonical anchors against date drift / UTC spillover
-        for (t_k, o_k), (c_date, c_time, c_venue, c_net) in CANONICAL_GAME_SCHEDULE_ANCHORS.items():
-            if t_k in team_low and o_k in opp_low:
-                item['date'] = c_date
-                item['venue'] = c_venue
-                item['tv'] = c_net
-                item['broadcast'] = c_net
-                if c_time.startswith(('W ', 'L ', 'Final')):
-                    item['result'] = c_time
-                elif not str(item.get('result', '')).startswith(('W ', 'L ', 'Final')):
-                    item['result'] = c_time
-                break
+
 
         dt = _parse_d(item.get('date'))
         res = str(item.get('result') or '')
