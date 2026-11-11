@@ -4188,7 +4188,7 @@ elif screen == "🎪 36h Virtual Tailgate & Meetups" or "Screen 2" in screen:
     # ------------------------------------------------------------------
     s2_zone = st.radio(
         "Tailgate Hub Selector",
-        ["⛺ 1. The Interactive Tailgate Campus & Stalls", "⚔️ 2. The 36h Rivalry War Room ('Tale of the Tape')", "🗣️ 3. Watsonx Granite Tactical Chant Synthesizer"],
+        ["🎪 1. Gameday Tailgate & Meetup Commons", "⚔️ 2. The 36h Rivalry War Room ('Tale of the Tape')", "🗣️ 3. Watsonx Granite Tactical Chant Synthesizer"],
         horizontal=True,
         label_visibility="collapsed"
     )
@@ -4196,90 +4196,149 @@ elif screen == "🎪 36h Virtual Tailgate & Meetups" or "Screen 2" in screen:
     # ==============================================================================
     # ZONE 1: THE INTERACTIVE TAILGATE CAMPUS & STALLS
     # ==============================================================================
-    if "1. The Interactive Tailgate Campus" in s2_zone:
-        st.subheader(f"🏟️ Interactive Arena Campus & Meetup Stalls ({_tg_team})")
-        st.caption("Explore active campus zones, pitch your virtual section tent, claim pre-game sponsor BBQ vouchers, and stage entrance audio.")
+    if "1. Gameday Tailgate & Meetup Commons" in s2_zone or "Tailgate" in s2_zone:
+        st.subheader(f"🎪 Official Gameday Tailgate & Pre-Game Meetups ({_tg_team})")
+        st.caption("Live pre-game rally lot, pit smoker specials, and priority section wristbands before arena gates open.")
 
-        # SVG Interactive Campus Map
-        _campus_svg = f"""
-        <svg width="100%" height="160" viewBox="0 0 600 160" style="background: #090c13; border: 1px solid #1f2737; border-radius: 14px; overflow: hidden;">
-            <!-- Stadium Oval in Center -->
-            <ellipse cx="300" cy="80" rx="110" ry="55" fill="#121622" stroke="{_tg['accent']}" stroke-width="2.5" stroke-dasharray="4 2" />
-            <text x="300" y="78" fill="#ffffff" font-size="11" font-weight="800" text-anchor="middle">{_tg_team.upper()}</text>
-            <text x="300" y="94" fill="#8d8d8d" font-size="8" text-anchor="middle">ARENA BOWL (GATES OPEN 5:30 PM)</text>
-            
-            <!-- Zone 1: Tent City Beacon (Left) -->
-            <circle cx="110" cy="80" r="32" fill="rgba(0,48,135,0.25)" stroke="{_tg['accent']}" stroke-width="1.5" />
-            <circle cx="110" cy="80" r="6" fill="#f1c21b" class="astryx-shockwave-ring" />
-            <text x="110" y="58" fill="#f1c21b" font-size="8.5" font-weight="800" text-anchor="middle">⛺ TENT COMMONS</text>
-            <text x="110" y="122" fill="#dcdcdc" font-size="7.5" text-anchor="middle">{_tg['tent_unit'][:18]}</text>
+        # ==============================================================================
+        # HERO GRAPHIC: VIBRANT TAILGATE CANOPY & SIZZLING SMOKER PIT
+        # ==============================================================================
+        _tailgate_hero_svg = f"""
+        <svg width="100%" height="175" viewBox="0 0 650 175" style="background: linear-gradient(180deg, #070a10 0%, #10141f 100%); border: 1.5px solid {_tg['accent']}; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.8);">
+            <defs>
+                <linearGradient id="grillGlow" x1="0%" y1="100%" x2="0%" y2="0%">
+                    <stop offset="0%" stop-color="#ff3300" stop-opacity="0.95" />
+                    <stop offset="50%" stop-color="#ff8800" stop-opacity="0.6" />
+                    <stop offset="100%" stop-color="#ffbb00" stop-opacity="0.0" />
+                </linearGradient>
+                <radialGradient id="smokeRadial" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="rgba(220,220,220,0.35)" />
+                    <stop offset="100%" stop-color="rgba(220,220,220,0.0)" />
+                </radialGradient>
+            </defs>
 
-            <!-- Zone 2: Smokehouse Pit Beacon (Right) -->
-            <circle cx="490" cy="80" r="32" fill="rgba(255,102,0,0.2)" stroke="#ff6600" stroke-width="1.5" />
-            <circle cx="490" cy="80" r="6" fill="#ff6600" class="astryx-shockwave-ring" />
-            <text x="490" y="58" fill="#ff6600" font-size="8.5" font-weight="800" text-anchor="middle">🥩 SMOKEHOUSE PIT</text>
-            <text x="490" y="122" fill="#dcdcdc" font-size="7.5" text-anchor="middle">Whataburger® & Pit BBQ</text>
+            <!-- Stadium Silhouette in Background -->
+            <path d="M 0 115 Q 160 92 325 92 Q 490 92 650 115 L 650 175 L 0 175 Z" fill="#090d15" opacity="0.8" />
+            <line x1="0" y1="115" x2="650" y2="115" stroke="#1c2536" stroke-width="2" />
 
-            <!-- Zone 3: Rally Soundstage (Top) -->
-            <circle cx="300" cy="20" r="5" fill="#42be65" />
-            <text x="300" y="14" fill="#42be65" font-size="7.5" font-weight="800" text-anchor="middle">📢 RALLY SOUNDSTAGE & SHUTTLES</text>
+            <!-- LEFT: Team Tailgate Canopy Tent -->
+            <polygon points="40,115 80,45 190,45 230,115" fill="{_tg['accent']}" opacity="0.9" stroke="#ffffff" stroke-width="1.5" />
+            <polygon points="80,45 135,22 190,45" fill="#ffffff" opacity="0.25" />
+            <line x1="50" y1="115" x2="50" y2="150" stroke="#8d8d8d" stroke-width="3.5" />
+            <line x1="220" y1="115" x2="220" y2="150" stroke="#8d8d8d" stroke-width="3.5" />
+            <text x="135" y="85" fill="#ffffff" font-size="10" font-weight="800" text-anchor="middle">SEC 114 RALLY LOT</text>
+            <text x="135" y="100" fill="#f1c21b" font-size="7.5" font-weight="bold" text-anchor="middle">GATES: 2H PRIOR</text>
+
+            <!-- CENTER: Sizzling Pit Smoker & Concession Drop -->
+            <rect x="275" y="65" width="145" height="58" rx="16" fill="#151a26" stroke="#ff6600" stroke-width="2.5" />
+            <!-- Smokestack with Rising Smoke -->
+            <rect x="400" y="32" width="14" height="34" rx="3" fill="#10141e" stroke="#666" stroke-width="1.5" />
+            <ellipse cx="407" cy="20" rx="12" ry="8" fill="url(#smokeRadial)" class="astryx-shockwave-ring" />
+            <ellipse cx="414" cy="8" rx="18" ry="10" fill="url(#smokeRadial)" class="astryx-shockwave-ring" />
+            <!-- Glowing Fire Chamber -->
+            <rect x="285" y="86" width="125" height="24" rx="6" fill="url(#grillGlow)" />
+            <line x1="290" y1="98" x2="400" y2="98" stroke="#ffe066" stroke-width="2" stroke-dasharray="6 4" />
+            <!-- Pit Gauge -->
+            <circle cx="347" cy="65" r="9" fill="#0d111a" stroke="#f1c21b" stroke-width="1.5" />
+            <text x="347" y="68" fill="#f1c21b" font-size="6.5" font-weight="bold" text-anchor="middle">225°</text>
+            <text x="347" y="140" fill="#ff8800" font-size="9" font-weight="800" text-anchor="middle">🔥 {_tg['grill_special'].upper()}</text>
+
+            <!-- RIGHT: Priority Wristband Entry Hub -->
+            <rect x="475" y="60" width="145" height="68" rx="12" fill="#0d111a" stroke="#42be65" stroke-width="2" />
+            <text x="547" y="82" fill="#42be65" font-size="8.5" font-weight="800" text-anchor="middle">🎟️ SECTION PRIORITY PASS</text>
+            <text x="547" y="98" fill="#ffffff" font-size="8" text-anchor="middle">148 Fans Rallied In Lot</text>
+            <rect x="495" y="106" width="105" height="12" rx="6" fill="#1c2536" />
+            <rect x="495" y="106" width="78" height="12" rx="6" fill="#42be65" />
+            <text x="547" y="115" fill="#ffffff" font-size="6.5" font-weight="bold" text-anchor="middle">74% CAPACITY</text>
         </svg>
         """
-        st.markdown("\n".join(l.lstrip() for l in _campus_svg.splitlines() if l.strip()), unsafe_allow_html=True)
+        st.markdown("\n".join(l.lstrip() for l in _tailgate_hero_svg.splitlines() if l.strip()), unsafe_allow_html=True)
 
-        col_st1, col_st2 = st.columns(2)
-        with col_st1:
+        # ==============================================================================
+        # TWO INTERACTIVE VIP MEETUP WRISTBANDS & STATIONS
+        # ==============================================================================
+        st.markdown("### 🎟️ Official Gameday Meetup Stations & Wristbands")
+        col_m1, col_m2 = st.columns(2)
+
+        # MEETUP 1: PLAZA / LOT B MEGA-TAILGATE
+        with col_m1:
+            _lot_title = f"{_tg['icon']} Plaza Tailgate & Smoker Pit ({_tg_team})" if _tg_is_bb else f"{_tg['icon']} Lot B Mega-Tailgate Pit ({_tg_team})"
+            _lot_ev_id = "meetup_rally_main"
+            _rsvpd_main = st.session_state.get(f"rsvpd_{_lot_ev_id}", False)
+            
             st.markdown(f"""
-            <div style="background: #0f131d; border: 1.5px solid {_tg['accent']}; border-radius: 14px; padding: 16px; margin-top: 10px;">
-                <span style="background: {_tg['accent']}25; color: {_tg['accent']}; padding: 2px 8px; border-radius: 4px; font-size: 7.5pt; font-weight: 800;">⛺ STALL #1 &bull; TENT COMMONS</span>
-                <h4 style="color: #ffffff; margin: 6px 0 4px 0;">{_tg['tent_unit']}</h4>
-                <p style="color: #dcdcdc; font-size: 8.5pt; margin: 0 0 10px 0;">Section 114/115 fan campout. Line monitors on duty. Early wristband access.</p>
-                <div style="background: #080c14; padding: 8px 12px; border-radius: 8px; border: 1px solid #1f2737; font-size: 8pt; color: #a8a8a8;">
-                    📍 <b>Host:</b> Marcus Vance & Elena Rostova &bull; 🎟️ <b>Perk:</b> 1.25x Multiplier Entry
+            <div style="background: linear-gradient(135deg, #101522 0%, #0a0d14 100%); border: 2px solid {'#42be65' if _rsvpd_main else _tg['accent']}; border-radius: 14px; padding: 18px; margin-bottom: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.6);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <span style="background: {'rgba(66,190,101,0.2)' if _rsvpd_main else 'rgba(15,98,254,0.2)'}; color: {'#42be65' if _rsvpd_main else '#78a9ff'}; padding: 3px 10px; border-radius: 9999px; font-size: 7.5pt; font-weight: 800; text-transform: uppercase;">
+                        {'● VIP WRISTBAND ACTIVE' if _rsvpd_main else '🎟️ PRIORITY WRISTBAND'}
+                    </span>
+                    <span style="color: #f1c21b; font-size: 8pt; font-weight: bold;">74% Capacity</span>
+                </div>
+                <h4 style="color: #ffffff; margin: 4px 0 6px 0; font-size: 12pt;">{_lot_title}</h4>
+                <p style="color: #dcdcdc; font-size: 8.5pt; margin: 0 0 10px 0;">Official pre-game gathering for Section 114/115. Thunderstick pickup, banner painting, and smoked food drop.</p>
+                
+                <div style="background: #07090e; border: 1px solid #1f2737; border-radius: 8px; padding: 10px; font-size: 8pt; color: #a8a8a8; margin-bottom: 12px;">
+                    📍 <b>Location:</b> North Plaza Student Gate (Lot B) &bull; ⏰ <b>Arrival:</b> 2 Hours Prior<br/>
+                    🍔 <b>Menu:</b> {_tg['grill_special']} &bull; ⚡ <b>Perk:</b> 1.25x Attendance Multiplier
                 </div>
             </div>
             """, unsafe_allow_html=True)
-            _tent_pitched = st.session_state.get("tailgate_tent_pitched", False)
-            if not _tent_pitched:
-                if st.button(f"⛺ Pitch Section Tent & RSVP ({_tg_team})", key="btn_pitch_tent", use_container_width=True):
-                    st.session_state.tailgate_tent_pitched = True
+
+            if not _rsvpd_main:
+                if st.button("🎟️ Claim VIP Tailgate Wristband", key="btn_claim_main_tailgate", type="primary", use_container_width=True):
+                    st.session_state[f"rsvpd_{_lot_ev_id}"] = True
                     st.session_state.tailgates_attended = st.session_state.get("tailgates_attended", 0) + 1
                     _sync_and_persist_user_state()
-                    st.success("🎉 Tent pitched! Your section stall reservation is recorded on your Fan Passport.")
+                    st.balloons()
+                    st.success("🎉 VIP Tailgate Wristband Claimed! Credited to your Fan Passport.")
                     st.rerun()
             else:
-                _tent_h = st.session_state.get("member_hash", "0xBCN-TENT")[:8].upper()
-                st.success(f"✅ **Tent Stall Confirmed!** Passport Hash: `{_tent_h}` &bull; Attendance Logged.")
-                if st.button("Cancel Tent Reservation", key="btn_cancel_tent"):
-                    st.session_state.tailgate_tent_pitched = False
+                _v_hash = f"0xPASS-{st.session_state.member_hash[2:8].upper()}"
+                st.success(f"✅ **Wristband Active!** Priority Hash: `{_v_hash}` &bull; 1.25x Multiplier Armed.")
+                if st.button("Cancel Tailgate Wristband", key="btn_cancel_main_tailgate", use_container_width=True):
+                    st.session_state[f"rsvpd_{_lot_ev_id}"] = False
                     _sync_and_persist_user_state()
                     st.rerun()
 
-        with col_st2:
+        # MEETUP 2: SHUTTLE EXPRESS & CONCOURSE MARCH
+        with col_m2:
+            _shut_title = "🚌 Concourse Priority Shuttle & Section March"
+            _shut_ev_id = "meetup_shuttle_march"
+            _rsvpd_shut = st.session_state.get(f"rsvpd_{_shut_ev_id}", False)
+            
             st.markdown(f"""
-            <div style="background: #0f131d; border: 1.5px solid #ff6600; border-radius: 14px; padding: 16px; margin-top: 10px;">
-                <span style="background: rgba(255,102,0,0.2); color: #ff6600; padding: 2px 8px; border-radius: 4px; font-size: 7.5pt; font-weight: 800;">🥩 STALL #2 &bull; SMOKEHOUSE & GRILL</span>
-                <h4 style="color: #ffffff; margin: 6px 0 4px 0;">{_tg['grill_special']}</h4>
-                <p style="color: #dcdcdc; font-size: 8.5pt; margin: 0 0 10px 0;">Official Tailgate Partner Station. Smoked hot off the pit 3 hours before doors open.</p>
-                <div style="background: #080c14; padding: 8px 12px; border-radius: 8px; border: 1px solid #1f2737; font-size: 8pt; color: #a8a8a8;">
-                    🍔 <b>Partner:</b> Whataburger® &bull; 🎟️ <b>Perk:</b> Free Pre-Game Drink & Biscuit Voucher
+            <div style="background: linear-gradient(135deg, #101522 0%, #0a0d14 100%); border: 2px solid {'#42be65' if _rsvpd_shut else '#ff6600'}; border-radius: 14px; padding: 18px; margin-bottom: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.6);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <span style="background: {'rgba(66,190,101,0.2)' if _rsvpd_shut else 'rgba(255,102,0,0.2)'}; color: {'#42be65' if _rsvpd_shut else '#ff8833'}; padding: 3px 10px; border-radius: 9999px; font-size: 7.5pt; font-weight: 800; text-transform: uppercase;">
+                        {'● BOARDING PASS ISSUED' if _rsvpd_shut else '🚌 SHUTTLE PASS'}
+                    </span>
+                    <span style="color: #42be65; font-size: 8pt; font-weight: bold;">Shuttles: Every 10 Min</span>
+                </div>
+                <h4 style="color: #ffffff; margin: 4px 0 6px 0; font-size: 12pt;">{_shut_title}</h4>
+                <p style="color: #dcdcdc; font-size: 8.5pt; margin: 0 0 10px 0;">Express transit directly to Section 114 turnstiles. Wearable BLE pairing station and coordinated march.</p>
+                
+                <div style="background: #07090e; border: 1px solid #1f2737; border-radius: 8px; padding: 10px; font-size: 8pt; color: #a8a8a8; margin-bottom: 12px;">
+                    📍 <b>Pickup:</b> North Express Bay 3 &bull; ⏰ <b>Departures:</b> Starting 90 Min Prior<br/>
+                    📱 <b>Sync:</b> Wearable BLE App Pairing &bull; 🚶 <b>March:</b> Gate 3 Concourse Entrance
                 </div>
             </div>
             """, unsafe_allow_html=True)
-            _claimed_food = st.session_state.get("tailgate_food_claimed", False)
-            if not _claimed_food:
-                if st.button("🍔 Claim Pre-Game Tailgate BBQ Voucher", key="btn_claim_tailgate_food", use_container_width=True):
-                    st.session_state.tailgate_food_claimed = True
+
+            if not _rsvpd_shut:
+                if st.button("🚌 Claim Shuttle Boarding Pass", key="btn_claim_shuttle_pass", use_container_width=True):
+                    st.session_state[f"rsvpd_{_shut_ev_id}"] = True
                     _sync_and_persist_user_state()
-                    st.balloons()
-                    st.success("🎉 Whataburger® Pre-Game Voucher added to your Living Trophy Case!")
+                    st.success("🎉 Shuttle Boarding Pass Issued! Express Bay 3 access unlocked.")
                     st.rerun()
             else:
-                st.success("✅ **BBQ Voucher Claimed!** Redeemable at Lot B Concourse Gates.")
+                _s_hash = f"0xSHUTTLE-{st.session_state.member_hash[2:8].upper()}"
+                st.success(f"✅ **Boarding Pass Active!** Express Pass: `{_s_hash}` &bull; Bay 3 Priority.")
+                if st.button("Cancel Shuttle Pass", key="btn_cancel_shuttle_pass", use_container_width=True):
+                    st.session_state[f"rsvpd_{_shut_ev_id}"] = False
+                    _sync_and_persist_user_state()
+                    st.rerun()
 
-    # ==============================================================================
-    # ZONE 2: THE 36-HOUR RIVALRY WAR ROOM ('TALE OF THE TAPE')
-    # ==============================================================================
+
     elif "2. The 36h Rivalry War Room" in s2_zone:
         st.subheader(f"⚔️ 36-Hour Rivalry War Room: Tale of the Tape ({_tg_team})")
         st.caption("Head-to-head fan section confrontation metrics and collective game prediction lock-in.")
