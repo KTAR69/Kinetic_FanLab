@@ -624,6 +624,27 @@ section[data-testid="stSidebar"] div[role="radiogroup"] > label:has(input:checke
     border-color: #0f62fe !important;
     box-shadow: 0 0 12px rgba(15, 98, 254, 0.35) !important;
 }
+
+/* Fix Sidebar Emoji Reaction Buttons Padding & Icon Visibility */
+[data-testid="stSidebar"] div[data-testid="stHorizontalBlock"] div.stButton > button {
+    padding: 0 !important;
+    min-height: 40px !important;
+    height: 40px !important;
+    width: 40px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 15pt !important;
+    line-height: 1 !important;
+}
+[data-testid="stSidebar"] div[data-testid="stHorizontalBlock"] div.stButton > button p {
+    font-size: 15pt !important;
+    line-height: 1 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -4187,17 +4208,30 @@ elif screen == "🎪 36h Virtual Tailgate & Meetups" or "Screen 2" in screen:
     # ------------------------------------------------------------------
     # 3 HIGH-IMPACT VIRTUAL TAILGATE HUBS (INTERACTIVE SELECTION)
     # ------------------------------------------------------------------
-    s2_zone = st.radio(
-        "Tailgate Hub Selector",
-        ["🎪 1. Gameday Tailgate & Meetup Commons", "⚔️ 2. The 36h Rivalry War Room ('Tale of the Tape')", "🗣️ 3. Watsonx Granite Tactical Chant Synthesizer"],
-        horizontal=True,
-        label_visibility="collapsed"
-    )
+    if "s2_active_zone" not in st.session_state:
+        st.session_state.s2_active_zone = "tailgate"
+    
+    z_col1, z_col2, z_col3 = st.columns(3)
+    t1_type = "primary" if st.session_state.s2_active_zone == "tailgate" else "secondary"
+    t2_type = "primary" if st.session_state.s2_active_zone == "war_room" else "secondary"
+    t3_type = "primary" if st.session_state.s2_active_zone == "chants" else "secondary"
+    
+    if z_col1.button("🎪 1. Tailgate Commons", key="pill_tg_1", type=t1_type, use_container_width=True):
+        st.session_state.s2_active_zone = "tailgate"
+        st.rerun()
+    if z_col2.button("⚔️ 2. Rivalry War Room", key="pill_tg_2", type=t2_type, use_container_width=True):
+        st.session_state.s2_active_zone = "war_room"
+        st.rerun()
+    if z_col3.button("🗣️ 3. Chant Synthesizer", key="pill_tg_3", type=t3_type, use_container_width=True):
+        st.session_state.s2_active_zone = "chants"
+        st.rerun()
+        
+    s2_zone = st.session_state.s2_active_zone
 
     # ==============================================================================
     # ZONE 1: GAMEDAY TAILGATE & MEETUP COMMONS
     # ==============================================================================
-    if "1. Gameday Tailgate & Meetup Commons" in s2_zone or "Tailgate" in s2_zone:
+    if s2_zone == "tailgate":
         st.subheader(f"🎪 Official Gameday Tailgate & Pre-Game Meetups ({_tg_team})")
         st.caption("Live pre-game rally lot, pit smoker specials, and priority section wristbands before arena gates open.")
 
@@ -4334,7 +4368,7 @@ elif screen == "🎪 36h Virtual Tailgate & Meetups" or "Screen 2" in screen:
     # ==============================================================================
     # ZONE 2: THE 36-HOUR RIVALRY WAR ROOM ('TALE OF THE TAPE' & NFT PROGNOSTICATOR)
     # ==============================================================================
-    elif "2. The 36h Rivalry War Room" in s2_zone:
+    elif s2_zone == "war_room":
         st.subheader(f"⚔️ 36-Hour Rivalry War Room: Tale of the Tape ({_tg_team})")
         st.caption("Head-to-head fan confrontation metrics, collective section predictions, and dynamic Oracle NFT minting.")
 
@@ -4464,13 +4498,36 @@ elif screen == "🎪 36h Virtual Tailgate & Meetups" or "Screen 2" in screen:
         st.markdown("### 🔮 Lock In Your Section Prediction & Mint Gameday Oracle NFT")
         st.caption("Submit your tactical prediction to earn the verifiable Section Oracle NFT in your Living Trophy Case.")
 
+        if f"pred_to_val_{_tg_team}" not in st.session_state:
+            st.session_state[f"pred_to_val_{_tg_team}"] = "Yes"
+        if f"pred_roar_val_{_tg_team}" not in st.session_state:
+            st.session_state[f"pred_roar_val_{_tg_team}"] = "Yes"
+
         col_p1, col_p2, col_p3 = st.columns(3)
         with col_p1:
-            p_to = st.selectbox("Force Turnover in 1st 5 Min?", ["Yes (Defense Rattles 'Em)", "No (Pre-Play Rhythm)"], key="sel_p_to")
+            st.caption("⚡ Force Q1 Turnover?")
+            to_sub1, to_sub2 = st.columns(2)
+            cur_to = st.session_state[f"pred_to_val_{_tg_team}"]
+            if to_sub1.button("🟢 YES", key=f"btn_to_y_{_tg_team}", type="primary" if cur_to == "Yes" else "secondary", use_container_width=True):
+                st.session_state[f"pred_to_val_{_tg_team}"] = "Yes"
+                st.rerun()
+            if to_sub2.button("⚪ NO", key=f"btn_to_n_{_tg_team}", type="primary" if cur_to == "No" else "secondary", use_container_width=True):
+                st.session_state[f"pred_to_val_{_tg_team}"] = "No"
+                st.rerun()
+            p_to = f"{cur_to} (Defense Rattles)"
         with col_p2:
-            p_roar = st.selectbox("Break 105 dB before Halftime?", ["Yes (Bleachers Rocking)", "No (Saving for Clutch)"], key="sel_p_roar")
+            st.caption("⚡ Break 105 dB Halftime?")
+            roar_sub1, roar_sub2 = st.columns(2)
+            cur_roar = st.session_state[f"pred_roar_val_{_tg_team}"]
+            if roar_sub1.button("🟢 YES", key=f"btn_r_y_{_tg_team}", type="primary" if cur_roar == "Yes" else "secondary", use_container_width=True):
+                st.session_state[f"pred_roar_val_{_tg_team}"] = "Yes"
+                st.rerun()
+            if roar_sub2.button("⚪ NO", key=f"btn_r_n_{_tg_team}", type="primary" if cur_roar == "No" else "secondary", use_container_width=True):
+                st.session_state[f"pred_roar_val_{_tg_team}"] = "No"
+                st.rerun()
+            p_roar = f"{cur_roar} (Bleachers Rocking)"
         with col_p3:
-            p_margin = st.slider("Projected Final Margin (Pts)", min_value=-20, max_value=30, value=7, key="sld_p_margin")
+            p_margin = st.slider("Projected Margin (Pts)", min_value=-20, max_value=30, value=7, key="sld_p_margin")
 
         _pred_locked = st.session_state.get(f"predictions_locked_{_tg_team}", False)
         if not _pred_locked:
