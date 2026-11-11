@@ -5754,23 +5754,59 @@ elif screen == "🧠 AI Squad & Game Intelligence" or "Screen 5" in screen:
     # PART 1: GAME-SPECIFIC STATISTICS, SITUATION & POSSIBLE SCENARIOS
     # ------------------------------------------------------------------
     banner_color = "#da1e28" if st.session_state.is_clutch else "#0f62fe"
-    st.markdown(f"""
-    <div style="background-color: #12161f; border-left: 5px solid {banner_color}; padding: 12px 16px; border-radius: 8px; margin-bottom: 14px;">
-        <span style="color: {banner_color}; font-weight: bold; font-size: 9.5pt; text-transform: uppercase;">
-            📊 LIVE GAME SITUATION — {intel['clock_situation']}
-        </span>
-        <span style="color: #f1c21b; font-weight: bold; font-size: 9.5pt; float: right;">
-            Squad Synergy: {st.session_state.synergy_score}% | Multiplier: {intel['multiplier']}x
-        </span><br>
-        <span style="color: #f4f4f4; font-size: 10pt;">Active Cue: <b>{intel['pacing_directive']}</b></span>
+    _s5_hud_raw = f"""
+    <div style="background: linear-gradient(135deg, #101522 0%, #080c14 100%); border: 2px solid {banner_color}; border-radius: 16px; padding: 18px 22px; margin-bottom: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 25px {banner_color}44;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 10px; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="background: {banner_color}25; color: {'#ff8389' if st.session_state.is_clutch else '#78a9ff'}; border: 1.5px solid {banner_color}; padding: 3px 12px; border-radius: 9999px; font-size: 8pt; font-weight: 800; text-transform: uppercase;">
+                    ⚡ LIVE TACTICAL SITUATION // {intel['clock_situation']}
+                </span>
+                <span style="color: #42be65; font-size: 8pt; font-weight: 800;">● WATSONX ORCHESTRATE ACTIVE</span>
+            </div>
+            <span style="color: #f1c21b; font-size: 8.5pt; font-weight: bold;">
+                Squad Synergy: <b>{st.session_state.synergy_score}%</b> &bull; Multiplier: <b>{intel['multiplier']}x</b>
+            </span>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div>
+                <span style="color: #8d8d8d; font-size: 7.5pt; text-transform: uppercase; font-weight: 700;">TACTICAL PACING DIRECTIVE</span>
+                <h3 style="color: #ffffff; margin: 2px 0 0 0; font-size: 13pt; font-weight: 800;">{intel['pacing_directive']}</h3>
+            </div>
+            <div style="background: rgba(14,19,29,0.85); border: 1px solid #1f2737; border-radius: 10px; padding: 6px 14px; text-align: right;">
+                <span style="color: #a8a8a8; font-size: 7.5pt; text-transform: uppercase;">Active Section</span><br/>
+                <b style="color: #5da8ff; font-size: 9.5pt;">{p_info['sec']}</b>
+            </div>
+        </div>
     </div>
-    """, unsafe_allow_html=True)
+    """
+    st.markdown("\n".join(l.lstrip() for l in _s5_hud_raw.splitlines() if l.strip()), unsafe_allow_html=True)
 
-    m1, m2, m3, m4 = st.columns(4)
-    m1.metric(intel["key_stat_label"], intel["key_stat_val"], delta=intel["key_stat_delta"])
-    m2.metric(intel["miss_label"], f"{intel['current_miss_pct']}%", delta=f"At {current_cmi}/100 CMI")
-    m3.metric("Home Win Prob Swing", f"+{intel['win_prob_swing']}%", delta="Live Crowd Factor")
-    m4.metric("Section Rivalry Lead", f"+{intel['rivalry_lead']} pts", delta=f"#1 {p_info['sec'][:11]}")
+    # 4 High-Contrast Tactical Metric Tiles
+    _m_tiles_raw = f"""
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 18px;">
+        <div style="background: #0f131d; border: 1px solid #1f2737; border-radius: 12px; padding: 12px 14px; text-align: center;">
+            <span style="color: #8d8d8d; font-size: 7pt; text-transform: uppercase; font-weight: 700;">{intel['key_stat_label']}</span>
+            <h3 style="color: #ffffff; margin: 4px 0 2px 0; font-size: 15pt; font-weight: 800;">{intel['key_stat_val']}</h3>
+            <span style="color: #42be65; font-size: 7.5pt; font-weight: bold;">{intel['key_stat_delta']}</span>
+        </div>
+        <div style="background: #0f131d; border: 1px solid #1f2737; border-radius: 12px; padding: 12px 14px; text-align: center;">
+            <span style="color: #8d8d8d; font-size: 7pt; text-transform: uppercase; font-weight: 700;">{intel['miss_label']}</span>
+            <h3 style="color: {'#42be65' if st.session_state.is_clutch else '#ff6600'}; margin: 4px 0 2px 0; font-size: 15pt; font-weight: 800;">{intel['current_miss_pct']}%</h3>
+            <span style="color: #f1c21b; font-size: 7.5pt; font-weight: bold;">At {current_cmi}/100 CMI</span>
+        </div>
+        <div style="background: #0f131d; border: 1px solid #1f2737; border-radius: 12px; padding: 12px 14px; text-align: center;">
+            <span style="color: #8d8d8d; font-size: 7pt; text-transform: uppercase; font-weight: 700;">HOME WIN PROB SWING</span>
+            <h3 style="color: #5da8ff; margin: 4px 0 2px 0; font-size: 15pt; font-weight: 800;">+{intel['win_prob_swing']}%</h3>
+            <span style="color: #5da8ff; font-size: 7.5pt; font-weight: bold;">Live Crowd Factor</span>
+        </div>
+        <div style="background: #0f131d; border: 1px solid #1f2737; border-radius: 12px; padding: 12px 14px; text-align: center;">
+            <span style="color: #8d8d8d; font-size: 7pt; text-transform: uppercase; font-weight: 700;">SECTION RIVALRY LEAD</span>
+            <h3 style="color: #f1c21b; margin: 4px 0 2px 0; font-size: 15pt; font-weight: 800;">+{intel['rivalry_lead']} pts</h3>
+            <span style="color: #42be65; font-size: 7.5pt; font-weight: bold;">#1 {p_info['sec'][:11]}</span>
+        </div>
+    </div>
+    """
+    st.markdown("\n".join(l.lstrip() for l in _m_tiles_raw.splitlines() if l.strip()), unsafe_allow_html=True)
 
     st.subheader("🔮 Possible Game Scenarios & Crowd Impact Projections")
     sc_cols = st.columns(3)
@@ -5792,20 +5828,24 @@ elif screen == "🧠 AI Squad & Game Intelligence" or "Screen 5" in screen:
     # PART 2: QUICK @AGENT SELECTOR BUTTONS & TWO-WAY SQUAD CHAT
     # ------------------------------------------------------------------
     st.markdown("---")
-    st.subheader("💬 Direct Comms With Your AI Squad")
-    st.caption("Click a button below to choose which Squad specialist you're talking to—on the backend, all 4 agents share live insights as one team.")
+    st.subheader("💬 Direct Comms With Your AI Squad Specialists")
+    st.caption("Select an AI Squad specialist below. On the backend, all 4 agents share live insights as one unified team via IBM watsonx Orchestrate.")
 
-    btn_c1, btn_c2, btn_c3, btn_c4, btn_c5 = st.columns(5)
-    if btn_c1.button("🏅 @coach", use_container_width=True, key="sel_coach"):
-        st.session_state.selected_squad_agent = "@coach"
-    if btn_c2.button("⏱️ @conductor", use_container_width=True, key="sel_conductor"):
-        st.session_state.selected_squad_agent = "@conductor"
-    if btn_c3.button("🏆 @strategist", use_container_width=True, key="sel_strategist"):
-        st.session_state.selected_squad_agent = "@strategist"
-    if btn_c4.button("📊 @scout", use_container_width=True, key="sel_scout"):
-        st.session_state.selected_squad_agent = "@scout"
-    if btn_c5.button("⚡ @squad (All 4)", use_container_width=True, key="sel_squad"):
-        st.session_state.selected_squad_agent = "@squad"
+    # 5 Interactive Squad Agent Dossier Selector Buttons
+    squad_btn_cols = st.columns(5)
+    _squad_list = [
+        ("@coach", "🏅 @coach", "Hype Coach", "#42be65"),
+        ("@conductor", "⏱️ @conductor", "The Conductor", "#0f62fe"),
+        ("@strategist", "🏆 @strategist", "The Strategist", "#f1c21b"),
+        ("@scout", "📊 @scout", "The Scout", "#8a3ffc"),
+        ("@squad", "⚡ @squad", "Full Squad", "#0f62fe"),
+    ]
+    for _s_i, (_s_tag, _s_label, _s_role, _s_col) in enumerate(_squad_list):
+        _is_act = (st.session_state.selected_squad_agent == _s_tag)
+        _btn_t = "primary" if _is_act else "secondary"
+        if squad_btn_cols[_s_i].button(f"{_s_label}\n({_s_role})", key=f"sel_sq_{_s_tag}", type=_btn_t, use_container_width=True):
+            st.session_state.selected_squad_agent = _s_tag
+            st.rerun()
 
     active_tag = st.session_state.selected_squad_agent
     tag_descriptions = {
