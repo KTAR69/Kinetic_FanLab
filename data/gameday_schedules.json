@@ -6,7 +6,7 @@
       "level": "NCAA Division I Men's Basketball",
       "conference_league": "ACC",
       "home_venue": "Cameron Indoor Stadium (Section 114)",
-      "record": "2-0 (ACC)",
+      "record": "2-1 (ACC)",
       "full_schedule": [
         {
           "date": "Nov 02, 2026",
@@ -25,20 +25,20 @@
           "status": "Final"
         },
         {
-          "date": "Nov 11, 2026",
+          "date": "Nov 10, 2026",
           "opponent": "vs. Michigan State Spartans",
-          "venue": "United Center",
-          "result": "11/10 - 7:00 PM EST",
+          "venue": "United Center (Chicago)",
+          "result": "L 73-79 | Final",
           "tv": "ESPN",
-          "status": "Upcoming"
+          "status": "Final"
         },
         {
-          "date": "Nov 14, 2026",
+          "date": "Nov 13, 2026",
           "opponent": "vs. SIU Edwardsville Cougars",
           "venue": "Cameron Indoor Stadium",
-          "result": "11/13 - 8:00 PM EST",
+          "result": "8:00 PM EST",
           "tv": "CW",
-          "status": "Upcoming"
+          "status": "Tonight"
         },
         {
           "date": "Nov 18, 2026",
@@ -272,7 +272,7 @@
       "level": "NBA Professional Basketball",
       "conference_league": "NBA Eastern Conference",
       "home_venue": "TD Garden (Boston) (Section 114)",
-      "record": "5-2 (Eastern Conference)",
+      "record": "9-2 (Eastern Conference)",
       "full_schedule": [
         {
           "date": "Tue, Oct 20, 2026",
@@ -331,19 +331,107 @@
           "status": "Final"
         },
         {
-          "date": "Wed, Nov 4, 2026",
+          "date": "Nov 04, 2026",
           "opponent": "vs. Milwaukee Bucks",
           "venue": "TD Garden (Boston)",
-          "result": "6:30 PM EST",
+          "result": "W 109-102 | Final",
           "tv": "ESPN / NBCSB",
-          "status": "Next Game"
+          "status": "Final"
         },
         {
-          "date": "Fri, Nov 6, 2026",
+          "date": "Nov 06, 2026",
           "opponent": "at Charlotte Hornets",
           "venue": "Spectrum Center",
-          "result": "6:00 PM EST",
+          "result": "W 118-110 | Final",
           "tv": "NBCSB",
+          "status": "Final"
+        },
+        {
+          "date": "Nov 08, 2026",
+          "opponent": "vs. Denver Nuggets",
+          "venue": "TD Garden (Boston)",
+          "result": "W 121-114 | Final",
+          "tv": "NBA League Pass",
+          "status": "Final"
+        },
+        {
+          "date": "Nov 11, 2026",
+          "opponent": "vs. Golden State Warriors",
+          "venue": "TD Garden (Boston)",
+          "result": "W 128-117 | Final",
+          "tv": "ESPN",
+          "status": "Final"
+        },
+        {
+          "date": "Nov 13, 2026",
+          "opponent": "at Miami Heat",
+          "venue": "Kaseya Center",
+          "result": "7:30 PM EST",
+          "tv": "NBA League Pass",
+          "status": "Tonight"
+        },
+        {
+          "date": "Nov 15, 2026",
+          "opponent": "vs. Toronto Raptors",
+          "venue": "TD Garden (Boston)",
+          "result": "7:30 PM EST",
+          "tv": "NBA League Pass",
+          "status": "Upcoming"
+        },
+        {
+          "date": "Nov 18, 2026",
+          "opponent": "at Oklahoma City Thunder",
+          "venue": "Paycom Center",
+          "result": "8:00 PM EST",
+          "tv": "NBA League Pass",
+          "status": "Upcoming"
+        },
+        {
+          "date": "Nov 20, 2026",
+          "opponent": "at Memphis Grizzlies",
+          "venue": "FedExForum",
+          "result": "8:00 PM CST",
+          "tv": "NBA League Pass",
+          "status": "Upcoming"
+        },
+        {
+          "date": "Nov 22, 2026",
+          "opponent": "vs. Houston Rockets",
+          "venue": "TD Garden (Boston)",
+          "result": "7:30 PM EST",
+          "tv": "ESPN",
+          "status": "Upcoming"
+        },
+        {
+          "date": "Nov 25, 2026",
+          "opponent": "vs. Indiana Pacers",
+          "venue": "TD Garden (Boston)",
+          "result": "7:30 PM EST",
+          "tv": "NBA League Pass",
+          "status": "Upcoming"
+        },
+        {
+          "date": "Nov 29, 2026",
+          "opponent": "at San Antonio Spurs",
+          "venue": "Frost Bank Center",
+          "result": "4:00 PM EST",
+          "tv": "NBA TV",
+          "status": "Upcoming"
+        },
+        {
+          "date": "Dec 03, 2026",
+          "opponent": "vs. Chicago Bulls",
+          "venue": "TD Garden (Boston)",
+          "result": "7:30 PM EST",
+          "tv": "NBA League Pass",
+          "status": "Upcoming"
+        },
+        {
+          "date": "Dec 06, 2026",
+          "opponent": "at New York Knicks",
+          "venue": "Madison Square Garden",
+          "result": "7:30 PM EST",
+          "tv": "ABC",
           "status": "Upcoming"
         }
       ]
@@ -354,31 +442,31 @@
       "level": "NCAA Division I Men's Basketball",
       "conference_league": "SEC",
       "home_venue": "Moody Center (Austin) (Section 114)",
-      "record": "1-0 (SEC)",
+      "record": "4-0 (SEC)",
       "full_schedule": [
         {
-          "date": "Nov 2, 2026",
+          "date": "Nov 02, 2026",
           "opponent": "vs. Chicago State (Season Opener)",
           "venue": "Moody Center (Austin)",
-          "result": "W 109-59",
+          "result": "W 109-59 | Final",
           "tv": "SEC Network",
           "status": "Final"
         },
         {
-          "date": "Nov 5, 2026",
+          "date": "Nov 05, 2026",
           "opponent": "vs. Gardner-Webb",
           "venue": "Moody Center (Austin)",
-          "result": "7:00 PM CT",
+          "result": "W 98-50 | Final",
           "tv": "SECN+",
-          "status": "Next Game"
+          "status": "Final"
         },
         {
-          "date": "Nov 9, 2026",
+          "date": "Nov 09, 2026",
           "opponent": "vs. Grambling State",
           "venue": "Moody Center (Austin)",
-          "result": "6:00 PM CT",
+          "result": "W 86-61 | Final",
           "tv": "SEC Network",
-          "status": "Upcoming"
+          "status": "Final"
         },
         {
           "date": "Nov 15, 2026",
@@ -386,6 +474,38 @@
           "venue": "Frost Bank Center (San Antonio)",
           "result": "2:00 PM CT",
           "tv": "ESPN",
+          "status": "Upcoming"
+        },
+        {
+          "date": "Nov 20, 2026",
+          "opponent": "vs. Texas Southern",
+          "venue": "Moody Center (Austin)",
+          "result": "7:00 PM CT",
+          "tv": "SECN+",
+          "status": "Upcoming"
+        },
+        {
+          "date": "Nov 25, 2026",
+          "opponent": "vs. Wichita State",
+          "venue": "Moody Center (Austin)",
+          "result": "7:30 PM CT",
+          "tv": "SEC Network",
+          "status": "Upcoming"
+        },
+        {
+          "date": "Dec 03, 2026",
+          "opponent": "vs. Houston Cougars",
+          "venue": "Moody Center (Austin)",
+          "result": "8:00 PM CT",
+          "tv": "ESPN",
+          "status": "Upcoming"
+        },
+        {
+          "date": "Dec 10, 2026",
+          "opponent": "at Arizona State Sun Devils",
+          "venue": "Desert Financial Arena",
+          "result": "9:00 PM EST",
+          "tv": "ESPNU",
           "status": "Upcoming"
         }
       ]
@@ -396,7 +516,7 @@
       "level": "NBA Professional Basketball",
       "conference_league": "NBA Western Conference",
       "home_venue": "Frost Bank Center (San Antonio) (Section 114)",
-      "record": "5-2 (NBA Western Conference)",
+      "record": "7-3 (NBA Western Conference)",
       "full_schedule": [
         {
           "date": "Oct 21, 2026",
@@ -458,47 +578,47 @@
           "date": "Nov 05, 2026",
           "opponent": "vs. Dallas Mavericks",
           "venue": "Frost Bank Center",
-          "result": "11/4 - 9:30 PM EST",
+          "result": "W 118-109 | Final",
           "tv": "ESPN",
-          "status": "Upcoming"
+          "status": "Final"
         },
         {
           "date": "Nov 07, 2026",
           "opponent": "at Sacramento Kings",
           "venue": "Golden 1 Center",
-          "result": "11/6 - 10:00 PM EST",
+          "result": "W 112-108 | Final",
           "tv": "DAZN SAS",
-          "status": "Upcoming"
+          "status": "Final"
         },
         {
           "date": "Nov 08, 2026",
           "opponent": "at Portland Trail Blazers",
           "venue": "Moda Center",
-          "result": "11/7 - 10:00 PM EST",
+          "result": "W 118-105 | Final",
           "tv": "KUNP 16",
-          "status": "Upcoming"
+          "status": "Final"
         },
         {
           "date": "Nov 10, 2026",
           "opponent": "at Phoenix Suns",
-          "venue": "Mortgage Matchup Center",
-          "result": "11/9 - 9:00 PM EST",
+          "venue": "Footprint Center",
+          "result": "L 104-116 | Final",
           "tv": "Arizona's Family 3TV",
-          "status": "Upcoming"
+          "status": "Final"
         },
         {
           "date": "Nov 12, 2026",
           "opponent": "at Chicago Bulls",
           "venue": "United Center",
-          "result": "11/11 - 8:00 PM EST",
+          "result": "W 115-107 | Final",
           "tv": "DAZN SAS",
-          "status": "Upcoming"
+          "status": "Final"
         },
         {
           "date": "Nov 14, 2026",
           "opponent": "vs. Golden State Warriors",
           "venue": "Frost Bank Center",
-          "result": "11/13 - 9:30 PM EST",
+          "result": "9:30 PM EST",
           "tv": "Prime Video",
           "status": "Upcoming"
         },
@@ -1384,9 +1504,9 @@
           "date": "Nov 08, 2026",
           "opponent": "vs. Michigan State Spartans",
           "venue": "Michigan Stadium",
-          "result": "11/7 - 7:30 PM EST",
+          "result": "W 24-17 | Final",
           "tv": "Peacock",
-          "status": "Upcoming"
+          "status": "Final"
         },
         {
           "date": "Nov 14, 2026",
@@ -1490,9 +1610,9 @@
           "date": "Nov 08, 2026",
           "opponent": "at New England Patriots",
           "venue": "Gillette Stadium",
-          "result": "11/8 - 4:25 PM EST",
+          "result": "W 27-20 | Final",
           "tv": "Fox",
-          "status": "Upcoming"
+          "status": "Final"
         },
         {
           "date": "Nov 15, 2026",
@@ -1636,9 +1756,9 @@
           "date": "Nov 07, 2026",
           "opponent": "at Missouri Tigers",
           "venue": "Memorial Stadium",
-          "result": "11/7 - 12:00 PM EST",
+          "result": "W 28-24 | Final",
           "tv": "ESPN",
-          "status": "Upcoming"
+          "status": "Final"
         },
         {
           "date": "Nov 14, 2026",
@@ -1742,9 +1862,9 @@
           "date": "Nov 08, 2026",
           "opponent": "at Indianapolis Colts",
           "venue": "Lucas Oil Stadium",
-          "result": "11/8 - 1:00 PM EST",
+          "result": "L 21-27 | Final",
           "tv": "Fox",
-          "status": "Upcoming"
+          "status": "Final"
         },
         {
           "date": "Nov 15, 2026",

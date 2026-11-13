@@ -1529,26 +1529,41 @@ def _get_active_matchup_info(sport: str, primary_team: str):
 
 
     known_scores = {
-        ('spurs', 'dallas mavericks'): 'L 109-120 | Final',
+        # Spurs
+        ('spurs', 'dallas mavericks'): 'W 118-109 | Final',
         ('spurs', 'sacramento kings'): 'W 112-108 | Final',
         ('spurs', 'portland trail blazers'): 'W 118-105 | Final',
         ('spurs', 'houston rockets'): 'W 109-106 | Final',
         ('spurs', 'oklahoma city thunder'): 'L 93-105 | Final',
         ('spurs', 'utah jazz'): 'W 106-88 | Final',
-        ('spurs', 'minnesota timberwolves'): 'W 113-103 | Final',
+        ('spurs', 'minnesota timberwolves'): 'W 121-111 | Final',
         ('spurs', 'la clippers'): 'L 104-113 | Final',
+        ('spurs', 'phoenix suns'): 'L 104-116 | Final',
+        ('spurs', 'chicago bulls'): 'W 115-107 | Final',
+        # Celtics
+        ('celtics', 'milwaukee bucks'): 'W 109-102 | Final',
+        ('celtics', 'charlotte hornets'): 'W 118-110 | Final',
+        ('celtics', 'denver nuggets'): 'W 121-114 | Final',
+        ('celtics', 'golden state warriors'): 'W 128-117 | Final',
+        # Texas Longhorns BB
         ('longhorns', 'gardner-webb'): 'W 98-50 | Final',
         ('longhorns', 'grambling state'): 'W 86-61 | Final',
-        ('longhorns', 'chicago state'): 'W 105-59 | Final',
+        ('longhorns', 'chicago state'): 'W 109-59 | Final',
         ('longhorns', 'texas southern'): 'W 89-58 | Final',
+        # Duke
         ('duke', 'coastal carolina'): 'W 113-52 | Final',
         ('duke', 'army black knights'): 'W 84-50 | Final',
         ('duke', 'michigan state'): 'L 73-79 | Final',
+        # Texas Longhorns FB
         ('longhorns', 'florida'): 'W 49-17 | Final',
+        ('longhorns', 'missouri'): 'W 28-24 | Final',
+        # Michigan Wolverines
         ('wolverines', 'michigan state'): 'W 24-17 | Final',
-        ('cowboys', 'indianapolis colts'): 'L 21-27 | Final',
-        ('celtics', 'milwaukee bucks'): 'W 109-102 | Final',
         ('wolverines', 'rutgers'): 'W 31-17 | Final',
+        # Green Bay Packers
+        ('packers', 'new england patriots'): 'W 27-20 | Final',
+        # Dallas Cowboys
+        ('cowboys', 'indianapolis colts'): 'L 21-27 | Final',
         ('cowboys', 'arizona cardinals'): 'L 30-33 (OT) | Final',
     }
 
