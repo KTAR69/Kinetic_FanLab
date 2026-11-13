@@ -3230,7 +3230,10 @@ if screen == "🎟️ Fan Passport & Section Roster" or "Screen 1" in screen:
             p_info = PERSONA_DB.get(st.session_state.active_member, PERSONA_DB["Marcus Vance" if is_basketball else "Sarah Jenkins"])
             glow_color = "#f1c21b" if "Tier 5" in p_info['tier'] else ("#8a3ffc" if "Tier 4" in p_info['tier'] else "#0f62fe")
             tier_badge_bg = "#3a2e0a" if "Tier 5" in p_info['tier'] else ("#27163f" if "Tier 4" in p_info['tier'] else "#0c2356")
-            
+            # GAP-03: Dynamic seat anchor resolution (same logic as the holographic credential above)
+            _lp_raw_seat = st.session_state.get("seat_bb" if is_basketball else "seat_fb") or st.session_state.get("member_seat") or p_info.get("seat", "Row 3, Seat 12")
+            _lp_seat_disp = _lp_raw_seat.split(", ", 1)[1] if ", " in _lp_raw_seat else _lp_raw_seat
+
             st.markdown(f"""
             <div style="background: linear-gradient(145deg, #121622 0%, #0d1017 100%); padding: 22px; border-radius: 14px; border: 2px solid {glow_color}; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 20px {glow_color}44; text-align: center; margin-top: 6px; position: relative;">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222938; padding-bottom: 10px; margin-bottom: 12px;">
@@ -3239,7 +3242,7 @@ if screen == "🎟️ Fan Passport & Section Roster" or "Screen 1" in screen:
                 </div>
                 <h2 style="color: #ffffff; margin: 4px 0 2px 0; font-size: 18pt; font-weight: 800; letter-spacing: -0.5px;">{st.session_state.member_name}</h2>
                 <div style="display: inline-block; background-color: #0f62fe22; color: #5da8ff; border: 1px solid #0f62fe66; padding: 4px 12px; border-radius: 20px; font-weight: 700; font-size: 9pt; margin: 6px 0 12px 0;">
-                    📍 {p_info['sec']} &bull; Row 3, Seat 12
+                    📍 {p_info['sec']} &bull; {_lp_seat_disp}
                 </div>
                 <div style="background-color: #0b0e14; border: 1px solid #1f2633; border-radius: 8px; padding: 10px 14px; margin-top: 4px; display: flex; justify-content: space-between; align-items: center;">
                     <div style="text-align: left;">
