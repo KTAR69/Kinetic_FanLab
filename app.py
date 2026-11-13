@@ -1297,6 +1297,32 @@ def _load_schedules_db():
     return {}
 
 
+
+def _get_team_sponsor_badge(team_name: str):
+    """Returns authentic, regionally accurate gameday sponsor branding for each collegiate and pro market."""
+    t_low = str(team_name or "").lower()
+    if "duke" in t_low:
+        return {"brand": "Bojangles®", "brand_color": "#e31837", "icon": "🍗", "item": "Cajun Filet Biscuit & Sweet Tea"}
+    elif "celtics" in t_low:
+        return {"brand": "Dunkin'®", "brand_color": "#ff671f", "icon": "☕", "item": "Iced Coffee & 10-pc Munchkins"}
+    elif "wolverines" in t_low or "packers" in t_low:
+        return {"brand": "Culver's®", "brand_color": "#0055a5", "icon": "🧀", "item": "ButterBurger & Wisconsin Cheese Curds"}
+    elif "longhorns" in t_low or "spurs" in t_low or "cowboys" in t_low:
+        return {"brand": "Whataburger®", "brand_color": "#ff6600", "icon": "🍔", "item": "Honey Butter Chicken Biscuit"}
+    if "sve" in globals() and sve is not None:
+        try:
+            prof = sve.get_team_sponsor_profile(team_name)
+            if isinstance(prof, dict) and prof.get("brand"):
+                return {
+                    "brand": prof.get("brand", "Official Partner"),
+                    "brand_color": prof.get("brand_color", "#ff6600"),
+                    "icon": prof.get("icon", "🎁"),
+                    "item": "Gameday Concessions Drop"
+                }
+        except Exception:
+            pass
+    return {"brand": "Local Arena Partner", "brand_color": "#ff6600", "icon": "🎁", "item": "Gameday Concessions Drop"}
+
 def _get_team_visual_theme(team_name: str, sport: str):
     """Provides authentic visual stadium identity, mascot accents, and venue names across collegiate and pro levels."""
     is_bb = ("basket" in str(sport or "").lower())
@@ -3230,10 +3256,7 @@ if screen == "🎟️ Fan Passport & Section Roster" or "Screen 1" in screen:
             p_info = PERSONA_DB.get(st.session_state.active_member, PERSONA_DB["Marcus Vance" if is_basketball else "Sarah Jenkins"])
             glow_color = "#f1c21b" if "Tier 5" in p_info['tier'] else ("#8a3ffc" if "Tier 4" in p_info['tier'] else "#0f62fe")
             tier_badge_bg = "#3a2e0a" if "Tier 5" in p_info['tier'] else ("#27163f" if "Tier 4" in p_info['tier'] else "#0c2356")
-            # GAP-03: Dynamic seat anchor resolution (same logic as the holographic credential above)
-            _lp_raw_seat = st.session_state.get("seat_bb" if is_basketball else "seat_fb") or st.session_state.get("member_seat") or p_info.get("seat", "Row 3, Seat 12")
-            _lp_seat_disp = _lp_raw_seat.split(", ", 1)[1] if ", " in _lp_raw_seat else _lp_raw_seat
-
+            
             st.markdown(f"""
             <div style="background: linear-gradient(145deg, #121622 0%, #0d1017 100%); padding: 22px; border-radius: 14px; border: 2px solid {glow_color}; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 20px {glow_color}44; text-align: center; margin-top: 6px; position: relative;">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222938; padding-bottom: 10px; margin-bottom: 12px;">
@@ -3242,7 +3265,7 @@ if screen == "🎟️ Fan Passport & Section Roster" or "Screen 1" in screen:
                 </div>
                 <h2 style="color: #ffffff; margin: 4px 0 2px 0; font-size: 18pt; font-weight: 800; letter-spacing: -0.5px;">{st.session_state.member_name}</h2>
                 <div style="display: inline-block; background-color: #0f62fe22; color: #5da8ff; border: 1px solid #0f62fe66; padding: 4px 12px; border-radius: 20px; font-weight: 700; font-size: 9pt; margin: 6px 0 12px 0;">
-                    📍 {p_info['sec']} &bull; {_lp_seat_disp}
+                    📍 {p_info['sec']} &bull; Row 3, Seat 12
                 </div>
                 <div style="background-color: #0b0e14; border: 1px solid #1f2633; border-radius: 8px; padding: 10px 14px; margin-top: 4px; display: flex; justify-content: space-between; align-items: center;">
                     <div style="text-align: left;">
@@ -4212,6 +4235,7 @@ elif screen == "🎪 36h Virtual Tailgate & Meetups" or "Screen 2" in screen:
     _tg_is_bb = ("basket" in _tg_sport.lower())
     _tg_team = active_team_focus
     _tg = _get_tailgate_theme(_tg_team, _tg_sport)
+    _tg_sp = _get_team_sponsor_badge(_tg_team)
 
     st.header(f"🎪 The 36-Hour Virtual Tailgate ({_tg_sport} — {role_tag})")
     st.caption(f"Unlocks 36 hours before game-time. Section culture, pre-game campus rally, rivalry war room, and chant huddle.")
@@ -4312,14 +4336,14 @@ elif screen == "🎪 36h Virtual Tailgate & Meetups" or "Screen 2" in screen:
                     <p style="color: #dcdcdc; font-size: 8.5pt; margin: 0 0 6px 0;"><b>Section Base:</b> {_tg['tent_unit']}</p>
                     <span style="color: #78a9ff; font-size: 8pt; font-style: italic;">{_tg['tradition']}</span>
                 </div>
-                <div style="background: rgba(14,19,29,0.85); border: 1.5px solid #ff660055; border-radius: 12px; padding: 14px; text-align: left;">
+                <div style="background: rgba(14,19,29,0.85); border: 1.5px solid {_tg_sp['brand_color']}55; border-radius: 12px; padding: 14px; text-align: left;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
-                        <span style="color: #ff6600; font-size: 7.5pt; text-transform: uppercase; font-weight: 700; letter-spacing: 0.8px;">PARTNER SMOKEHOUSE</span>
-                        <span style="background: rgba(255,102,0,0.2); color: #ff6600; padding: 2px 6px; border-radius: 4px; font-size: 7pt; font-weight: bold;">WHATABURGER®</span>
+                        <span style="color: {_tg_sp['brand_color']}; font-size: 7.5pt; text-transform: uppercase; font-weight: 700; letter-spacing: 0.8px;">REGIONAL GAMEDAY PARTNER</span>
+                        <span style="background: {_tg_sp['brand_color']}25; color: {_tg_sp['brand_color']}; padding: 2px 6px; border-radius: 4px; font-size: 7pt; font-weight: bold;">{_tg_sp['brand'].upper()}</span>
                     </div>
                     <h3 style="color: #ffffff; margin: 4px 0 4px 0; font-size: 13pt; font-weight: 800;">🔥 {_tg['grill_special']}</h3>
-                    <p style="color: #dcdcdc; font-size: 8.5pt; margin: 0 0 6px 0;">Slow-smoked hot off the pit 3 hours before arena gates open.</p>
-                    <span style="color: #f1c21b; font-size: 8pt; font-weight: bold;">🍔 Free with Section 114 VIP Wristband</span>
+                    <p style="color: #dcdcdc; font-size: 8.5pt; margin: 0 0 6px 0;">Hot pre-game catering ready 3 hours before arena gates open.</p>
+                    <span style="color: #f1c21b; font-size: 8pt; font-weight: bold;">{_tg_sp['icon']} Free {_tg_sp['item']} with VIP Wristband</span>
                 </div>
                 <div style="background: rgba(14,19,29,0.85); border: 1px solid #1f2737; border-radius: 12px; padding: 14px; text-align: center; display: flex; flex-direction: column; justify-content: space-between;">
                     <div>
@@ -4537,7 +4561,7 @@ elif screen == "🎪 36h Virtual Tailgate & Meetups" or "Screen 2" in screen:
                 <div style="background: #141924; padding: 10px 14px; border-radius: 8px; border-left: 3px solid #ff6600;">
                     <span style="color: #8d8d8d; font-size: 7.5pt; text-transform: uppercase;">Roar Threshold (105+ dB)</span>
                     <h4 style="color: #ff6600; margin: 2px 0;">94% Before Halftime</h4>
-                    <span style="color: #dcdcdc; font-size: 7.5pt;">Whataburger Perk Expected</span>
+                    <span style="color: #dcdcdc; font-size: 7.5pt;">{_tg_sp['brand']} Perk Expected</span>
                 </div>
                 <div style="background: #141924; padding: 10px 14px; border-radius: 8px; border-left: 3px solid #0f62fe;">
                     <span style="color: #8d8d8d; font-size: 7.5pt; text-transform: uppercase;">Oracle Reward Status</span>
@@ -4709,6 +4733,7 @@ elif screen == "⚡ In-Arena Game Hub & Crowd Defense" or "Screen 3" in screen:
     _is_bball_sport = (_arena_sport == "Basketball")
     _active_tm = active_team_focus
     _theme = _get_team_visual_theme(_active_tm, _arena_sport)
+    _s3_sp = _get_team_sponsor_badge(_active_tm)
     
     _is_clutch_active = st.session_state.get("is_clutch", False)
     _arena_sec = _theme.get("unit", "Section 114 (Thunder Row)" if _is_bball_sport else "Section 115 (End Zone Loyals)")
@@ -4792,15 +4817,15 @@ elif screen == "⚡ In-Arena Game Hub & Crowd Defense" or "Screen 3" in screen:
         </div>
 
         <!-- RIGHT: The Fan Value (Pound For The Perk / Sponsor Voucher) -->
-        <div style="flex: 1.1; min-width: 270px; background: #0c0f17; border: 1.5px solid {'#42be65' if _perk_unlocked else '#ff6600'}; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between;">
+        <div style="flex: 1.1; min-width: 270px; background: #0c0f17; border: 1.5px solid {'#42be65' if _perk_unlocked else _s3_sp['brand_color']}; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between;">
             <div>
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                    <span style="color: #ff6600; font-size: 7.5pt; text-transform: uppercase; font-weight: 800; letter-spacing: 0.8px;">🎁 GAMEDAY DROP CHALLENGE</span>
-                    <span style="background: rgba(255,102,0,0.2); color: #ff6600; border: 1px solid #ff660055; padding: 2px 8px; border-radius: 6px; font-size: 7.5pt; font-weight: 800;">OFFICIAL PARTNER</span>
+                    <span style="color: {_s3_sp['brand_color']}; font-size: 7.5pt; text-transform: uppercase; font-weight: 800; letter-spacing: 0.8px;">🎁 GAMEDAY DROP CHALLENGE</span>
+                    <span style="background: {_s3_sp['brand_color']}25; color: {_s3_sp['brand_color']}; border: 1px solid {_s3_sp['brand_color']}55; padding: 2px 8px; border-radius: 6px; font-size: 7.5pt; font-weight: 800;">OFFICIAL REGIONAL PARTNER</span>
                 </div>
                 
-                <h3 style="color: #ffffff; margin: 2px 0 4px 0; font-size: 14pt; font-weight: 800;">Whataburger® Clutch Drop</h3>
-                <p style="color: #a8a8a8; font-size: 8.5pt; margin: 0 0 10px 0;">Pound the bleachers past <b>105.0 dB</b> to unlock a free gameday voucher straight to your Trophy Case!</p>
+                <h3 style="color: #ffffff; margin: 2px 0 4px 0; font-size: 14pt; font-weight: 800;">{_s3_sp['icon']} {_s3_sp['brand']} Clutch Drop</h3>
+                <p style="color: #a8a8a8; font-size: 8.5pt; margin: 0 0 10px 0;">Pound the bleachers past <b>105.0 dB</b> to unlock a free <b>{_s3_sp['item']}</b> voucher straight to your Trophy Case!</p>
 
                 <!-- Noise-to-Reward Progress Bar -->
                 <div style="background: #161c29; border-radius: 9999px; height: 12px; overflow: hidden; margin-bottom: 8px; border: 1px solid #232d40;">
@@ -4809,7 +4834,7 @@ elif screen == "⚡ In-Arena Game Hub & Crowd Defense" or "Screen 3" in screen:
                 <div style="display: flex; justify-content: space-between; font-size: 7.5pt; color: #8d8d8d; margin-bottom: 10px;">
                     <span>Baseline (82 dB)</span>
                     <span style="color: #f1c21b; font-weight: bold;">Current: {_cur_db} dB</span>
-                    <span style="color: #42be65; font-weight: bold;">Target: 105 dB 🍔</span>
+                    <span style="color: #42be65; font-weight: bold;">Target: 105 dB {_s3_sp['icon']}</span>
                 </div>
             </div>
 
@@ -5129,9 +5154,15 @@ elif screen == "⚡ In-Arena Game Hub & Crowd Defense" or "Screen 3" in screen:
         _active_team = active_team_focus
         _live_perk = sve.evaluate_clutch_sponsor_perk(st.session_state.sport, _active_team, current_cmi, is_clutch=st.session_state.is_clutch or current_cmi >= 80.0)
         if _live_perk:
-            _p_brand = _live_perk.get("brand", "Whataburger®")
-            _p_color = _live_perk.get("brand_color", "#ff6600")
-            _p_icon = _live_perk.get("icon", "🍔")
+            if "duke" in _active_team.lower() or "celtics" in _active_team.lower() or "wolverines" in _active_team.lower() or "packers" in _active_team.lower():
+                _live_perk["brand"] = _s3_sp["brand"]
+                _live_perk["brand_color"] = _s3_sp["brand_color"]
+                _live_perk["icon"] = _s3_sp["icon"]
+                _live_perk["title"] = f"{_s3_sp['brand']} Clutch Drop: {_s3_sp['item']}"
+                _live_perk["desc"] = f"Triggered by {_active_team} Section acoustic momentum!"
+            _p_brand = _live_perk.get("brand", _s3_sp["brand"])
+            _p_color = _live_perk.get("brand_color", _s3_sp["brand_color"])
+            _p_icon = _live_perk.get("icon", _s3_sp["icon"])
             _p_code = _live_perk.get("discount_code", "WHATACLUTCH26")
             _p_val = _live_perk.get("retail_value", 6.50)
             
@@ -5798,7 +5829,7 @@ elif screen == "📜 Crowd Box Score & Fan Storycard" or "Screen 4" in screen:
     _trophy_items = st.session_state.get("claimed_vouchers", [])
     
     if not _trophy_items:
-        st.info("ℹ️ **Your Living Trophy Case is currently waiting for its first collectible.**\n\nLock in your pre-game predictions in **Screen 2** to mint an **Oracle NFT**, or cross 105 dB in **Screen 3** to unlock a **Whataburger® Clutch Drop**!")
+        st.info("ℹ️ **Your Living Trophy Case is currently waiting for its first collectible.**\n\nLock in your pre-game predictions in **Screen 2** to mint an **Oracle NFT**, or cross 105 dB in **Screen 3** to unlock your regional **Clutch Drop**!")
     else:
         # Group into columns
         num_cols = min(3, len(_trophy_items))
