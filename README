@@ -43,3 +43,8 @@ Start the app:
 
 Bash
 streamlit run app.py
+
+- **Live Production App:** [kineticfanlab-ff8r8uefl7hbmak7awskq4.streamlit.app](https://kineticfanlab-ff8r8uefl7hbmak7awskq4.streamlit.app/)
+- **Demo Video:** [Watch on YouTube](https://youtu.be/H1XWpE-eAdY)
+- **Problem and Solution Statement:** [Kinetic_FanLab_Problem_and_Solution_Statement.pdf](docs/Kinetic_FanLab_Problem_and_Solution_Statement.pdf)
+- **Technology Statement (IBM Bob):** [Kinetic_FanLab_Technology_Statement_IBM_Bob.pdf](docs/Kinetic_FanLab_Technology_Statement_IBM_Bob.pdf)
