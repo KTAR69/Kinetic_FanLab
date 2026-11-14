@@ -1,0 +1,29 @@
+name: Keep Streamlit App Awake
+on:
+  schedule:
+    - cron: "0 */6 * * *" # Runs every 6 hours
+  workflow_dispatch:
+
+jobs:
+  wake:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install playwright && playwright install chromium
+      - run: |
+          python -c '
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as p:
+              b = p.chromium.launch()
+              page = b.new_page()
+              page.goto("https://kineticfanlab-ff8r8uefl7hbmak7awskq4.streamlit.app/", timeout=60000)
+              page.wait_for_timeout(5000)
+              btn = page.get_by_role("button", name="Yes, get this app back up!")
+              if btn.count() > 0:
+                  btn.click()
+                  page.wait_for_timeout(15000)
+              b.close()
+          '
