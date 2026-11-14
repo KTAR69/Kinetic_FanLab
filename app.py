@@ -1437,6 +1437,140 @@ def _get_tailgate_theme(team_name: str, sport: str):
         'tradition': 'Bleacher chant rehearsal and section warmup.'
     }
 
+
+@st.cache_data(ttl=900, show_spinner=False)
+def _fetch_espn_live_schedule(sport: str, primary_team: str):
+    """Fetches real-time official schedule, scores, and record directly from ESPN public API (cached 15 min)."""
+    import urllib.request
+    import zoneinfo
+    t_low = str(primary_team or "").lower()
+    is_bb = ("basket" in str(sport or "").lower())
+
+    endpoint = None
+    team_abbr = ""
+    if is_bb:
+        if "duke" in t_low:
+            endpoint = "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/150/schedule"
+            team_abbr = "DUKE"
+        elif "texas" in t_low or "longhorns" in t_low:
+            endpoint = "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/251/schedule"
+            team_abbr = "TEX"
+        elif "celtics" in t_low:
+            endpoint = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/teams/bos/schedule"
+            team_abbr = "BOS"
+        elif "spurs" in t_low:
+            endpoint = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/teams/sa/schedule"
+            team_abbr = "SA"
+    else:
+        if "michigan" in t_low or "wolverines" in t_low:
+            endpoint = "https://site.api.espn.com/apis/site/v2/sports/football/college-football/teams/130/schedule"
+            team_abbr = "MICH"
+        elif "texas" in t_low or "longhorns" in t_low:
+            endpoint = "https://site.api.espn.com/apis/site/v2/sports/football/college-football/teams/251/schedule"
+            team_abbr = "TEX"
+        elif "cowboys" in t_low:
+            endpoint = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/dal/schedule"
+            team_abbr = "DAL"
+        elif "packers" in t_low:
+            endpoint = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/gb/schedule"
+            team_abbr = "GB"
+
+    if not endpoint:
+        return None
+
+    try:
+        req = urllib.request.Request(endpoint, headers={"User-Agent": "Mozilla/5.0 KineticFanLab/1.0"})
+        with urllib.request.urlopen(req, timeout=3.0) as resp:
+            payload = json.loads(resp.read().decode("utf-8"))
+    except Exception:
+        return None
+
+    events = payload.get("events", [])
+    if not events:
+        return None
+
+    tz_chi = zoneinfo.ZoneInfo("America/Chicago")
+    team_info = payload.get("team", {})
+    record_summary = str(team_info.get("recordSummary") or "")
+    parsed_games = []
+
+    for ev in events:
+        comps = ev.get("competitions", [])
+        if not comps:
+            continue
+        comp = comps[0]
+        raw_date = str(ev.get("date") or comp.get("date") or "")
+        try:
+            dt_utc = datetime.fromisoformat(raw_date.replace("Z", "+00:00"))
+            dt_loc = dt_utc.astimezone(tz_chi)
+            date_str = dt_loc.strftime("%b %d, %Y")
+            time_str = dt_loc.strftime("%I:%M %p CST").lstrip("0")
+        except Exception:
+            date_str = raw_date[:10]
+            time_str = "7:00 PM CST"
+
+        competitors = comp.get("competitors", [])
+        our_comp = None
+        opp_comp = None
+        for c in competitors:
+            c_team = c.get("team", {})
+            c_name = str(c_team.get("displayName") or "").lower()
+            c_abbr = str(c_team.get("abbreviation") or "").upper()
+            if c_abbr == team_abbr or any(w in c_name for w in t_low.split() if len(w) > 3):
+                our_comp = c
+            else:
+                opp_comp = c
+
+        if not opp_comp:
+            continue
+
+        is_home = (our_comp.get("homeAway") == "home") if our_comp else True
+        prefix = "vs." if is_home else "at"
+        opp_name = f"{prefix} {opp_comp.get('team', {}).get('displayName', 'Opponent')}"
+        venue_name = comp.get("venue", {}).get("fullName", "Arena Stadium")
+
+        broadcasts = comp.get("broadcasts", [])
+        tv_str = "ESPN"
+        if broadcasts and isinstance(broadcasts, list):
+            names = broadcasts[0].get("names", [])
+            if names:
+                tv_str = str(names[0])
+
+        status_obj = comp.get("status", {}).get("type", {})
+        is_completed = bool(status_obj.get("completed", False))
+        state = str(status_obj.get("state") or "")
+        short_detail = str(status_obj.get("shortDetail") or "")
+
+        if is_completed and our_comp and opp_comp:
+            our_sc = our_comp.get("score", {}).get("displayValue") if isinstance(our_comp.get("score"), dict) else our_comp.get("score", "")
+            opp_sc = opp_comp.get("score", {}).get("displayValue") if isinstance(opp_comp.get("score"), dict) else opp_comp.get("score", "")
+            wl = "W" if our_comp.get("winner") else "L"
+            result_str = f"{wl} {our_sc}-{opp_sc} | Final" if our_sc and opp_sc else "Final"
+            status_label = "Final"
+        elif state == "in":
+            result_str = f"LIVE • {short_detail}"
+            status_label = "Live"
+        else:
+            result_str = time_str
+            status_label = "Upcoming"
+
+        parsed_games.append({
+            "date": date_str,
+            "opponent": opp_name,
+            "venue": venue_name,
+            "tv": tv_str,
+            "broadcast": tv_str,
+            "result": result_str,
+            "status": status_label,
+            "is_completed": is_completed,
+        })
+
+    return {
+        "schedule": parsed_games,
+        "record": record_summary,
+        "venue": team_info.get("venue", {}).get("fullName", "") if isinstance(team_info.get("venue"), dict) else ""
+    }
+
 def _get_active_matchup_info(sport: str, primary_team: str):
     """Retrieves real-time active and upcoming schedule with autonomous temporal auto-advancement across all teams."""
     import re
@@ -1473,7 +1607,16 @@ def _get_active_matchup_info(sport: str, primary_team: str):
             base_record = t_entry.get("record", "")
             team_venue = t_entry.get("venue", team_venue)
 
-    # GAP-01 Self-Healing: Guarantee Nov 11 live gameday entries for Spurs and Celtics against stale JSON
+    # Live ESPN Public API Override (auto-refreshes every 15 min on Streamlit Cloud)
+    _espn_live = _fetch_espn_live_schedule(sport, primary_team)
+    if _espn_live and _espn_live.get("schedule"):
+        raw_schedule = _espn_live["schedule"]
+        if _espn_live.get("record"):
+            base_record = _espn_live["record"]
+        if _espn_live.get("venue"):
+            team_venue = _espn_live["venue"]
+
+    # Fallback Self-Healing when offline: Guarantee Nov 2026 gameday entries
     clean_team_check = primary_team.lower()
     if 'spurs' in clean_team_check:
         if not any('Nov 11' in str(g.get('date', '')) for g in raw_schedule):
@@ -1529,41 +1672,30 @@ def _get_active_matchup_info(sport: str, primary_team: str):
 
 
     known_scores = {
-        # Spurs
-        ('spurs', 'dallas mavericks'): 'W 118-109 | Final',
+        ('spurs', 'dallas mavericks'): 'L 109-120 | Final',
         ('spurs', 'sacramento kings'): 'W 112-108 | Final',
         ('spurs', 'portland trail blazers'): 'W 118-105 | Final',
         ('spurs', 'houston rockets'): 'W 109-106 | Final',
         ('spurs', 'oklahoma city thunder'): 'L 93-105 | Final',
         ('spurs', 'utah jazz'): 'W 106-88 | Final',
-        ('spurs', 'minnesota timberwolves'): 'W 121-111 | Final',
+        ('spurs', 'minnesota timberwolves'): 'W 113-103 | Final',
         ('spurs', 'la clippers'): 'L 104-113 | Final',
-        ('spurs', 'phoenix suns'): 'L 104-116 | Final',
-        ('spurs', 'chicago bulls'): 'W 115-107 | Final',
-        # Celtics
-        ('celtics', 'milwaukee bucks'): 'W 109-102 | Final',
-        ('celtics', 'charlotte hornets'): 'W 118-110 | Final',
-        ('celtics', 'denver nuggets'): 'W 121-114 | Final',
-        ('celtics', 'golden state warriors'): 'W 128-117 | Final',
-        # Texas Longhorns BB
         ('longhorns', 'gardner-webb'): 'W 98-50 | Final',
         ('longhorns', 'grambling state'): 'W 86-61 | Final',
-        ('longhorns', 'chicago state'): 'W 109-59 | Final',
+        ('longhorns', 'chicago state'): 'W 105-59 | Final',
         ('longhorns', 'texas southern'): 'W 89-58 | Final',
-        # Duke
         ('duke', 'coastal carolina'): 'W 113-52 | Final',
         ('duke', 'army black knights'): 'W 84-50 | Final',
         ('duke', 'michigan state'): 'L 73-79 | Final',
-        # Texas Longhorns FB
+        ('duke', 'siu edwardsville'): 'W 90-47 | Final',
+        ('spurs', 'golden state'): 'W 123-85 | Final',
+        ('cowboys', 'indianapolis'): 'W 27-23 | Final',
+        ('packers', 'new england'): 'W 45-27 | Final',
         ('longhorns', 'florida'): 'W 49-17 | Final',
-        ('longhorns', 'missouri'): 'W 28-24 | Final',
-        # Michigan Wolverines
         ('wolverines', 'michigan state'): 'W 24-17 | Final',
-        ('wolverines', 'rutgers'): 'W 31-17 | Final',
-        # Green Bay Packers
-        ('packers', 'new england patriots'): 'W 27-20 | Final',
-        # Dallas Cowboys
         ('cowboys', 'indianapolis colts'): 'L 21-27 | Final',
+        ('celtics', 'milwaukee bucks'): 'W 109-102 | Final',
+        ('wolverines', 'rutgers'): 'W 31-17 | Final',
         ('cowboys', 'arizona cardinals'): 'L 30-33 (OT) | Final',
     }
 
@@ -1611,7 +1743,7 @@ def _get_active_matchup_info(sport: str, primary_team: str):
                         matched = True
                         break
                 if not matched:
-                    item['result'] = 'W 84-74 | Final' if is_bb else 'W 31-17 | Final'
+                    item['result'] = 'Final'
             if item['result'].startswith('W '):
                 wins += 1
             elif item['result'].startswith('L '):
